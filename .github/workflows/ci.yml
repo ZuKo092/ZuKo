@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint-php:
+    name: PHP Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, json, mbstring
+
+      - name: Check PHP syntax
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" | while read file; do
+            php -l "$file" || exit 1
+          done
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Checking for hardcoded Supabase service role keys..."
+          if grep -rn 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.*service_role' --include="*.php" --include="*.js" --include="*.html" .; then
+            echo "::error::Found hardcoded Supabase service role key!"
+            exit 1
+          fi
+
+          echo "Checking for Stripe live keys..."
+          if grep -rn 'sk_live_' --include="*.php" --include="*.js" --include="*.html" .; then
+            echo "::error::Found hardcoded Stripe live key!"
+            exit 1
+          fi
+
+          echo "Checking for hardcoded passwords..."
+          if grep -rn "SMTP_PASS.*=.*'[^']" --include="*.php" . | grep -v "getenv\|env(\|SMTP_PASS)" | grep -v config.php | grep -v .env; then
+            echo "::error::Found hardcoded SMTP password!"
+            exit 1
+          fi
+
+          echo "No hardcoded secrets found."
+
+      - name: Check for .env file in repo
+        run: |
+          if [ -f .env ]; then
+            echo "::error::.env file should not be committed!"
+            exit 1
+          fi
+          echo "No .env file in repo."
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: lint-php
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, json, mbstring
+          tools: composer
+
+      - name: Install dependencies
+        run: |
+          if [ -f composer.json ]; then
+            composer install --no-interaction --prefer-dist
+          fi
+
+      - name: Run tests
+        run: |
+          if [ -f vendor/bin/phpunit ]; then
+            vendor/bin/phpunit
+          else
+            echo "No PHPUnit installed yet — skipping tests."
+          fi

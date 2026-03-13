@@ -1,0 +1,9 @@
+/* ══════════════════════════════════════════════════════════
+   REVENUE DASHBOARD
+   ══════════════════════════════════════════════════════════ */
+.revKpiRow .kpiRevenue .v{color:var(--brand)}
+.revTrendBars{grid-template-columns:repeat(30,1fr)}
+.revTrendBars .trendBar.on{background:var(--brand)}
+.revTrendBars .trendBarFill{background:#d1fae5}
+.revTrendBars .trendBar.active .trendBarFill{background:var(--brand)}
+#revTrendCard .cardBody{min-height:200px}

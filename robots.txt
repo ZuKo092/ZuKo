@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /anfrage/api/
+Disallow: /anfrage/admin.html
+Disallow: /anfrage/login/
+Disallow: /anfrage/onboarding.html
+Disallow: /anfrage/signup.html
+Disallow: /portal/
+
+Sitemap: https://anfragebox.de/sitemap.xml

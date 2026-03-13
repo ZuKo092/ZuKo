@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AnfrageBox Admin Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/anfrage/login/auth.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = "https://uledkuegmaritmsjejlm.supabase.co";
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+    window.AB_LOGIN_PAGE = "/anfrage/login/login.html";
+    window.AB_LOGIN_REDIRECT = "/anfrage/admin.html";
+    window.AB_MFA_PAGE = "/anfrage/login/login.html";
+    window.AB_COMPANY_USERS_TABLE = "company_users";
+    window.AB_MFA_ROLES = [];
+  </script>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-brand" aria-hidden="true">
+      <div class="brand-card">
+        <div class="brand-top">
+          <div class="brand-mark"></div>
+          <h1 class="brand-title">Zentraler Zugriff für Ihr Team.</h1>
+          <p class="brand-text">Verwalten Sie Anfragen, Angebote und Standorte an einem Ort.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-panel">
+      <!-- LOGIN VIEW -->
+      <div class="auth-card" id="viewLogin">
+        <div class="auth-kicker">Sicherer Zugang</div>
+        <h2 class="auth-title">Anmelden</h2>
+        <p class="auth-text">Melden Sie sich mit Ihrem Firmenkonto an.</p>
+
+        <div id="loginLoading" class="loading-bar" aria-hidden="true"><span></span></div>
+        <div id="loginMessage" class="notice" role="alert" aria-live="polite"></div>
+
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="field">
+            <label for="email">E-Mail</label>
+            <input id="email" name="email" class="input" type="email" autocomplete="email" placeholder="name@firma.de" required />
+          </div>
+          <div class="field">
+            <label for="password">Passwort</label>
+            <div class="password-row">
+              <input id="password" name="password" class="input" type="password" autocomplete="current-password" placeholder="Passwort eingeben" required />
+              <button id="togglePassword" class="small-btn" type="button">Anzeigen</button>
+            </div>
+          </div>
+          <button id="loginBtn" class="primary-btn" type="submit">Anmelden</button>
+        </form>
+
+        <div style="text-align:center;margin-top:16px;">
+          <button id="showReset" type="button" style="background:none;border:none;color:#047857;font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px;">Passwort vergessen?</button>
+        </div>
+      </div>
+
+      <!-- RESET VIEW -->
+      <div class="auth-card" id="viewReset" style="display:none;">
+        <div class="auth-kicker">Passwort zurücksetzen</div>
+        <h2 class="auth-title">Neues Passwort</h2>
+        <p class="auth-text">Geben Sie Ihre E-Mail ein. Sie erhalten einen Link zum Zurücksetzen.</p>
+
+        <div id="resetMessage" class="notice" role="alert" aria-live="polite"></div>
+
+        <div class="auth-form">
+          <div class="field">
+            <label for="resetEmail">E-Mail</label>
+            <input id="resetEmail" class="input" type="email" placeholder="name@firma.de" required />
+          </div>
+          <button id="resetBtn" class="primary-btn" type="button">Link senden</button>
+        </div>
+
+        <div style="text-align:center;margin-top:16px;">
+          <button id="showLogin" type="button" style="background:none;border:none;color:#047857;font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px;">← Zurück zum Login</button>
+        </div>
+      </div>
+
+      <!-- UPDATE PASSWORD VIEW (shown when user clicks reset link) -->
+      <div class="auth-card" id="viewUpdate" style="display:none;">
+        <div class="auth-kicker">Neues Passwort festlegen</div>
+        <h2 class="auth-title">Passwort ändern</h2>
+        <p class="auth-text">Geben Sie Ihr neues Passwort ein.</p>
+
+        <div id="updateMessage" class="notice" role="alert" aria-live="polite"></div>
+
+        <div class="auth-form">
+          <div class="field">
+            <label for="newPassword">Neues Passwort</label>
+            <input id="newPassword" class="input" type="password" placeholder="Min. 8 Zeichen" minlength="8" />
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Passwort bestätigen</label>
+            <input id="confirmPassword" class="input" type="password" placeholder="Passwort wiederholen" />
+          </div>
+          <button id="updateBtn" class="primary-btn" type="button">Passwort speichern</button>
+        </div>
+      </div>
+    </section>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const $ = id => document.getElementById(id);
+  const form = $("loginForm");
+  const emailEl = $("email");
+  const passwordEl = $("password");
+  const msg = $("loginMessage");
+  const toggleBtn = $("togglePassword");
+
+  const SUPABASE_URL = window.SUPABASE_URL;
+  const SUPABASE_KEY = window.SUPABASE_ANON_KEY || window.SUPABASE_PUBLISHABLE_KEY;
+
+  if (!window.supabase || !SUPABASE_URL || !SUPABASE_KEY) {
+    if (msg) msg.textContent = "Supabase config missing.";
+    return;
+  }
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+
+  const getNext = () =>
+    new URLSearchParams(window.location.search).get("next") || "/anfrage/admin.html";
+
+  // Check if this is a password recovery callback
+  const hash = window.location.hash;
+  if (hash && (hash.includes("type=recovery") || hash.includes("type=signup"))) {
+    // Supabase will auto-detect the recovery token from the URL hash
+    $("viewLogin").style.display = "none";
+    $("viewReset").style.display = "none";
+    $("viewUpdate").style.display = "block";
+  } else {
+    // Normal flow: check existing session
+    try {
+      const { data } = await sb.auth.getSession();
+      if (data?.session?.user) {
+        window.location.replace(getNext());
+        return;
+      }
+    } catch (err) {
+      console.error("session check failed:", err);
+    }
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+      $("viewLogin").style.display = "none";
+      $("viewReset").style.display = "none";
+      $("viewUpdate").style.display = "block";
+    } else if (event === "SIGNED_IN" && session?.user && !$("viewUpdate").style.display !== "none") {
+      // Only redirect if we're not in password update mode
+      if ($("viewUpdate").style.display === "none") {
+        window.location.replace(getNext());
+      }
+    }
+  });
+
+  // Toggle password visibility
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = passwordEl.type === "password";
+      passwordEl.type = isPassword ? "text" : "password";
+      toggleBtn.textContent = isPassword ? "Verbergen" : "Anzeigen";
+    });
+  }
+
+  // LOGIN
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (msg) msg.textContent = "";
+      const email = String(emailEl?.value || "").trim();
+      const password = String(passwordEl?.value || "");
+      if (!email || !password) { if (msg) msg.textContent = "Bitte E-Mail und Passwort eingeben."; return; }
+
+      $("loginBtn").disabled = true;
+      $("loginBtn").textContent = "Laden...";
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (msg) msg.textContent = error.message || "Login fehlgeschlagen.";
+        $("loginBtn").disabled = false;
+        $("loginBtn").textContent = "Anmelden";
+        return;
+      }
+      window.location.replace(getNext());
+    });
+  }
+
+  // SHOW RESET VIEW
+  $("showReset").addEventListener("click", () => {
+    $("viewLogin").style.display = "none";
+    $("viewReset").style.display = "block";
+    $("resetEmail").value = emailEl.value || "";
+    $("resetEmail").focus();
+  });
+
+  // SHOW LOGIN VIEW
+  $("showLogin").addEventListener("click", () => {
+    $("viewReset").style.display = "none";
+    $("viewLogin").style.display = "block";
+  });
+
+  // SEND RESET LINK
+  $("resetBtn").addEventListener("click", async () => {
+    const resetMsg = $("resetMessage");
+    resetMsg.textContent = "";
+    resetMsg.className = "notice";
+    resetMsg.style.display = "none";
+
+    const email = $("resetEmail").value.trim();
+    if (!email || !email.includes("@")) {
+      resetMsg.textContent = "Bitte gültige E-Mail eingeben.";
+      resetMsg.style.color = "#b42318";
+      resetMsg.style.display = "block";
+      return;
+    }
+
+    $("resetBtn").disabled = true;
+    $("resetBtn").textContent = "Sende...";
+
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/anfrage/login/login.html"
+    });
+
+    if (error) {
+      resetMsg.textContent = error.message || "Fehler beim Senden.";
+      resetMsg.style.color = "#b42318";
+      resetMsg.style.display = "block";
+    } else {
+      resetMsg.textContent = "E-Mail gesendet! Prüfen Sie Ihr Postfach (auch Spam). Der Link ist 60 Minuten gültig.";
+      resetMsg.style.color = "#047857";
+      resetMsg.style.display = "block";
+    }
+
+    $("resetBtn").disabled = false;
+    $("resetBtn").textContent = "Link senden";
+  });
+
+  $("resetEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("resetBtn").click(); });
+
+  // UPDATE PASSWORD
+  $("updateBtn").addEventListener("click", async () => {
+    const updateMsg = $("updateMessage");
+    updateMsg.textContent = "";
+    updateMsg.className = "notice";
+    updateMsg.style.display = "none";
+
+    const pw = $("newPassword").value;
+    const pw2 = $("confirmPassword").value;
+
+    if (pw.length < 8) {
+      updateMsg.textContent = "Passwort muss min. 8 Zeichen haben.";
+      updateMsg.style.color = "#b42318";
+      updateMsg.style.display = "block";
+      return;
+    }
+    if (pw !== pw2) {
+      updateMsg.textContent = "Passwörter stimmen nicht überein.";
+      updateMsg.style.color = "#b42318";
+      updateMsg.style.display = "block";
+      return;
+    }
+
+    $("updateBtn").disabled = true;
+    $("updateBtn").textContent = "Speichern...";
+
+    const { error } = await sb.auth.updateUser({ password: pw });
+
+    if (error) {
+      updateMsg.textContent = error.message || "Fehler beim Speichern.";
+      updateMsg.style.color = "#b42318";
+      updateMsg.style.display = "block";
+    } else {
+      updateMsg.textContent = "Passwort erfolgreich geändert! Sie werden zum Admin-Panel weitergeleitet...";
+      updateMsg.style.color = "#047857";
+      updateMsg.style.display = "block";
+      setTimeout(() => { window.location.href = "/anfrage/admin.html"; }, 2000);
+    }
+
+    $("updateBtn").disabled = false;
+    $("updateBtn").textContent = "Passwort speichern";
+  });
+
+  $("confirmPassword").addEventListener("keydown", e => { if (e.key === "Enter") $("updateBtn").click(); });
+});
+</script>
+  </main>
+</body>
+</html>

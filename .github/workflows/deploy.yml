@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    # Uncomment when ready to enable auto-deploy:
+    # needs: [lint-php, security-check, test]
+    if: false  # Disabled until deployment target is configured
+    steps:
+      - uses: actions/checkout@v4
+
+      # Option 1: Deploy via SSH/rsync
+      # - name: Deploy via rsync
+      #   uses: burnett01/rsync-deployments@7.0.1
+      #   with:
+      #     switches: -avzr --delete --exclude='.env' --exclude='.git'
+      #     path: ./
+      #     remote_path: /var/www/html/
+      #     remote_host: ${{ secrets.DEPLOY_HOST }}
+      #     remote_user: ${{ secrets.DEPLOY_USER }}
+      #     remote_key: ${{ secrets.DEPLOY_KEY }}
+
+      # Option 2: Deploy via FTP
+      # - name: Deploy via FTP
+      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      #   with:
+      #     server: ${{ secrets.FTP_HOST }}
+      #     username: ${{ secrets.FTP_USER }}
+      #     password: ${{ secrets.FTP_PASS }}
+      #     server-dir: /public_html/
+
+      - name: Deployment placeholder
+        run: echo "Configure deployment target in workflow file"

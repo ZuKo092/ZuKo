@@ -1,0 +1,33 @@
+# Environment & secrets
+.env
+anfrage/_secrets.php
+anfrage/api/_secrets.php
+
+# Log files
+*.log
+logs/
+anfrage/api/*.log
+
+# Rate limit data
+anfrage/api/ratelimit.json
+anfrage/api/ratelimit/*.json
+anfrage/api/ratelimit_offer/*.json
+
+# PHP dependencies
+/vendor/
+composer.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# PHPUnit cache
+.phpunit.result.cache
+
+# Archives
+*.zip

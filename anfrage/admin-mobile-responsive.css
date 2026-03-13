@@ -1,0 +1,453 @@
+/* ============================================================
+   AnfrageBox Admin — Mobile v3
+   Breakpoint: 768px
+   Design: Card-first, zero clutter, thumb-optimized
+   ============================================================ */
+
+/* ── Bottom Navigation Bar ── */
+.mobileBottomNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+}
+.mobileBottomNav .mbn-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.mobileBottomNav .mbn-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-4);
+  font-size: 10px;
+  font-weight: 600;
+  transition: color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobileBottomNav .mbn-item svg {
+  width: 22px; height: 22px;
+  stroke: currentColor; stroke-width: 2; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.mobileBottomNav .mbn-item.active { color: var(--brand); }
+.mobileBottomNav .mbn-item.active svg { stroke: var(--brand); }
+
+@media (max-width: 768px) {
+
+  .mobileBottomNav { display: block; }
+  .sidebar { display: none !important; }
+  .app { grid-template-columns: 1fr !important; }
+  .content { padding: 12px 12px 90px !important; }
+
+  /* ── Topbar ── */
+  .topbar { height: 50px; }
+  .topbar-inner { padding: 0 12px; }
+  .burger { display: none !important; }
+  .titleText .h { font-size: 16px; }
+  .titleText .p { font-size: 11px; }
+
+  /* Verbunden: dot only */
+  .pill.startStatusMini {
+    font-size: 0 !important; padding: 0 !important;
+    min-width: 0 !important; width: 24px !important; height: 24px !important;
+    display: flex !important; align-items: center; justify-content: center;
+    border-radius: 50% !important; background: transparent !important;
+    border: none !important; box-shadow: none !important;
+  }
+  .pill.startStatusMini #connText { display: none !important; }
+  .pill.startStatusMini .dot { width: 10px !important; height: 10px !important; margin: 0 !important; }
+
+  /* ── Tab bars ── */
+  #leadsTabBar, #settingsTabBar {
+    display: flex !important; gap: 4px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; padding-bottom: 4px; margin-bottom: 12px !important;
+  }
+  #leadsTabBar::-webkit-scrollbar, #settingsTabBar::-webkit-scrollbar { display: none; }
+  #leadsTabBar .btn, #settingsTabBar .btn {
+    flex-shrink: 0; height: 34px !important;
+    padding: 0 14px !important; font-size: 12px !important; white-space: nowrap;
+  }
+
+  /* ── KPIs: big numbers ── */
+  .kpiGrid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .kpiMini { padding: 14px !important; }
+  .kpiMini .v { font-size: 30px !important; font-weight: 900 !important; line-height: 1.1 !important; }
+  .kpiMini .k { font-size: 9px !important; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-4) !important; }
+
+  /* ── Start page ── */
+  .startGrid, .startGridSimple { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .startTrendHead { flex-direction: column; align-items: flex-start !important; gap: 8px; }
+  .rangeTabs { margin-left: 0 !important; }
+
+  /* ── Filter collapse ── */
+  .leadsToolbar { padding: 12px !important; }
+  .leadsToolbar .ltLeft {
+    margin-bottom: 0; display: flex; align-items: center; gap: 8px;
+  }
+  .leadsToolbar .ltMid { display: none !important; }
+  .leadsToolbar .ltMid.mob-filters-open {
+    display: grid !important; grid-template-columns: 1fr !important;
+    gap: 6px !important; margin-top: 8px;
+  }
+  .leadsToolbar .ltMid .input { font-size: 16px !important; height: 44px !important; }
+  .leadsToolbar .ltMid .select { height: 44px !important; font-size: 14px !important; }
+
+  .mob-filter-toggle {
+    display: inline-flex !important; align-items: center; gap: 4px;
+    height: 32px; padding: 0 12px;
+    border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    font-size: 12px; font-weight: 700; color: var(--text-2); cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-filter-toggle svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* ══════════════════════════════════════
+     LEAD CARDS — Clean, 4-line hierarchy
+     ══════════════════════════════════════ */
+  .leadTable { padding: 0 !important; border-spacing: 0 !important; }
+  .leadTable thead { display: none !important; }
+  .leadTable, .leadTable tbody, .leadTable tr, .leadTable td {
+    display: block !important; width: 100% !important;
+  }
+
+  .leadTable tbody tr {
+    background: #fff !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 14px !important;
+    padding: 0 !important;
+    margin-bottom: 10px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: box-shadow .12s, border-color .12s;
+    overflow: hidden;
+  }
+  .leadTable tbody tr:active {
+    box-shadow: 0 0 0 2px var(--brand-glow);
+    border-color: var(--brand) !important;
+  }
+  .leadTable tbody tr.active {
+    border-left: 3px solid var(--brand) !important;
+  }
+
+  .leadTable tbody td {
+    border: none !important; padding: 0 !important; border-radius: 0 !important;
+    display: none !important;
+  }
+
+  /* Only show the mobile card td */
+  .leadTable tbody td.mob-card-td {
+    display: block !important;
+    padding: 14px 16px !important;
+  }
+
+  /* Mobile card elements */
+  .mob-card-name {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -.02em;
+    line-height: 1.25;
+  }
+  .mob-card-route {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-2);
+    margin-top: 3px;
+  }
+  .mob-card-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .mob-card-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .mob-card-pill.st-neu { background: #dbeafe; color: #1e40af; }
+  .mob-card-pill.st-bearbeitung { background: #fef3c7; color: #92400e; }
+  .mob-card-pill.st-angebot { background: #e0e7ff; color: #3730a3; }
+  .mob-card-pill.st-gebucht { background: #d1fae5; color: #065f46; }
+  .mob-card-pill.st-abgeschlossen { background: #d1fae5; color: #065f46; }
+  .mob-card-pill.st-storniert { background: #fee2e2; color: #991b1b; }
+  .mob-card-pill.st-archiviert { background: #f3f4f6; color: #6b7280; }
+  .mob-card-date {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-3);
+  }
+
+  /* Hide desktop-generated tName/tSub on mobile (in case rewrite hasn't run) */
+  .tName { font-size: 17px !important; font-weight: 900 !important; }
+  .tSub { display: none !important; }
+
+  /* ══════════════════════════════════════
+     DRAWER — Full screen, 3 zones
+     ══════════════════════════════════════ */
+  .drawer.show { padding: 0 !important; }
+  .drawerPanel {
+    width: 100vw !important; max-height: none !important;
+    height: 100vh !important; border-radius: 0 !important;
+    display: flex; flex-direction: column;
+  }
+
+  /* HIDE desktop drawer header on mobile */
+  .drawerHead { display: none !important; }
+
+  .drawerBody {
+    padding: 0 !important; flex: 1;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+
+  /* Desktop layout hidden on mobile */
+  .leadLayout { display: none !important; }
+  .mob-drawer-wrapper { display: block !important; }
+
+  /* Zone 1: Sticky header with close button */
+  .mob-drawer-header {
+    position: sticky; top: 0; z-index: 10;
+    background: #fff; padding: 14px 16px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mob-drawer-top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .mob-back-btn {
+    display: flex; align-items: center; gap: 4px;
+    background: none; border: none; padding: 6px 0;
+    font-size: 14px; font-weight: 700; color: var(--brand);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .mob-back-btn svg {
+    width: 18px; height: 18px; stroke: currentColor;
+    stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .mob-edit-btn {
+    background: none; border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--text-2);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .mob-drawer-header .mob-name {
+    font-size: 22px; font-weight: 900;
+    color: var(--text); margin: 0; line-height: 1.15;
+    letter-spacing: -.03em;
+  }
+  .mob-drawer-header .mob-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+  .mob-drawer-header .mob-route-short {
+    font-size: 12px; font-weight: 600; color: var(--text-3);
+  }
+  .mob-drawer-header .mob-status-pill {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 800; white-space: nowrap;
+  }
+  .mob-status-pill.st-neu { background: #dbeafe; color: #1e40af; }
+  .mob-status-pill.st-bearbeitung { background: #fef3c7; color: #92400e; }
+  .mob-status-pill.st-angebot { background: #e0e7ff; color: #3730a3; }
+  .mob-status-pill.st-gebucht { background: #d1fae5; color: #065f46; }
+  .mob-status-pill.st-abgeschlossen { background: #d1fae5; color: #065f46; }
+  .mob-status-pill.st-storniert { background: #fee2e2; color: #991b1b; }
+  .mob-status-pill.st-archiviert { background: #f3f4f6; color: #6b7280; }
+
+  /* Action buttons: filled, prominent */
+  .mob-actions-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px; margin-top: 14px;
+  }
+  .mob-action-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    height: 44px; border-radius: 10px;
+    border: none; background: var(--bg-subtle);
+    font-size: 13px; font-weight: 700; color: var(--text);
+    text-decoration: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .12s;
+  }
+  .mob-action-btn:active { opacity: .7; }
+  .mob-action-btn svg {
+    width: 16px; height: 16px; stroke: currentColor;
+    stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .mob-action-btn.call-btn { background: #ecfdf5; color: #059669; }
+  .mob-action-btn.wa-btn { background: #f0fdf4; color: #16a34a; }
+  .mob-action-btn.email-btn { background: #eff6ff; color: #2563eb; }
+
+  /* Zone 2: Quick actions — tight spacing */
+  .mob-drawer-quick {
+    padding: 12px 16px;
+  }
+  .mob-quick-card {
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+  }
+  .mob-quick-card:last-child { margin-bottom: 0; }
+  .mob-quick-card .mob-qc-title {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--text-4); margin-bottom: 8px;
+  }
+
+  .mob-offer-row { display: flex; gap: 8px; align-items: center; }
+  .mob-offer-row .input { flex: 1; height: 44px; font-size: 16px !important; font-weight: 700; }
+  .mob-offer-row .btn { height: 44px; padding: 0 18px; white-space: nowrap; font-weight: 800; }
+
+  .mob-portal-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .mob-portal-status .mob-ps-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+  .mob-portal-status .mob-ps-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .mob-portal-status .btn { height: 36px; padding: 0 14px; font-size: 11px; font-weight: 800; }
+
+  .mob-status-change { display: flex; gap: 8px; align-items: center; }
+  .mob-status-change .select { flex: 1; height: 44px; font-size: 14px !important; min-width: 0; }
+  .mob-status-change .btn { height: 44px; padding: 0 16px; white-space: nowrap; font-weight: 800; }
+
+  /* Zone 3: Accordions */
+  .mob-drawer-details { padding: 16px; }
+
+  .mob-acc {
+    border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 8px; overflow: hidden; background: #fff;
+  }
+  .mob-acc summary {
+    padding: 14px 16px; font-size: 14px; font-weight: 800;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    list-style: none; display: flex; align-items: center; justify-content: space-between;
+  }
+  .mob-acc summary::-webkit-details-marker { display: none; }
+  .mob-acc summary::after {
+    content: ''; width: 8px; height: 8px;
+    border-right: 2px solid var(--text-4); border-bottom: 2px solid var(--text-4);
+    transform: rotate(-45deg); transition: transform 0.2s; flex-shrink: 0;
+  }
+  .mob-acc[open] summary::after { transform: rotate(45deg); }
+  .mob-acc .mob-acc-body { padding: 0 16px 16px; font-size: 13px; line-height: 1.6; }
+  .mob-acc .mob-acc-body .invRoom { margin-bottom: 12px; }
+  .mob-acc .mob-acc-body .invRoomTitle { font-weight: 800; margin-bottom: 4px; color: var(--brand-dark); }
+  .mob-acc .mob-acc-body .invLine { display: flex; gap: 6px; padding: 3px 0; font-size: 13px; }
+  .mob-acc .mob-acc-body .invQty { font-weight: 800; min-width: 32px; color: var(--text-2); }
+
+  /* ── Angebot sticky bar ── */
+  .offerCorpShell { padding: 0 !important; }
+  .offerCorpIntro { padding: 16px !important; }
+  .offerCorpTitle { font-size: 20px !important; }
+  .offerCorpGrid { gap: 12px !important; }
+  .offerCorpCardBody .input, .offerCorpCardBody .select, .offerCorpCardBody .textarea {
+    font-size: 16px !important;
+  }
+  .offerCorpSticky {
+    position: fixed !important; bottom: 70px !important;
+    left: 0 !important; right: 0 !important;
+    background: #fff !important; border-top: 1px solid var(--line) !important;
+    padding: 10px 12px !important; z-index: 100 !important;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08); border-radius: 0 !important;
+  }
+  .offerCorpStickyLeft { display: none !important; }
+  .offerCorpStickyRight {
+    display: flex !important; gap: 6px !important; width: 100% !important;
+  }
+  .offerCorpStickyRight .btn {
+    flex: 1 !important; height: 44px !important;
+    font-size: 13px !important; padding: 0 8px !important; font-weight: 800 !important;
+  }
+
+  /* ── Portal, Gebuchte, Rechnungen tables as cards ── */
+  #portalTable thead, #gebuchteTable thead, #rechnungTable thead { display: none !important; }
+  #portalTable, #portalTable tbody, #portalTable tr, #portalTable td,
+  #gebuchteTable, #gebuchteTable tbody, #gebuchteTable tr, #gebuchteTable td,
+  #rechnungTable, #rechnungTable tbody, #rechnungTable tr, #rechnungTable td {
+    display: block !important; width: 100% !important;
+  }
+  #portalTable tbody tr, #gebuchteTable tbody tr, #rechnungTable tbody tr {
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  #portalTable tbody td, #gebuchteTable tbody td, #rechnungTable tbody td {
+    border: none !important; padding: 2px 0 !important;
+  }
+  #portalTable tbody td:last-child, #gebuchteTable tbody td:last-child, #rechnungTable tbody td:last-child {
+    margin-top: 10px; padding-top: 10px !important;
+    border-top: 1px solid var(--line-2) !important;
+  }
+
+  /* ── Calendar ── */
+  .cardHead { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+
+  /* ── Settings ── */
+  .grid2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+  #viewSettings .card { margin-bottom: 0 !important; }
+
+  /* ── Modals full-screen ── */
+  .modal { padding: 0 !important; }
+  .modalCard { min-height: 100vh !important; max-width: none !important; border-radius: 0 !important; }
+  .modalHead { padding: 10px 14px !important; flex-wrap: wrap !important; gap: 8px !important; }
+  .modalHead h3 { font-size: 16px !important; }
+  .editStickyBar {
+    position: fixed !important; bottom: 0 !important;
+    left: 0 !important; right: 0 !important;
+    padding: 10px 14px !important; background: #fff !important;
+    border-top: 1px solid var(--line) !important; z-index: 100 !important;
+  }
+  #rechnungPickerModal .modalCard { min-height: 100vh !important; max-width: none !important; border-radius: 0 !important; }
+  #rechnungPickerSearch { font-size: 16px !important; height: 44px !important; }
+
+  /* ── Touch targets ── */
+  .btn { min-height: 36px; -webkit-tap-highlight-color: transparent; }
+  .input, .select, .textarea { min-height: 44px; }
+
+  /* ── Prevent horizontal scroll ── */
+  body, .app, .main, .content { overflow-x: hidden !important; }
+
+  /* ── Route boxes ── */
+  .routeRow { gap: 8px !important; }
+  .routeBox { font-size: 12px !important; padding: 10px !important; }
+
+  /* ── Accordions (desktop fallback) ── */
+  .acc summary { padding: 10px 12px !important; font-size: 13px !important; }
+  .accBody { padding: 10px 12px !important; }
+}
+
+/* ── Small phones ── */
+@media (max-width: 400px) {
+  .kpiGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .kpiMini .v { font-size: 24px !important; }
+  .content { padding: 10px 10px 90px !important; }
+  .mob-drawer-header { padding: 12px; }
+  .mob-drawer-quick { padding: 12px; }
+  .mob-drawer-details { padding: 12px; }
+  .mob-actions-row { gap: 6px; }
+  .mob-action-btn { height: 42px; font-size: 12px; }
+  .leadTable tbody tr { padding: 12px !important; }
+  .tName { font-size: 15px !important; }
+}
+
+/* ── Desktop: hide mobile-only ── */
+@media (min-width: 769px) {
+  .mob-drawer-wrapper { display: none !important; }
+  .mob-filter-toggle { display: none !important; }
+}

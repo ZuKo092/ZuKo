@@ -1,0 +1,86 @@
+/* ============================================================
+   PATCH: Send Offer Email Styles
+   Add to admin_premium_theme35.css or load as separate file
+   ============================================================ */
+
+/* Email send button in drawer and offer card */
+.emailSendBtn {
+  background: linear-gradient(180deg, #3b82f6, #2563eb) !important;
+  border-color: rgba(37, 99, 235, .2) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, .18) !important;
+}
+
+.emailSendBtn:hover {
+  filter: brightness(.96);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, .24) !important;
+}
+
+.emailSendBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  filter: none;
+  box-shadow: none !important;
+}
+
+/* Email modal specifics */
+#emailModal .modalCard {
+  max-width: 680px;
+  border-radius: 22px;
+}
+
+#emailModal .field {
+  margin-top: 12px;
+}
+
+#emailModal .field:first-child {
+  margin-top: 0;
+}
+
+#emailModal .field label {
+  color: #475467;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .01em;
+}
+
+#emailModal .input,
+#emailModal .textarea {
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, .07);
+  background: rgba(255, 255, 255, .97);
+}
+
+#emailModal .input:focus,
+#emailModal .textarea:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, .12);
+}
+
+#emailModal .textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+#emailModal .emailStatusBar {
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+/* Drawer head email button alignment */
+.dHeadRight .emailSendBtn {
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* Lead table email sent indicator */
+.pillEmailSent {
+  border-color: rgba(59, 130, 246, .22) !important;
+  background: rgba(59, 130, 246, .08) !important;
+  color: #1d4ed8 !important;
+}
