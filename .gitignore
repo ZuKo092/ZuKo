@@ -12,6 +12,10 @@ anfrage/api/ratelimit.json
 anfrage/api/ratelimit/*.json
 anfrage/api/ratelimit_offer/*.json
 
+# PHP dependencies
+/vendor/
+composer.lock
+
 # OS files
 .DS_Store
 Thumbs.db
