@@ -1,0 +1,24 @@
+# Environment & secrets
+.env
+anfrage/_secrets.php
+anfrage/api/_secrets.php
+
+# Log files
+*.log
+anfrage/api/*.log
+
+# Rate limit data
+anfrage/api/ratelimit/*.json
+anfrage/api/ratelimit_offer/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Archives
+*.zip

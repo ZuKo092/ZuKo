@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AnfrageBox - Konto erstellen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/anfrage/login/auth10.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = "https://uledkuegmaritmsjejlm.supabase.co";
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+  </script>
+  <style>
+    .plan-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 2px solid #bbf7d0;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .plan-name { font-size: 13px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: .08em; }
+    .plan-price { font-size: 36px; font-weight: 900; color: #065f46; margin: 8px 0 4px; letter-spacing: -.03em; }
+    .plan-price span { font-size: 15px; font-weight: 600; color: #6b7280; }
+    .plan-trial { font-size: 13px; font-weight: 700; color: #047857; background: #dcfce7; display: inline-block; padding: 4px 12px; border-radius: 999px; margin-top: 8px; }
+    .plan-features { text-align: left; margin-top: 14px; font-size: 13px; color: #374151; line-height: 1.8; }
+    .plan-features div::before { content: "✓ "; color: #047857; font-weight: 800; }
+    .step-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; }
+    .step-dot.active { background: #047857; }
+    .step-dot.done { background: #86efac; }
+    .auth-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 500px) { .auth-form .row2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-brand" aria-hidden="true">
+      <div class="brand-card">
+        <div class="brand-top">
+          <h1 class="brand-title">Mehr Anfragen. Weniger Aufwand.</h1>
+          <p class="brand-text">
+            AnfrageBox automatisiert Ihre Umzugsanfragen. Professionelle Formulare, automatische Angebote, Kundenportal.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-card" style="max-width:440px;">
+
+        <div class="step-dots" id="stepDots">
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+
+        <!-- STEP 1: Company info -->
+        <div id="step1">
+          <div class="auth-kicker">Schritt 1 von 3</div>
+          <h2 class="auth-title">Konto erstellen</h2>
+          <p class="auth-text">Starten Sie mit 14 Tagen kostenlos. Keine Kreditkarte nötig.</p>
+
+          <div id="signupMessage" class="notice" role="alert" aria-live="polite"></div>
+
+          <form id="signupForm" class="auth-form" novalidate>
+            <div class="field">
+              <label for="company_name">Firmenname</label>
+              <input id="company_name" class="input" type="text" placeholder="Umzüge Müller GmbH" required />
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="contact_name">Ihr Name</label>
+                <input id="contact_name" class="input" type="text" placeholder="Max Müller" required />
+              </div>
+              <div class="field">
+                <label for="phone">Telefon</label>
+                <input id="phone" class="input" type="tel" placeholder="+49 ..." />
+              </div>
+            </div>
+            <div class="field">
+              <label for="email">E-Mail</label>
+              <input id="email" class="input" type="email" autocomplete="email" placeholder="info@firma.de" required />
+            </div>
+            <div class="field">
+              <label for="password">Passwort</label>
+              <input id="password" class="input" type="password" autocomplete="new-password" placeholder="Min. 8 Zeichen" required minlength="8" />
+            </div>
+
+            <button id="signupBtn" class="primary-btn" type="submit">Kostenlos starten</button>
+          </form>
+
+          <p style="margin-top:16px;font-size:12px;color:#9ca3af;text-align:center;">
+            Bereits Kunde? <a href="/anfrage/login/login.html" style="color:#047857;font-weight:700;">Anmelden</a>
+          </p>
+        </div>
+
+        <!-- STEP 2: Plan confirmation + Stripe redirect -->
+        <div id="step2" style="display:none;">
+          <div class="auth-kicker">Schritt 2 von 3</div>
+          <h2 class="auth-title">Ihr Plan</h2>
+
+          <div class="plan-card">
+            <div class="plan-name">AnfrageBox Pro</div>
+            <div class="plan-price">99 € <span>/ Monat</span></div>
+            <div class="plan-trial">14 Tage kostenlos testen</div>
+            <div class="plan-features">
+              <div>Unbegrenzte Anfragen</div>
+              <div>Professionelles Anfrageformular</div>
+              <div>Automatische E-Mails</div>
+              <div>Kundenportal mit Fotos</div>
+              <div>Angebote & Rechnungen</div>
+              <div>Kalender & Dashboard</div>
+            </div>
+          </div>
+
+          <button id="checkoutBtn" class="primary-btn" type="button">Weiter zur Zahlung</button>
+          <p style="font-size:11px;color:#9ca3af;text-align:center;margin-top:10px;">
+            Sie werden erst nach Ablauf der 14-tägigen Testphase belastet. Jederzeit kündbar.
+          </p>
+        </div>
+
+        <!-- STEP 3: Processing -->
+        <div id="step3" style="display:none;">
+          <div class="auth-kicker">Schritt 3 von 3</div>
+          <h2 class="auth-title">Wird eingerichtet...</h2>
+          <p class="auth-text">Ihr Konto wird vorbereitet. Bitte warten.</p>
+          <div class="loading-bar" style="display:block;"><span></span></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+<script>
+(async () => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const SUPABASE_URL = window.SUPABASE_URL;
+  const SUPABASE_KEY = window.SUPABASE_ANON_KEY;
+  const CREATE_CHECKOUT_URL = "/anfrage/api/billing/create-checkout.php";
+
+  if (!window.supabase || !SUPABASE_URL || !SUPABASE_KEY) return;
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let signupData = { companyId: "", email: "", companyName: "", token: "" };
+
+  function showMsg(text, isError) {
+    const el = $("signupMessage");
+    if (!el) return;
+    el.textContent = text;
+    el.className = "notice " + (isError ? "err" : "ok");
+    el.style.display = text ? "block" : "none";
+  }
+
+  function setStep(n) {
+    $("step1").style.display = n === 1 ? "" : "none";
+    $("step2").style.display = n === 2 ? "" : "none";
+    $("step3").style.display = n === 3 ? "" : "none";
+    const dots = $("stepDots").children;
+    for (let i = 0; i < 3; i++) {
+      dots[i].className = "step-dot" + (i < n - 1 ? " done" : "") + (i === n - 1 ? " active" : "");
+    }
+  }
+
+  function makeUuid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+
+  function slugify(s) {
+    return s.toLowerCase().replace(/[äÄ]/g,"ae").replace(/[öÖ]/g,"oe").replace(/[üÜ]/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "firma";
+  }
+
+  // STEP 1: Signup
+  $("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showMsg("");
+
+    const companyName = $("company_name").value.trim();
+    const contactName = $("contact_name").value.trim();
+    const phone = $("phone").value.trim();
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    if (!companyName) { showMsg("Firmenname fehlt.", true); return; }
+    if (!contactName) { showMsg("Ihr Name fehlt.", true); return; }
+    if (!email || !email.includes("@")) { showMsg("Gültige E-Mail nötig.", true); return; }
+    if (password.length < 8) { showMsg("Passwort: mindestens 8 Zeichen.", true); return; }
+
+    const btn = $("signupBtn");
+    btn.disabled = true;
+    btn.textContent = "Erstelle Konto...";
+
+    try {
+      // 1. Create Supabase auth user
+      const { data: authData, error: authErr } = await sb.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { company_name: companyName, contact_name: contactName, phone },
+          emailRedirectTo: window.location.origin + "/anfrage/admin.html"
+        }
+      });
+
+      if (authErr) { showMsg("Fehler: " + authErr.message, true); btn.disabled = false; btn.textContent = "Kostenlos starten"; return; }
+
+      const userId = authData.user?.id;
+      if (!userId) { showMsg("Konto konnte nicht erstellt werden.", true); btn.disabled = false; btn.textContent = "Kostenlos starten"; return; }
+
+      // 2. Sign in to get token
+      const { data: signInData, error: signInErr } = await sb.auth.signInWithPassword({ email, password });
+      if (signInErr) { showMsg("Login nach Registrierung fehlgeschlagen: " + signInErr.message, true); btn.disabled = false; btn.textContent = "Kostenlos starten"; return; }
+
+      const token = signInData.session?.access_token || "";
+
+      // 3. Create company via service role (simplified: insert directly)
+      const companyId = makeUuid();
+      const slug = slugify(companyName) + "-" + Math.random().toString(36).slice(2, 8);
+
+      const { error: compErr } = await sb.from("company_settings").insert({
+        company_id: companyId,
+        slug,
+        company_name: companyName,
+        phone: phone || null,
+        email,
+        logo_url: "/img/logo1-umzug.png",
+        is_demo: false,
+      });
+
+      if (compErr) { showMsg("Firma erstellen fehlgeschlagen: " + compErr.message, true); btn.disabled = false; btn.textContent = "Kostenlos starten"; return; }
+
+      // 4. Link user to company
+      const { error: linkErr } = await sb.from("company_users").insert({
+        company_id: companyId,
+        user_id: userId,
+        role: "owner",
+        is_active: true,
+        mfa_required: false,
+      });
+
+      if (linkErr) { showMsg("Benutzer verknüpfen fehlgeschlagen: " + linkErr.message, true); btn.disabled = false; btn.textContent = "Kostenlos starten"; return; }
+
+      // 5. Create trial subscription record
+      const trialEnd = new Date();
+      trialEnd.setDate(trialEnd.getDate() + 14);
+
+      const { error: subErr } = await sb.from("subscriptions").insert({
+        company_id: companyId,
+        status: "trialing",
+        plan_name: "pro",
+        amount_eur: 9900,
+        interval: "month",
+        trial_start: new Date().toISOString(),
+        trial_end: trialEnd.toISOString(),
+      });
+
+      if (subErr) { console.error("Subscription insert error:", subErr); }
+
+      signupData = { companyId, email, companyName, token };
+      setStep(2);
+
+    } catch (err) {
+      showMsg("Fehler: " + (err.message || err), true);
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Kostenlos starten";
+  });
+
+  // STEP 2: Stripe Checkout
+  $("checkoutBtn").addEventListener("click", async () => {
+    const btn = $("checkoutBtn");
+    btn.disabled = true;
+    btn.textContent = "Weiterleiten...";
+    setStep(3);
+
+    try {
+      const res = await fetch(CREATE_CHECKOUT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + signupData.token,
+        },
+        body: JSON.stringify({
+          company_id: signupData.companyId,
+          company_name: signupData.companyName,
+          email: signupData.email,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.ok && result.checkout_url) {
+        window.location.href = result.checkout_url;
+      } else {
+        showMsg("Checkout fehlgeschlagen: " + (result.error || ""), true);
+        setStep(2);
+        btn.disabled = false;
+        btn.textContent = "Weiter zur Zahlung";
+      }
+    } catch (err) {
+      showMsg("Netzwerkfehler: " + err.message, true);
+      setStep(2);
+      btn.disabled = false;
+      btn.textContent = "Weiter zur Zahlung";
+    }
+  });
+
+})();
+</script>
+</body>
+</html>

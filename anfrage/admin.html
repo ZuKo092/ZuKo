@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AnfrageBox Admin</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/anfrage/anfragebox-enterprise6.css" />
+  <link rel="stylesheet" href="/anfrage/anfragebox-revenue1.css" />
+  <link rel="stylesheet" href="/anfrage/admin-mobile-responsive4.css" />
+  <script>document.documentElement.classList.add("ab-auth-pending");</script>
+  <style>html.ab-auth-pending body{visibility:hidden} html.ab-auth-ready body{visibility:visible}</style>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL="https://uledkuegmaritmsjejlm.supabase.co";
+    window.SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+    window.AB_LOGIN_PAGE="/anfrage/login/login.html";
+    window.AB_LOGIN_REDIRECT="/anfrage/admin.html";
+    window.AB_MFA_PAGE="/anfrage/login/login.html";
+    window.AB_COMPANY_USERS_TABLE="company_users";
+    window.AB_MFA_ROLES=[];
+  </script>
+  <script src="/anfrage/admin-auth-guard11.js" defer></script>
+  <script src="/anfrage/anfragebox-pdf-unified1.js" defer></script>
+  <script src="/anfrage/admin_pro_clean27.js" defer></script>
+  <script src="/anfrage/admin-revenue1.js" defer></script>
+  <script src="/anfrage/admin-rechnung18.js" defer></script>
+<script src="/anfrage/admin-rechnung-module1.js" defer></script>
+  <script src="/anfrage/angebot35.js" defer></script>
+  <script src="/anfrage/admin-calendar2.js" defer></script>
+  <script src="/anfrage/admin-billing2.js" defer></script>
+  <script src="/anfrage/admin-empty-states.js" defer></script>
+    <script src="/anfrage/admin-notifications1.js" defer></script>
+  <script src="/anfrage/admin-mobile-patch3.js" defer></script>
+
+</head>
+<body>
+  <noscript>Bitte JavaScript aktivieren.</noscript>
+  <div class="app" id="appRoot">
+    <aside class="sidebar" id="sidebar" aria-label="Navigation">
+      <div class="railBrand">
+        <div class="railMark"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10H7z"></path><path d="M9.5 9.5h5v5h-5z"></path></svg></div>
+        <div class="railNameWrap"><div class="railName">AnfrageBox</div><div class="railSub">Admin Panel</div></div>
+      </div>
+      <div class="nav">
+        <button id="navStart" type="button" title="Start"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="5" rx="2"></rect><rect x="13" y="10" width="8" height="11" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect></svg></span><span>Start</span></button>
+        <button id="navLeads" type="button" title="Leads"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span><span>Leads</span></button>
+        <button id="navOffer" type="button" title="Angebot"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h6"></path></svg></span><span>Angebot</span></button>
+        <button id="navCalendar" type="button" title="Kalender"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span>Kalender</span></button>
+        <button id="navRechnungen" type="button" title="Rechnungen"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg></span><span>Rechnungen</span></button>
+        <button id="navSettings" type="button" title="Einstellungen"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><span>Einstellungen</span></button>
+        <!-- Hidden nav buttons for JS compatibility -->
+        <button id="navPortal" type="button" style="display:none;" title="Kundenportal"></button>
+        <button id="navBilling" type="button" style="display:none;" title="Abo & Zahlung"></button>
+      </div>
+      <div class="sidebar-foot">
+        <button class="railBtn" id="btnTutorial" type="button" title="Tutorial"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span><span>Tutorial</span></button>
+        <button class="railBtn" id="btnLogout" type="button" title="Logout"><span class="navIcon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5"></path><path d="M21 12H9"></path></svg></span><span>Logout</span></button>
+      </div>
+    </aside>
+    <main class="main" role="main">
+      <header class="topbar"><div class="topbar-inner"><div class="title"><button class="burger" id="btnBurger" type="button" aria-label="Menü"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#111827" stroke-width="2" stroke-linecap="round"/></svg></button><div class="titleText"><p class="h" id="pageTitle">Start</p><p class="p" id="pageSub">Übersicht</p></div></div><div class="pill startStatusMini" id="pillConn" title="Status"><span class="dot" id="dotConn"></span><span id="connText">Verbinden...</span></div></div></header>
+      <section class="content">
+        <div class="notice" id="notice" aria-live="polite"></div>
+        <section class="view active" id="viewStart">
+          <!-- Hidden embed elements for JS compatibility -->
+          <div style="display:none;"><button id="btnCopyEmbedStart"></button><a id="linkFormStart" href="#"></a></div>
+          <div class="card startKpiRow" id="startKpiCard"><div class="cardHead"><div><p class="h">Übersicht</p><p class="sub" id="kpiHint">Aktueller Monat</p></div></div><div class="cardBody"><div class="kpiGrid"><div class="kpiMini"><div class="k">Anfragen gesamt</div><div class="v" id="kpiTotal">0</div></div><div class="kpiMini"><div class="k">Neue Anfragen</div><div class="v" id="kpiNew">0</div></div><div class="kpiMini"><div class="k">Heute</div><div class="v" id="kpiToday">0</div></div><div class="kpiMini kpiRevenue"><div class="k">Umsatz (Monat)</div><div class="v" id="kpiRevenue">0 &euro;</div></div></div></div></div>
+          <!-- Hidden KPI elements for JS compatibility -->
+          <div style="display:none;"><span id="kpiVisible"></span><span id="kpiUmzuege"></span><span id="kpiConversion"></span><span id="kpiAvgDeal"></span></div>
+          <div class="startGrid startGridSimple"><div class="card" id="startActivityCard"><div class="cardHead"><div><p class="h">Letzte Anfragen</p><p class="sub">Klick öffnet Lead</p></div></div><div class="cardBody"><div id="startStrip" class="startStrip" style="display:none;"></div><div id="startActivityList" class="startActivityList"></div></div></div><div class="card" id="revTrendCard"><div class="cardHead startTrendHead"><div><p class="h">Umsatz-Trend</p><p class="sub">Gebucht + Abgeschlossen</p></div><div class="rangeTabs" id="revRangeTabs"><button type="button" class="tab" data-range="7">7T</button><button type="button" class="tab active" data-range="30">30T</button><button type="button" class="tab" data-range="90">90T</button></div></div><div class="cardBody"><div id="revTrendMeta" class="hint"></div><div id="revTrend" class="trendBars revTrendBars"></div></div></div></div>
+        </section>
+        <section class="view" id="viewLeads">
+          <div style="display:flex;gap:4px;margin-bottom:16px;" id="leadsTabBar">
+            <button class="btn green" id="tabLeads" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Leads</button>
+            <button class="btn" id="tabPortal" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Kundenportal</button>
+            <button class="btn" id="tabGebuchte" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Gebuchte</button>
+          </div>
+          <div id="leadsSubView">
+          <div class="card"><div class="leadsToolbar"><div class="ltLeft"><div class="listTitle">Leads</div><div class="hint" id="countHint">0 sichtbar</div></div><div class="ltMid"><input class="input" id="qSearch" placeholder="Suche: Name, Telefon, Ort, PLZ..." /><select class="select" id="qStatus"><option value="">Alle Status</option><option>Neu</option><option>In Bearbeitung</option><option>Angebot gesendet</option><option>Gebucht</option><option>Abgeschlossen</option><option>Archiviert</option></select><select class="select" id="qDate"><option value="">Alle Daten</option><option value="today">Heute</option><option value="7d">7 Tage</option><option value="30d">30 Tage</option></select><select class="select" id="qSort"><option value="newest">Neueste</option><option value="oldest">Älteste</option><option value="name_asc">Name A-Z</option></select><button class="btn" id="btnReset" type="button">Reset</button></div></div><div class="tableWrap"><table class="leadTable"><thead><tr><th>Kunde</th><th>Termin</th><th>Status</th><th>Erstellt</th><th>Aktion</th></tr></thead><tbody id="leadTbody"><tr><td colspan="5" class="hint" style="padding:14px;">Login nötig.</td></tr></tbody></table></div></div>
+          </div>
+          <div id="portalSubView" style="display:none;">
+          <div class="card"><div class="cardHead"><p class="h">Kundenportal</p><p class="sub">Portal-Links und Kundenstatus</p></div><div class="cardBody"><p class="hint" style="margin-bottom:12px;">Alle Portal-Links. Sehen Sie ob Kunden ihr Angebot angenommen haben.</p><div id="portalListLoading" class="hint">Laden...</div><table class="leadTable" id="portalTable" style="display:none;"><thead><tr><th>Kunde</th><th>Portal Link</th><th>Erstellt</th><th>Status</th><th>Aktion</th></tr></thead><tbody id="portalTbody"></tbody></table><div id="portalEmpty" class="hint" style="display:none;padding:20px;text-align:center;">Noch keine Portal-Links. Öffnen Sie einen Lead und klicken Sie "Portal Link".</div></div></div>
+          </div>
+          <div id="gebuchteSubView" style="display:none;">
+          <div class="card"><div class="cardHead"><p class="h">Gebuchte Aufträge</p><p class="sub">Signierte Angebote und Rechnungen</p></div><div class="cardBody"><div id="gebuchteLoading" class="hint">Laden...</div><table class="leadTable" id="gebuchteTable" style="display:none;"><thead><tr><th>Kunde</th><th>Route</th><th>Termin</th><th>Preis</th><th>Dokumente</th></tr></thead><tbody id="gebuchteTbody"></tbody></table><div id="gebuchteEmpty" class="hint" style="display:none;padding:20px;text-align:center;">Keine gebuchten Aufträge vorhanden.</div></div></div>
+          </div>
+        </section>
+        <section class="view" id="viewOffer">
+          <div class="offerCorpShell">
+            <div class="offerCorpIntro"><div class="offerCorpIntroLeft"><p class="offerCorpEyebrow">Angebot erstellen</p><h2 class="offerCorpTitle">Neues Umzugsangebot</h2><p class="offerCorpSub">Schnell. Klar. Professionell.</p></div><div class="offerCorpMetaCard"><div class="offerCorpMetaLabel">Status</div><select class="select" id="o_status" style="min-width:0;width:100%;"><option value="Neu">Neu</option><option value="Angebot gesendet" selected>Angebot gesendet</option></select></div></div>
+            <div class="offerCorpGrid offerCorpGridTop"><div class="card offerCorpCard"><div class="cardHead offerCorpCardHead"><div><p class="h">Beladestelle</p><p class="sub">Startadresse</p></div></div><div class="cardBody offerCorpCardBody"><div class="row2" style="margin-top:0;"><div class="field" style="margin-top:0;"><label>Straße</label><input class="input" id="o_from_street" placeholder="Musterstraße" /></div><div class="field" style="margin-top:0;"><label>Nr.</label><input class="input" id="o_from_no" placeholder="34" /></div></div><div class="row2"><div class="field"><label>PLZ</label><input class="input" id="o_from_zip" placeholder="78647" /></div><div class="field"><label>Stadt</label><input class="input" id="o_from_city" placeholder="Trossingen" /></div></div><div class="row2"><div class="field"><label>Stock</label><input class="input" id="o_from_floor" placeholder="0" /></div><div class="field"><label>Aufzug</label><select class="select" id="o_from_lift" style="min-width:0;width:100%;"><option value="">-</option><option value="Ja">Ja</option><option value="Nein">Nein</option></select></div></div></div></div><div class="card offerCorpCard"><div class="cardHead offerCorpCardHead"><div><p class="h">Entladestelle</p><p class="sub">Zieladresse</p></div></div><div class="cardBody offerCorpCardBody"><div class="row2" style="margin-top:0;"><div class="field" style="margin-top:0;"><label>Straße</label><input class="input" id="o_to_street" placeholder="Musterstraße" /></div><div class="field" style="margin-top:0;"><label>Nr.</label><input class="input" id="o_to_no" placeholder="34" /></div></div><div class="row2"><div class="field"><label>PLZ</label><input class="input" id="o_to_zip" placeholder="78532" /></div><div class="field"><label>Stadt</label><input class="input" id="o_to_city" placeholder="Rottweil" /></div></div><div class="row2"><div class="field"><label>Stock</label><input class="input" id="o_to_floor" placeholder="0" /></div><div class="field"><label>Aufzug</label><select class="select" id="o_to_lift" style="min-width:0;width:100%;"><option value="">-</option><option value="Ja">Ja</option><option value="Nein">Nein</option></select></div></div></div></div></div>
+            <div class="offerCorpGrid offerCorpGridMid"><div class="card offerCorpCard"><div class="cardHead offerCorpCardHead"><div><p class="h">Kunde</p><p class="sub">Kontaktdaten</p></div></div><div class="cardBody offerCorpCardBody"><div class="field" style="margin-top:0;"><label>Name</label><input class="input" id="o_name" placeholder="Max Mustermann" /></div><div class="row2"><div class="field"><label>Telefon</label><input class="input" id="o_phone" placeholder="+49 ..." /></div><div class="field"><label>E-Mail</label><input class="input" id="o_email" placeholder="mail@..." /></div></div><div class="field"><label>Termin</label><input class="input" id="o_move_date" placeholder="YYYY-MM-DD" /></div></div></div><div class="card offerCorpCard"><div class="cardHead offerCorpCardHead"><div><p class="h">Angebotsdaten</p><p class="sub">Preis und Notiz</p></div></div><div class="cardBody offerCorpCardBody"><div class="field" style="margin-top:0;"><label>Preis brutto (EUR)</label><input class="input" id="o_price" placeholder="z.B. 899" /></div><div class="field"><label>Text / Hinweis</label><textarea class="textarea" id="o_text" placeholder="Optionaler Angebotstext..."></textarea></div></div></div></div>
+            <div class="card offerCorpInventoryCard"><div class="cardHead offerCorpInventoryHead"><div><p class="h">Inventar</p><p class="sub">Räume, Möbel, Menge und Service</p></div><div class="offerCorpInventoryHeadRight"><button class="btn" id="invAddRoomBtn" type="button">Raum hinzufügen</button></div></div><div class="cardBody offerCorpInventoryBody"><div id="o_invEditor"></div></div></div>
+            <div class="offerCorpSticky"><div class="offerCorpStickyLeft"><div class="offerCorpStickyLabel">Interner Angebotsprozess</div><div class="offerCorpStickySub">Draft sichern, PDF prüfen, dann als Lead speichern.</div></div><div class="offerCorpStickyRight"><button class="btn" id="o_saveDraft" type="button">Draft speichern</button><button class="btn" id="o_resetDraft" type="button">Reset</button><button class="btn" id="o_pdf" type="button">PDF Vorschau</button><button class="btn green" id="o_saveLead" type="button">Als Lead speichern</button></div></div>
+          </div>
+        </section>
+        <section class="view" id="viewPortal" style="display:none;">
+          <!-- Portal moved into Leads view as tab -->
+        </section>
+        <section class="view" id="viewCalendar">
+          <div class="card">
+            <div class="cardHead" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;"><div><p class="h">Kalender</p><p class="sub">Umzüge und Termine</p></div><div style="display:flex;gap:8px;align-items:center;"><button class="btn" id="calPrev" type="button" style="min-width:36px;padding:0 8px;">&larr;</button><div id="calTitle" style="font-size:16px;font-weight:800;min-width:180px;text-align:center;"></div><button class="btn" id="calNext" type="button" style="min-width:36px;padding:0 8px;">&rarr;</button><button class="btn" id="calToday" type="button">Heute</button><div style="display:flex;gap:4px;margin-left:8px;"><button class="btn" id="calViewMonth" type="button" style="font-size:12px;">Monat</button><button class="btn" id="calViewWeek" type="button" style="font-size:12px;">Woche</button></div><button class="btn green" id="calAddEvent" type="button" style="margin-left:8px;">+ Termin</button></div></div>
+            <div class="cardBody" style="padding:0;"><div id="calGrid" style="min-height:500px;"></div></div>
+          </div>
+        </section>
+        <section class="view" id="viewRechnungen">
+          <div class="card"><div class="cardHead" style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div><p class="h">Rechnungen</p><p class="sub">Alle erstellten Rechnungen</p></div><div><button class="btn green" id="btnNewRechnung" type="button" style="height:36px;padding:0 16px;font-size:13px;font-weight:800;">+ Rechnung erstellen</button></div></div><div class="cardBody"><div id="rechnungListLoading" class="hint">Laden...</div><table class="leadTable" id="rechnungTable" style="display:none;"><thead><tr><th>Nr.</th><th>Kunde</th><th>Datum</th><th>Betrag</th><th>Status</th><th>Aktion</th></tr></thead><tbody id="rechnungTbody"></tbody></table><div id="rechnungEmpty" class="hint" style="display:none;padding:20px;text-align:center;">Noch keine Rechnungen erstellt.</div></div></div>
+        </section>
+        <div class="modal" id="rechnungPickerModal" aria-hidden="true"><div class="modalCard" style="max-width:700px;"><div class="modalHead"><h3>Lead auswählen</h3><div class="row"><button class="btn" id="btnRechnungPickerClose" type="button">Schließen</button></div></div><div style="padding:16px;"><div style="margin-bottom:12px;"><input class="input" id="rechnungPickerSearch" placeholder="Suche: Name, Telefon, Ort..." style="width:100%;" /></div><div id="rechnungPickerLoading" class="hint">Laden...</div><div id="rechnungPickerEmpty" class="hint" style="display:none;padding:16px;text-align:center;">Keine Gebucht/Abgeschlossen Leads ohne Rechnung gefunden.</div><div id="rechnungPickerList" style="max-height:400px;overflow-y:auto;"></div></div></div></div>
+        <section class="view" id="viewBilling" style="display:none;">
+          <!-- Billing moved into Settings view -->
+        </section>
+        <section class="view" id="viewSettings">
+          <div style="display:flex;gap:4px;margin-bottom:16px;" id="settingsTabBar">
+            <button class="btn green" id="tabFirmendaten" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Firmendaten</button>
+            <button class="btn" id="tabAboBilling" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Abo & Zahlung</button>
+            <button class="btn" id="tabNotifications" type="button" style="height:36px;padding:0 20px;font-size:13px;font-weight:800;">Benachrichtigungen</button>
+          </div>
+          <!-- Tab 1: Firmendaten -->
+          <div id="settingsTabFirma">
+          <div class="grid2" style="margin-bottom:16px;">
+            <div class="card"><div class="cardHead"><p class="h">Firmendaten</p><p class="sub" id="settingsHint">Nicht gespeichert.</p></div><div class="cardBody"><div class="row2"><div class="field" style="margin-top:0;"><label>Firmenname</label><input class="input" id="s_company_name" placeholder="Umzug Transporte 84" /></div><div class="field" style="margin-top:0;"><label>Telefon</label><input class="input" id="s_phone" placeholder="+49 ..." /></div></div><div class="row2"><div class="field"><label>E-Mail</label><input class="input" id="s_email" placeholder="info@..." /></div><div class="field"><label>Land</label><input class="input" id="s_country" placeholder="Deutschland" /></div></div><div class="row2"><div class="field"><label>Straße + Nr.</label><input class="input" id="s_street" placeholder="Musterstraße 1" /></div><div class="field"><label>PLZ + Stadt</label><input class="input" id="s_cityline" placeholder="78647 Trossingen" /></div></div></div></div>
+            <div class="card"><div class="cardHead"><p class="h">Firmenlogo</p><p class="sub">Erscheint auf PDF-Angeboten und Formularen</p></div><div class="cardBody"><div style="display:flex;flex-direction:column;align-items:center;gap:16px;"><div style="width:140px;height:140px;border:2px dashed var(--line);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg-subtle);"><img id="logoPreview" src="/img/logo1-umzug.png" alt="Logo" style="max-width:100%;max-height:100%;object-fit:contain;" /></div><div style="display:flex;gap:8px;"><label class="btn green" style="cursor:pointer;height:34px;padding:0 16px;font-size:12px;display:inline-flex;align-items:center;">Hochladen<input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none;" /></label><button class="btn danger" id="btnRemoveLogo" type="button" style="height:34px;padding:0 16px;font-size:12px;">Entfernen</button></div><div class="hint" id="logoHint" style="font-size:11px;">PNG, JPG, WebP, SVG. Max 2 MB.</div></div></div></div>
+          </div>
+          <div class="grid2" style="margin-bottom:16px;">
+            <div class="card"><div class="cardHead"><p class="h">Steuern &amp; Rechnungen</p><p class="sub">Angaben für Ihre Rechnungen</p></div><div class="cardBody"><div class="row2"><div class="field" style="margin-top:0;"><label>Steuernummer</label><input class="input" id="s_tax" placeholder="..." /></div><div class="field" style="margin-top:0;"><label>USt-IdNr.</label><input class="input" id="s_vat" placeholder="DE..." /></div></div><div class="field"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="s_kleinunternehmer" style="width:18px;height:18px;accent-color:var(--brand);" /> Kleinunternehmer gem. §19 UStG (keine MwSt.)</label></div><div class="field"><label>Zahlungsziel (Tage)</label><input class="input" id="s_payment_days" type="number" min="1" max="90" value="14" placeholder="14" /></div><div class="field"><label>Rechnungs-Footer</label><textarea class="textarea" id="s_footer" rows="2" placeholder="z.B. Unverbindlich."></textarea></div></div></div>
+            <div class="card"><div class="cardHead"><p class="h">Bankverbindung</p><p class="sub">Für Rechnungen und Zahlungen</p></div><div class="cardBody"><div class="field" style="margin-top:0;"><label>IBAN</label><input class="input" id="s_iban" placeholder="DE..." /></div><div class="field"><label>BIC</label><input class="input" id="s_bic" placeholder="..." /></div></div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn green" id="btnSaveSettings" type="button" style="height:42px;padding:0 28px;font-size:14px;">Speichern</button><button class="btn" id="btnResetSettings" type="button" style="height:42px;padding:0 20px;font-size:14px;">Reset</button></div>
+          </div>
+          <!-- Tab 2: Abo & Zahlung -->
+          <div id="settingsTabAbo" style="display:none;">
+          <div class="grid2" style="margin-bottom:16px;">
+            <div class="card">
+              <div class="cardHead"><p class="h">Ihr Abonnement</p><p class="sub" id="billingStatusHint">Laden...</p></div>
+              <div class="cardBody">
+                <div id="billingInfo" style="margin-bottom:16px;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div><div class="hint" style="font-size:11px;font-weight:800;text-transform:uppercase;">Plan</div><div id="billingPlan" style="font-size:18px;font-weight:900;color:#111827;margin-top:4px;">-</div></div>
+                    <div><div class="hint" style="font-size:11px;font-weight:800;text-transform:uppercase;">Status</div><div id="billingStatus" style="font-size:18px;font-weight:900;margin-top:4px;">-</div></div>
+                    <div><div class="hint" style="font-size:11px;font-weight:800;text-transform:uppercase;">Preis</div><div id="billingPrice" style="font-size:18px;font-weight:900;color:#111827;margin-top:4px;">-</div></div>
+                    <div><div class="hint" style="font-size:11px;font-weight:800;text-transform:uppercase;">Nächste Zahlung</div><div id="billingNext" style="font-size:18px;font-weight:900;color:#111827;margin-top:4px;">-</div></div>
+                  </div>
+                  <div id="billingTrialInfo" style="display:none;margin-top:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#065f46;"></div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn green" id="btnManageBilling" type="button">Zahlungsmethode verwalten</button>
+                  <button class="btn" id="btnRefreshBilling" type="button">Aktualisieren</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="cardHead"><p class="h">Embed Code</p><p class="sub">Formular auf Ihrer Website einbetten</p></div>
+              <div class="cardBody">
+                <p class="hint" style="margin-bottom:12px;">Kopieren Sie diesen Code und fügen Sie ihn auf Ihrer Website ein.</p>
+                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px;font-family:monospace;font-size:11px;line-height:1.6;color:#1f2937;word-break:break-all;position:relative;">
+                  <button class="btn" id="btnCopyEmbedAdmin" type="button" style="position:absolute;top:8px;right:8px;height:28px;padding:0 10px;font-size:11px;">Kopieren</button>
+                  <code id="embedCodeAdmin">Laden...</code>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <!-- Tab 3: Benachrichtigungen (injected by admin-notifications.js) -->
+          <div id="settingsTabNotif" style="display:none;">
+            <div id="notifTabPlaceholder"></div>
+          </div>
+        </section>
+        <div class="modal" id="calEventModal" aria-hidden="true"><div class="modalCard" style="max-width:480px;"><div class="modalHead"><h3 id="calEventModalTitle">Termin</h3><div class="row"><button class="btn green" id="btnCalEventSave" type="button">Speichern</button><button class="btn danger" id="btnCalEventDelete" type="button" style="display:none;">Löschen</button><button class="btn" id="btnCalEventClose" type="button">Schließen</button></div></div><div style="padding:16px;"><div class="field" style="margin-top:0;"><label>Titel</label><input class="input" id="calEvTitle" placeholder="z.B. Umzug Müller" /></div><div class="row2"><div class="field"><label>Datum</label><input class="input" id="calEvDate" type="date" /></div><div class="field"><label>Farbe</label><select class="select" id="calEvColor" style="min-width:0;width:100%;"><option value="#047857">Grün (Umzug)</option><option value="#0369a1">Blau (Besichtigung)</option><option value="#b45309">Orange (Sonstiges)</option><option value="#dc2626">Rot (Wichtig)</option><option value="#6b7280">Grau</option></select></div></div><div class="row2"><div class="field"><label>Von</label><input class="input" id="calEvTimeStart" type="time" /></div><div class="field"><label>Bis</label><input class="input" id="calEvTimeEnd" type="time" /></div></div><div class="field"><label>Notizen</label><textarea class="textarea" id="calEvNotes" rows="3" placeholder="Optional..."></textarea></div></div></div></div>
+        <div class="drawer" id="leadDrawer" aria-hidden="true"><div class="drawerOverlay" id="drawerOverlay"></div><aside class="drawerPanel" role="dialog" aria-modal="true"><div class="drawerHead"><div><div class="dTitle" id="drawerTitle">Lead</div><div class="dSub hint" id="drawerSub"></div></div><div class="dHeadRight"><button class="btn green" id="drawerRechnung" type="button" style="display:none;">Rechnung</button><button class="btn" id="drawerEdit" type="button">Bearbeiten</button><button class="btn" id="drawerClose" type="button">Schließen</button></div></div><div class="drawerBody" id="drawerBody"></div></aside></div>
+      </section>
+
+        <!-- ONBOARDING TOUR -->
+        <div id="tourOverlay" style="display:none;position:fixed;inset:0;z-index:9998;pointer-events:none;">
+          <div id="tourBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);pointer-events:auto;"></div>
+          <div id="tourSpotlight" style="position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);z-index:9999;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;"></div>
+          <div id="tourCard" style="position:fixed;z-index:10000;background:#fff;border-radius:16px;padding:24px 28px;box-shadow:0 20px 60px rgba(0,0,0,.18);max-width:380px;width:90vw;pointer-events:auto;transition:all .35s cubic-bezier(.4,0,.2,1);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div id="tourStepBadge" style="width:32px;height:32px;background:#047857;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;"></div>
+              <div style="flex:1;">
+                <div id="tourTitle" style="font-size:16px;font-weight:800;color:#0f172a;line-height:1.2;"></div>
+              </div>
+              <button id="tourSkip" type="button" style="background:none;border:none;font-size:12px;color:#9ca3af;font-weight:600;cursor:pointer;padding:4px 8px;flex-shrink:0;">Überspringen</button>
+            </div>
+            <div id="tourDesc" style="font-size:13px;color:#4b5563;line-height:1.65;margin-bottom:20px;"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div id="tourDots" style="display:flex;gap:6px;"></div>
+              <div style="display:flex;gap:8px;">
+                <button id="tourPrev" type="button" style="height:36px;padding:0 16px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:13px;font-weight:700;color:#374151;cursor:pointer;">Zurück</button>
+                <button id="tourNext" type="button" style="height:36px;padding:0 20px;border-radius:10px;border:none;background:#047857;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Weiter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </main>
+  </div>
+  <div class="modal" id="pdfModal" aria-hidden="true"><div class="modalCard"><div class="modalHead"><h3>Angebot Vorschau</h3><div class="row"><button class="btn green" id="btnPrint" type="button">Drucken / PDF</button><button class="btn" id="btnPdfClose" type="button">Schließen</button></div></div><div id="printArea"></div></div></div>
+  <div class="modal" id="editModal" aria-hidden="true"><div class="modalCard" style="max-width:980px;"><div class="modalHead"><h3>Lead bearbeiten</h3><div class="row"><button class="btn green" id="btnEditSave" type="button">Speichern</button><button class="btn" id="btnEditClose" type="button">Schließen</button></div></div><div id="editBody" style="padding:16px;"></div><div class="editStickyBar"><button class="btn green" id="btnEditSaveBottom" type="button">Speichern</button><button class="btn" id="btnEditCloseBottom" type="button">Schließen</button></div></div></div>
+  <div class="modal" id="contactModal" aria-hidden="true"><div class="modalCard" style="max-width:640px;"><div class="modalHead"><h3>Kontakt</h3><div class="row"><button class="btn" id="btnContactClose" type="button">Schließen</button></div></div><div id="contactBody" style="padding:16px;"></div></div></div>
+  <script>document.addEventListener("DOMContentLoaded",()=>{const a=document.getElementById("appRoot"),s=document.getElementById("sidebar");if(!a||!s)return;s.addEventListener("mouseenter",()=>a.classList.add("railOpen"));s.addEventListener("mouseleave",()=>a.classList.remove("railOpen"));
+
+/* Leads / Portal / Gebuchte tab toggle */
+const tabLeads=document.getElementById("tabLeads"),tabPortal=document.getElementById("tabPortal"),tabGebuchte=document.getElementById("tabGebuchte");
+const leadsSubView=document.getElementById("leadsSubView"),portalSubView=document.getElementById("portalSubView"),gebuchteSubView=document.getElementById("gebuchteSubView");
+const leadsTabs=[tabLeads,tabPortal,tabGebuchte];
+const leadsPanels=[leadsSubView,portalSubView,gebuchteSubView];
+function switchLeadsTab(idx){leadsTabs.forEach((t,i)=>{if(!t)return;if(i===idx){t.className="btn green";t.style.cssText="height:36px;padding:0 20px;font-size:13px;font-weight:800;";}else{t.className="btn";t.style.cssText="height:36px;padding:0 20px;font-size:13px;font-weight:800;";}});leadsPanels.forEach((p,i)=>{if(p)p.style.display=i===idx?"":"none";});if(idx===1){if(window.__AB_APP&&typeof window.__AB_APP.loadPortalList==="function")window.__AB_APP.loadPortalList();else if(window.__AB_Rechnung&&typeof window.__AB_Rechnung.loadPortalList==="function")window.__AB_Rechnung.loadPortalList();}if(idx===2)loadGebuchteList();}
+if(tabLeads)tabLeads.addEventListener("click",()=>switchLeadsTab(0));
+if(tabPortal)tabPortal.addEventListener("click",()=>switchLeadsTab(1));
+if(tabGebuchte)tabGebuchte.addEventListener("click",()=>switchLeadsTab(2));
+
+/* Gebuchte list loader */
+async function loadGebuchteList(){
+  const loading=document.getElementById("gebuchteLoading"),table=document.getElementById("gebuchteTable"),empty=document.getElementById("gebuchteEmpty"),tbody=document.getElementById("gebuchteTbody");
+  if(loading)loading.style.display="block";if(table)table.style.display="none";if(empty)empty.style.display="none";
+  const app=window.__AB_APP;if(!app||!app.sb||!app.state||!app.state.companyId){if(loading)loading.style.display="none";if(empty)empty.style.display="block";return;}
+  const sb=app.sb,cid=app.state.companyId;
+  const rows=(app.state.rows||[]).filter(r=>{const s=String(r.status||"").toLowerCase();return s.includes("gebucht")||s.includes("abgeschlossen");});
+  if(loading)loading.style.display="none";
+  if(!rows.length){if(empty)empty.style.display="block";return;}
+  const leadIds=rows.map(r=>String(r.id));
+  let sigMap=new Map(),uploadMap=new Map(),invoiceMap=new Map();
+  try{const{data:sigs}=await sb.from("portal_signatures").select("lead_id,signed_at,signer_name").in("lead_id",leadIds);if(sigs)sigs.forEach(s=>sigMap.set(s.lead_id,s));}catch(e){}
+  try{const{data:ups}=await sb.from("portal_uploads").select("lead_id,file_name,file_url,file_type").in("lead_id",leadIds);if(ups)ups.forEach(u=>{if(!uploadMap.has(u.lead_id))uploadMap.set(u.lead_id,[]);uploadMap.get(u.lead_id).push(u);});}catch(e){}
+  try{const{data:invs}=await sb.from("invoices").select("id,lead_id,invoice_number,status").eq("company_id",cid).neq("status","Storniert").in("lead_id",leadIds);if(invs)invs.forEach(inv=>invoiceMap.set(inv.lead_id,inv));}catch(e){}
+  if(table)table.style.display="table";if(tbody)tbody.innerHTML="";
+  const esc=typeof app.escapeHtml==="function"?app.escapeHtml:(v=>String(v??"").replace(/[&<>"']/g,m=>m==="&"?"&amp;":m==="<"?"&lt;":m===">"?"&gt;":m==='"'?"&quot;":"&#39;"));
+  const fmtDate=(v)=>{if(!v)return"-";const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString("de-DE");};
+  const fmtEuro=(v)=>{const n=Number(String(v||"").replace(",","."));return Number.isFinite(n)?n.toLocaleString("de-DE",{style:"currency",currency:"EUR"}):"-";};
+  for(const r of rows){
+    const p=typeof app.getPayload==="function"?app.getPayload(r):(r.payload||{});
+    const name=typeof app.customerName==="function"?app.customerName(r):(r.customer_name||"-");
+    const fromA=typeof app.getAddr==="function"?app.getAddr(r,"from"):{};
+    const toA=typeof app.getAddr==="function"?app.getAddr(r,"to"):{};
+    const fromShort=[fromA.zip,fromA.city].filter(Boolean).join(" ")||"-";
+    const toShort=[toA.zip,toA.city].filter(Boolean).join(" ")||"-";
+    const route=fromShort+" → "+toShort;
+    const moveDate=fmtDate(r.move_date||p.move_date||"");
+    const offer=p.offer||{};const price=offer.price?fmtEuro(offer.price):"-";
+    const sig=sigMap.get(r.id);
+    const leadUps=uploadMap.get(r.id)||[];
+    const signedPdf=leadUps.find(u=>u.file_type==="application/pdf"&&u.file_name&&u.file_name.includes("Angebot"));
+    const invoice=invoiceMap.get(r.id);
+    let docs="";
+    if(signedPdf){docs+=`<a class="btn green" href="${esc(signedPdf.file_url)}" target="_blank" style="height:28px;padding:0 10px;font-size:11px;text-decoration:none;">Signiertes PDF</a> `;}
+    else if(sig){docs+=`<button class="btn" style="height:28px;padding:0 10px;font-size:11px;opacity:.5;" disabled>Signiert (kein PDF)</button> `;}
+    else{docs+=`<span style="font-size:11px;color:#9ca3af;">Nicht signiert</span> `;}
+    docs+=`<button class="btn" data-gebuchte-pdf="${esc(String(r.id))}" type="button" style="height:28px;padding:0 10px;font-size:11px;">Angebot PDF</button> `;
+    if(invoice){docs+=`<button class="btn" data-gebuchte-inv="${esc(String(invoice.id))}" type="button" style="height:28px;padding:0 10px;font-size:11px;">Rechnung ${esc(invoice.invoice_number)}</button>`;}
+    else{docs+=`<button class="btn green" data-gebuchte-rechnung="${esc(String(r.id))}" type="button" style="height:28px;padding:0 10px;font-size:11px;font-weight:800;">+ Rechnung</button>`;}
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><div style="font-weight:800;">${esc(name)}</div></td><td style="font-size:12px;">${esc(route)}</td><td style="font-size:12px;">${esc(moveDate)}</td><td style="font-weight:700;">${price}</td><td><div style="display:flex;gap:4px;flex-wrap:wrap;">${docs}</div></td>`;
+    if(tbody)tbody.appendChild(tr);
+  }
+  if(tbody){
+    tbody.querySelectorAll("[data-gebuchte-pdf]").forEach(btn=>{btn.addEventListener("click",()=>{const lid=btn.dataset.gebuchtePdf;if(lid&&typeof app.openPdfForLead==="function")app.openPdfForLead(lid);});});
+    tbody.querySelectorAll("[data-gebuchte-rechnung]").forEach(btn=>{btn.addEventListener("click",async()=>{const lid=btn.dataset.gebuchteRechnung;if(!lid)return;btn.disabled=true;btn.textContent="...";try{if(window.__AB_Rechnung&&typeof window.__AB_Rechnung.create==="function"){const inv=await window.__AB_Rechnung.create(lid);if(inv&&window.__AB_Rechnung.openPdf)window.__AB_Rechnung.openPdf(inv);loadGebuchteList();}}catch(e){}btn.disabled=false;btn.textContent="+ Rechnung";});});
+    tbody.querySelectorAll("[data-gebuchte-inv]").forEach(btn=>{btn.addEventListener("click",async()=>{const invId=btn.dataset.gebuchteInv;if(!invId)return;try{const{data}=await sb.from("invoices").select("*").eq("id",invId).single();if(data&&window.__AB_Rechnung&&window.__AB_Rechnung.openPdf)window.__AB_Rechnung.openPdf(data);}catch(e){}});});
+  }
+}
+
+/* Settings 3-tab system */
+const tabFirma=document.getElementById("tabFirmendaten"),tabAbo=document.getElementById("tabAboBilling"),tabNotif=document.getElementById("tabNotifications");
+const panelFirma=document.getElementById("settingsTabFirma"),panelAbo=document.getElementById("settingsTabAbo"),panelNotif=document.getElementById("settingsTabNotif");
+const settingsTabs=[tabFirma,tabAbo,tabNotif];
+const settingsPanels=[panelFirma,panelAbo,panelNotif];
+function switchSettingsTab(idx){settingsTabs.forEach((t,i)=>{if(!t)return;if(i===idx){t.className="btn green";t.style.cssText="height:36px;padding:0 20px;font-size:13px;font-weight:800;";}else{t.className="btn";t.style.cssText="height:36px;padding:0 20px;font-size:13px;font-weight:800;";}});settingsPanels.forEach((p,i)=>{if(p)p.style.display=i===idx?"":"none";});if(idx===1&&window.__AB_Billing&&typeof window.__AB_Billing.load==="function")window.__AB_Billing.load();if(idx===2&&window.__AB_Notifications&&typeof window.__AB_Notifications.load==="function")window.__AB_Notifications.load();}
+if(tabFirma)tabFirma.addEventListener("click",()=>switchSettingsTab(0));
+if(tabAbo)tabAbo.addEventListener("click",()=>switchSettingsTab(1));
+if(tabNotif)tabNotif.addEventListener("click",()=>switchSettingsTab(2));
+});</script>
+
+<script>
+(function(){
+  function setupEmbedAndWelcome(){
+    var app=window.__AB_APP;
+    if(!app||!app.state||!app.state.companySettings)return;
+    var slug=app.state.companySettings.slug||'';
+    if(!slug)return;
+    var formUrl='https://anfragebox.de/anfrage/index.html?slug='+slug;
+    var embedCode='<iframe src="'+formUrl+'" width="100%" height="900" frameborder="0" style="border:none;border-radius:12px;"><\/iframe>';
+    var link=document.getElementById('linkFormStart');
+    if(link)link.href=formUrl;
+    var btn=document.getElementById('btnCopyEmbedStart');
+    if(btn){btn.addEventListener('click',function(){navigator.clipboard.writeText(embedCode).then(function(){btn.textContent='Kopiert!';setTimeout(function(){btn.textContent='Embed-Code kopieren';},2000);});});}
+
+    // Auto-start tour on first login
+    var cid=app.state.companyId||'x';
+    var key='ab_tour_done_'+cid;
+    try{if(!localStorage.getItem(key))startTour();}catch(e){}
+  }
+
+  /* ══════════════════════════════════════
+     INTERACTIVE ONBOARDING TOUR (5 steps)
+     ══════════════════════════════════════ */
+  var STEPS=[
+    {
+      target:'#navSettings',
+      nav:'settings',
+      settingsTab:1,
+      title:'Embed Code kopieren',
+      desc:'Unter Einstellungen > Abo & Zahlung finden Sie Ihren Embed-Code. Kopieren Sie ihn und fügen Sie ihn auf Ihrer Website ein. So erhalten Sie Anfragen direkt in AnfrageBox.',
+      pos:'right'
+    },
+    {
+      target:'#navLeads',
+      nav:'leads',
+      title:'Leads verwalten',
+      desc:'Hier landen alle Anfragen Ihrer Kunden. Sie sehen Name, Route, Datum und Status. Klicken Sie auf einen Lead um Details zu sehen, Kontakt aufzunehmen oder ein Angebot zu erstellen.',
+      pos:'right'
+    },
+    {
+      target:'#navLeads',
+      nav:'leads',
+      title:'Lead-Details & Kundenportal',
+      desc:'Klicken Sie auf einen Lead: rechts sehen Sie Kontaktdaten (Anrufen, WhatsApp, E-Mail), können den Status ändern und ein Angebot mit Preis erstellen. Im Kundenportal laden Kunden Fotos hoch und unterschreiben Angebote digital.',
+      pos:'right'
+    },
+    {
+      target:'#navOffer',
+      nav:'offer',
+      title:'Angebot erstellen',
+      desc:'Hier erstellen Sie ein neues Angebot von Grund auf: Belade- und Entladestelle, Kundendaten, Preis, Inventar. PDF-Vorschau und direkt als Lead speichern.',
+      pos:'right'
+    },
+    {
+      target:'#navRechnungen',
+      nav:'rechnungen',
+      title:'Rechnungen',
+      desc:'Sobald ein Lead den Status "Gebucht" hat, erstellen Sie hier mit einem Klick eine Rechnung. PDF mit Ihrem Logo, E-Rechnungspflicht-konform, automatische Nummerierung.',
+      pos:'right'
+    }
+  ];
+
+  var currentStep=-1;
+  var overlay,backdrop,spotlight,card,badge,title,desc,dots,prevBtn,nextBtn,skipBtn;
+
+  function initEls(){
+    overlay=document.getElementById('tourOverlay');
+    backdrop=document.getElementById('tourBackdrop');
+    spotlight=document.getElementById('tourSpotlight');
+    card=document.getElementById('tourCard');
+    badge=document.getElementById('tourStepBadge');
+    title=document.getElementById('tourTitle');
+    desc=document.getElementById('tourDesc');
+    dots=document.getElementById('tourDots');
+    prevBtn=document.getElementById('tourPrev');
+    nextBtn=document.getElementById('tourNext');
+    skipBtn=document.getElementById('tourSkip');
+  }
+
+  function startTour(){
+    initEls();
+    if(!overlay)return;
+    currentStep=-1;
+    overlay.style.display='block';
+    backdrop.style.display='block';
+    nextStep();
+    if(prevBtn)prevBtn.addEventListener('click',prevStep);
+    if(nextBtn)nextBtn.addEventListener('click',nextStep);
+    if(skipBtn)skipBtn.addEventListener('click',endTour);
+    if(backdrop)backdrop.addEventListener('click',endTour);
+  }
+
+  function nextStep(){
+    currentStep++;
+    if(currentStep>=STEPS.length){endTour();return;}
+    showStep(currentStep);
+  }
+
+  function prevStep(){
+    if(currentStep>0){currentStep--;showStep(currentStep);}
+  }
+
+  function showStep(idx){
+    var step=STEPS[idx];
+
+    // Navigate to the right view
+    if(step.nav&&window.__AB_APP&&typeof window.__AB_APP.navigate==='function'){
+      window.__AB_APP.navigate(step.nav);
+    }
+
+    // Switch settings tab if needed
+    if(typeof step.settingsTab==='number'){
+      setTimeout(function(){
+        var tabBtns=[document.getElementById('tabFirmendaten'),document.getElementById('tabAboBilling'),document.getElementById('tabNotifications')];
+        if(tabBtns[step.settingsTab])tabBtns[step.settingsTab].click();
+      },100);
+    }
+
+    // Update card content
+    badge.textContent=String(idx+1);
+    title.textContent=step.title;
+    desc.textContent=step.desc;
+    prevBtn.style.display=idx>0?'':'none';
+    nextBtn.textContent=idx===STEPS.length-1?'Fertig':'Weiter';
+
+    // Dots
+    var dotsHtml='';
+    for(var i=0;i<STEPS.length;i++){
+      dotsHtml+='<div style="width:8px;height:8px;border-radius:50%;background:'+(i===idx?'#047857':'#d1d5db')+';transition:background .2s;"></div>';
+    }
+    dots.innerHTML=dotsHtml;
+
+    // Position spotlight and card after DOM settles
+    setTimeout(function(){positionTour(step);},150);
+  }
+
+  function positionTour(step){
+    var el=document.querySelector(step.target);
+    if(!el){
+      spotlight.style.display='none';
+      card.style.top='50%';card.style.left='50%';card.style.transform='translate(-50%,-50%)';
+      return;
+    }
+    var rect=el.getBoundingClientRect();
+    var pad=8;
+
+    // Spotlight around target
+    spotlight.style.display='block';
+    spotlight.style.top=(rect.top-pad)+'px';
+    spotlight.style.left=(rect.left-pad)+'px';
+    spotlight.style.width=(rect.width+pad*2)+'px';
+    spotlight.style.height=(rect.height+pad*2)+'px';
+
+    // Card position
+    card.style.transform='none';
+    var cardW=380;
+    var cardH=card.offsetHeight||220;
+
+    if(step.pos==='right'){
+      card.style.left=Math.min(rect.right+16,window.innerWidth-cardW-16)+'px';
+      card.style.top=Math.max(16,Math.min(rect.top,window.innerHeight-cardH-16))+'px';
+    }else if(step.pos==='bottom'){
+      card.style.top=(rect.bottom+16)+'px';
+      card.style.left=Math.max(16,Math.min(rect.left,window.innerWidth-cardW-16))+'px';
+    }else{
+      card.style.top='50%';card.style.left='50%';card.style.transform='translate(-50%,-50%)';
+    }
+  }
+
+  function endTour(){
+    if(overlay)overlay.style.display='none';
+    currentStep=-1;
+    // Mark as done
+    try{
+      var app=window.__AB_APP;
+      var cid=(app&&app.state&&app.state.companyId)||'x';
+      localStorage.setItem('ab_tour_done_'+cid,'1');
+    }catch(e){}
+    // Navigate to Start
+    if(window.__AB_APP&&typeof window.__AB_APP.navigate==='function'){
+      window.__AB_APP.navigate('start');
+    }
+  }
+
+  // Tutorial button in sidebar
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('btnTutorial');
+    if(btn)btn.addEventListener('click',function(){startTour();});
+  });
+
+  // Expose for external use
+  window.__AB_Tour={start:startTour};
+
+  var tries=0;
+  var iv=setInterval(function(){
+    tries++;
+    if(window.__AB_APP&&window.__AB_APP.state&&window.__AB_APP.state.companyId){clearInterval(iv);setupEmbedAndWelcome();}
+    if(tries>60)clearInterval(iv);
+  },300);
+})();
+</script>
+<!-- Mobile Bottom Navigation -->
+<nav class="mobileBottomNav" id="mobileBottomNav">
+  <div class="mbn-inner">
+    <button class="mbn-item active" data-mbn="start" type="button">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="5" rx="2"></rect><rect x="13" y="10" width="8" height="11" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect></svg>
+      <span>Start</span>
+    </button>
+    <button class="mbn-item" data-mbn="leads" type="button">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+      <span>Leads</span>
+    </button>
+    <button class="mbn-item" data-mbn="offer" type="button">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h6"></path></svg>
+      <span>Angebot</span>
+    </button>
+    <button class="mbn-item" data-mbn="rechnungen" type="button">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      <span>Rechnungen</span>
+    </button>
+    <button class="mbn-item" data-mbn="settings" type="button">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      <span>Mehr</span>
+    </button>
+  </div>
+</nav>
+<script>
+(function(){
+  var items=document.querySelectorAll('.mbn-item[data-mbn]');
+  items.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var target=btn.dataset.mbn;
+      if(window.__AB_APP&&typeof window.__AB_APP.navigate==='function'){
+        window.__AB_APP.navigate(target);
+      }
+      items.forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+    });
+  });
+  // Sync bottom nav with sidebar nav clicks
+  var navMap={navStart:'start',navLeads:'leads',navOffer:'offer',navRechnungen:'rechnungen',navSettings:'settings',navCalendar:'settings'};
+  Object.keys(navMap).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.addEventListener('click',function(){
+      items.forEach(function(b){b.classList.remove('active');});
+      var match=document.querySelector('.mbn-item[data-mbn="'+navMap[id]+'"]');
+      if(match)match.classList.add('active');
+    });
+  });
+})();
+</script>
+</body>
+</html>
