@@ -79,3 +79,22 @@ define('DEMO_CLEANUP_TOKEN',    env('DEMO_CLEANUP_TOKEN'));
 
 // ── Admin tool token ────────────────────────────────────────────────────
 define('ADMIN_SECRET_TOKEN',    env('ADMIN_SECRET_TOKEN'));
+
+// ── CORS ────────────────────────────────────────────────────────────────
+define('ALLOWED_ORIGINS', array_filter(array_map('trim', explode(',',
+    env('ALLOWED_ORIGINS', 'https://anfragebox.de,https://www.anfragebox.de')
+))));
+
+function cors_headers(): void {
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origin !== '' && in_array($origin, ALLOWED_ORIGINS, true)) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Vary: Origin');
+    }
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+}

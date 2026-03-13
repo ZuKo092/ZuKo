@@ -10,11 +10,9 @@ declare(strict_types=1);
  */
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') { http_response_code(204); exit; }
+require_once __DIR__ . '/config.php';
+cors_headers();
 
 function out(int $code, array $data): void {
   http_response_code($code);
@@ -84,8 +82,6 @@ function rollback(string $baseUrl, string $serviceRole, string $companyId, strin
 }
 
 /* ── CONFIG ── */
-require_once __DIR__ . '/config.php';
-
 $BASE_URL = rtrim(SUPABASE_URL, '/');
 $SERVICE_ROLE = SUPABASE_SERVICE_ROLE_KEY;
 $SITE_URL = 'https://anfragebox.de';
