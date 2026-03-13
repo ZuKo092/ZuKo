@@ -18,11 +18,6 @@ $SMTP_USER    = SMTP_USER;
 $SMTP_SECURE  = SMTP_SECURE;
 $SITE_URL     = 'https://anfragebox.de';
 
-function clog(string $msg): void {
-  $line = '[' . date('c') . '] ' . $msg;
-  echo $line . "\n";
-  @file_put_contents(__DIR__ . '/cron-portal-welcome.log', $line . "\n", FILE_APPEND);
-}
 
 function sb_get(string $base, string $path, string $key): ?array {
   $ch = curl_init(rtrim($base, '/') . $path);

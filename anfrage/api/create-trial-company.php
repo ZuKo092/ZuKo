@@ -329,7 +329,7 @@ if ($pmOk && $SMTP_PASS !== '') {
     $mail->send();
   } catch (\Throwable $e) {
     // Log but don't fail the signup
-    @file_put_contents(__DIR__ . '/create_demo_debug.log', '[' . date('c') . '] Welcome email failed: ' . $e->getMessage() . "\n", FILE_APPEND);
+    log_error('Welcome email failed: ' . $e->getMessage());
   }
 }
 

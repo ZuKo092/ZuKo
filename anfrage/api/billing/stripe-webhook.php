@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 
-function wlog(string $msg): void {
-  @file_put_contents(__DIR__ . '/webhook.log', '[' . date('c') . '] ' . $msg . "\n", FILE_APPEND);
-}
 
 function respond(int $code, array $data): void {
   http_response_code($code);
@@ -30,7 +27,7 @@ $SERVICE_ROLE          = SUPABASE_SERVICE_ROLE_KEY;
 $SUPABASE_URL          = SUPABASE_URL;
 
 if ($STRIPE_WEBHOOK_SECRET === '' || $STRIPE_SECRET_KEY === '' || $SERVICE_ROLE === '') {
-  wlog('ERROR: Missing secrets');
+  log_info('ERROR: Missing secrets');
   respond(500, ['error' => 'Server not configured']);
 }
 
@@ -66,7 +63,7 @@ function verifyStripeSignature(string $payload, string $sigHeader, string $secre
 }
 
 if (!verifyStripeSignature($payload, $sigHeader, $STRIPE_WEBHOOK_SECRET)) {
-  wlog('ERROR: Invalid signature');
+  log_info('ERROR: Invalid signature');
   respond(400, ['error' => 'Invalid signature']);
 }
 
@@ -78,7 +75,7 @@ if (!is_array($event) || empty($event['type'])) {
 $type = $event['type'];
 $obj = $event['data']['object'] ?? [];
 
-wlog("EVENT: $type | id=" . ($obj['id'] ?? '?'));
+log_info("EVENT: $type | id=" . ($obj['id'] ?? '?'));
 
 /* ── Supabase helpers ── */
 
@@ -100,7 +97,7 @@ function sb_upsert(string $url, string $key, string $table, array $row, string $
   $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
   if ($http < 200 || $http >= 300) {
-    wlog("sb_upsert FAIL $table HTTP $http: " . substr((string)$res, 0, 500));
+    log_info("sb_upsert FAIL $table HTTP $http: " . substr((string)$res, 0, 500));
     return false;
   }
   return true;
@@ -150,7 +147,7 @@ switch ($type) {
     $subscriptionId = $obj['subscription'] ?? '';
 
     if ($companyId === '' || $subscriptionId === '') {
-      wlog("SKIP checkout: missing company_id or subscription_id");
+      log_info("SKIP checkout: missing company_id or subscription_id");
       break;
     }
 
@@ -185,7 +182,7 @@ switch ($type) {
     ];
 
     sb_upsert($SUPABASE_URL, $SERVICE_ROLE, 'subscriptions', $row, 'company_id');
-    wlog("OK checkout: company=$companyId status=$status");
+    log_info("OK checkout: company=$companyId status=$status");
     break;
 
   case 'customer.subscription.updated':
@@ -194,7 +191,7 @@ switch ($type) {
     $companyId = findCompanyId($SUPABASE_URL, $SERVICE_ROLE, $obj);
 
     if ($companyId === '' || $subscriptionId === '') {
-      wlog("SKIP $type: no company_id found");
+      log_info("SKIP $type: no company_id found");
       break;
     }
 
@@ -218,7 +215,7 @@ switch ($type) {
     ];
 
     sb_upsert($SUPABASE_URL, $SERVICE_ROLE, 'subscriptions', $row, 'company_id');
-    wlog("OK $type: company=$companyId status=$status");
+    log_info("OK $type: company=$companyId status=$status");
     break;
 
   case 'invoice.payment_failed':
@@ -230,12 +227,12 @@ switch ($type) {
         'status' => 'past_due',
         'updated_at' => date('c'),
       ], 'company_id');
-      wlog("OK payment_failed: company=" . $subRow['company_id']);
+      log_info("OK payment_failed: company=" . $subRow['company_id']);
     }
     break;
 
   default:
-    wlog("IGNORED: $type");
+    log_info("IGNORED: $type");
     break;
 }
 

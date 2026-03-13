@@ -17,9 +17,6 @@ function respond(int $code, array $data): void {
   exit;
 }
 
-function blog(string $msg): void {
-  @file_put_contents(__DIR__ . '/billing.log', '[' . date('c') . '] ' . $msg . "\n", FILE_APPEND);
-}
 
 /* ── CORS ── */
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -121,11 +118,11 @@ curl_close($ch);
 $result = json_decode((string)$res, true);
 
 if ($http < 200 || $http >= 300 || !is_array($result) || empty($result['url'])) {
-  blog("Checkout FAIL HTTP $http: " . substr((string)$res, 0, 500));
+  log_info("Checkout FAIL HTTP $http: " . substr((string)$res, 0, 500));
   respond(500, ['ok' => false, 'error' => 'Stripe checkout creation failed', 'details' => $result['error']['message'] ?? '']);
 }
 
-blog("Checkout OK: company=$companyId url=" . $result['url']);
+log_info("Checkout OK: company=$companyId url=" . $result['url']);
 
 respond(200, [
   'ok' => true,

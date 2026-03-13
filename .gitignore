@@ -5,6 +5,7 @@ anfrage/api/_secrets.php
 
 # Log files
 *.log
+logs/
 anfrage/api/*.log
 
 # Rate limit data

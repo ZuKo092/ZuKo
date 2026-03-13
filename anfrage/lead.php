@@ -11,10 +11,6 @@ function respond(int $code, array $data): void {
   exit;
 }
 
-function log_error(string $msg): void {
-  $line = '[' . date('c') . '] ' . $msg . "\n";
-  @file_put_contents(__DIR__ . '/lead_errors.log', $line, FILE_APPEND);
-}
 
 function read_json_body(): array {
   $raw = file_get_contents('php://input');

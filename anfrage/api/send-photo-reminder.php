@@ -18,10 +18,6 @@ function respond(int $code, array $data): void {
   exit;
 }
 
-function log_error(string $msg): void {
-  @file_put_contents(__DIR__ . '/offer_email_errors.log',
-    '[' . date('c') . '] [photo-reminder] ' . $msg . "\n", FILE_APPEND);
-}
 
 function h($s): string {
   if ($s === null) return '';

@@ -11,11 +11,6 @@ declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 
-function clog(string $msg): void {
-  $line = '[' . date('c') . '] ' . $msg;
-  echo $line . "\n";
-  @file_put_contents(__DIR__ . '/cron-monthly-stats.log', $line . "\n", FILE_APPEND);
-}
 
 require_once __DIR__ . '/config.php';
 

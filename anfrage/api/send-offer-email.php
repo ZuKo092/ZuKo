@@ -13,10 +13,6 @@ function respond(int $code, array $data): void {
   exit;
 }
 
-function log_error(string $msg): void {
-  $line = '[' . date('c') . '] ' . $msg . "\n";
-  @file_put_contents(__DIR__ . '/offer_email_errors.log', $line, FILE_APPEND);
-}
 
 register_shutdown_function(function () {
   $e = error_get_last();

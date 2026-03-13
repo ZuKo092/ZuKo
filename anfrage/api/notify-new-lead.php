@@ -22,10 +22,6 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/config.php';
 
-function nlog(string $msg): void {
-  $line = '[' . date('c') . '] ' . $msg . "\n";
-  @file_put_contents(__DIR__ . '/notify-new-lead.log', $line, FILE_APPEND);
-}
 
 function nrespond(int $code, array $data): void {
   http_response_code($code);
@@ -62,7 +58,7 @@ $RATE_MAX     = 30; // max emails per company per hour
 $RATE_WINDOW  = 3600;
 
 if ($SB_KEY === '' || $SMTP_PASS === '') {
-  nlog('ERROR: Missing secrets');
+  log_info('ERROR: Missing secrets');
   nrespond(500, ['ok' => false, 'error' => 'not configured']);
 }
 
@@ -90,7 +86,7 @@ if (!is_dir($DEDUP_DIR)) @mkdir($DEDUP_DIR, 0755, true);
 $dedupFile = $DEDUP_DIR . '/' . hash('sha256', $leadId) . '.lock';
 $dedupFp = @fopen($dedupFile, 'x'); // fails if file exists
 if ($dedupFp === false) {
-  nlog('DEDUP: already notified for lead ' . $leadId);
+  log_info('DEDUP: already notified for lead ' . $leadId);
   nrespond(200, ['ok' => true, 'skipped' => 'already_notified']);
 }
 fclose($dedupFp);
@@ -115,7 +111,7 @@ if ($rateFp) {
   if (count($rateList) >= $RATE_MAX) {
     @flock($rateFp, LOCK_UN);
     @fclose($rateFp);
-    nlog('RATE LIMIT: company ' . $companyId . ' exceeded ' . $RATE_MAX . '/hr');
+    log_info('RATE LIMIT: company ' . $companyId . ' exceeded ' . $RATE_MAX . '/hr');
     nrespond(200, ['ok' => true, 'skipped' => 'rate_limited']);
   }
 }
@@ -159,9 +155,9 @@ if (!is_array($prefs) || count($prefs) === 0) {
   if (is_array($settings) && isset($settings[0]['email']) && $settings[0]['email'] !== '') {
     // Send to company email as default (no prefs configured yet)
     $prefs = [['notify_email' => $settings[0]['email'], 'quiet_hours_start' => null, 'quiet_hours_end' => null, 'user_id' => null]];
-    nlog('FALLBACK: no prefs for company ' . $companyId . ', using company email ' . $settings[0]['email']);
+    log_info('FALLBACK: no prefs for company ' . $companyId . ', using company email ' . $settings[0]['email']);
   } else {
-    nlog('SKIP: no prefs and no company email for ' . $companyId);
+    log_info('SKIP: no prefs and no company email for ' . $companyId);
     nrespond(200, ['ok' => true, 'skipped' => 'no_recipients']);
   }
 }
@@ -282,7 +278,7 @@ $emailText = "Neue Anfrage: " . ($custName ?: 'Neuer Lead') . "\n"
 /* ── PHPMailer ── */
 $pmDir = __DIR__ . '/phpmailer';
 if (!is_readable($pmDir . '/PHPMailer.php')) {
-  nlog('ERROR: PHPMailer missing');
+  log_info('ERROR: PHPMailer missing');
   nrespond(500, ['ok' => false, 'error' => 'mailer missing']);
 }
 require_once $pmDir . '/Exception.php';
@@ -304,7 +300,7 @@ foreach ($prefs as $pref) {
   $qStart = $pref['quiet_hours_start'] ?? null;
   $qEnd = $pref['quiet_hours_end'] ?? null;
   if (isQuietHour($qStart, $qEnd)) {
-    nlog('QUIET: skipping ' . $recipientEmail . ' (quiet ' . $qStart . '-' . $qEnd . ')');
+    log_info('QUIET: skipping ' . $recipientEmail . ' (quiet ' . $qStart . '-' . $qEnd . ')');
     $skipped++;
     continue;
   }
@@ -331,9 +327,9 @@ foreach ($prefs as $pref) {
     $mail->send();
 
     $sent++;
-    nlog('SENT: ' . $recipientEmail . ' for lead ' . $leadId);
+    log_info('SENT: ' . $recipientEmail . ' for lead ' . $leadId);
   } catch (\Throwable $e) {
-    nlog('FAIL: ' . $recipientEmail . ' - ' . $e->getMessage());
+    log_info('FAIL: ' . $recipientEmail . ' - ' . $e->getMessage());
   }
 }
 
@@ -360,5 +356,5 @@ if (rand(1, 50) === 1) { // 2% chance per request
   }
 }
 
-nlog("DONE: lead={$leadId} company={$companyId} sent={$sent} skipped={$skipped}");
+log_info("DONE: lead={$leadId} company={$companyId} sent={$sent} skipped={$skipped}");
 nrespond(200, ['ok' => true, 'sent' => $sent, 'skipped' => $skipped]);

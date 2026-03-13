@@ -80,6 +80,9 @@ define('DEMO_CLEANUP_TOKEN',    env('DEMO_CLEANUP_TOKEN'));
 // ── Admin tool token ────────────────────────────────────────────────────
 define('ADMIN_SECRET_TOKEN',    env('ADMIN_SECRET_TOKEN'));
 
+// ── Logger ──────────────────────────────────────────────────────────────
+require_once __DIR__ . '/logger.php';
+
 // ── CORS ────────────────────────────────────────────────────────────────
 define('ALLOWED_ORIGINS', array_filter(array_map('trim', explode(',',
     env('ALLOWED_ORIGINS', 'https://anfragebox.de,https://www.anfragebox.de')
