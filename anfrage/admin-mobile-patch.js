@@ -1,6 +1,6 @@
 /* ============================================================
    AnfrageBox Admin — Mobile Patch v3
-   After admin-rechnung18.js
+   After admin-rechnung.js
    Features: filter collapse, mobile drawer, swipe back,
              bottom nav sync, tap-to-open cards
    ============================================================ */

@@ -18,7 +18,7 @@
     startRangeTabs: document.getElementById("startRangeTabs"),
   };
 
-  const SEND_OFFER_EMAIL_URL = "/anfrage/api/send-offer-email7.php";
+  const SEND_OFFER_EMAIL_URL = "/anfrage/api/send-offer-email.php";
   const SUPABASE_URL = String(window.SUPABASE_URL || "").trim();
   const SUPABASE_ANON_KEY = String(window.SUPABASE_ANON_KEY || "").trim();
   const LOGIN_PAGE = String(window.AB_LOGIN_PAGE || "/anfrage/login/login.html");
@@ -1262,7 +1262,7 @@ const photoReminderKey="ab_photo_reminder_"+leadId; const lastPhotoReminder=loca
             const lead=STATE.rows.find(r=>String(r.id)===leadId);
             const p=lead?getPayload(lead):{};
             const offer=p.offer||{};
-            const res=await fetch("/anfrage/api/send-offer-email7.php",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({lead_id:leadId,company_id:STATE.companyId,recipient_email:email,recipient_name:name,subject:"Ihr Angebot - Bitte bestätigen",price_eur:offer.price||"",offer_text:offer.text||"",email_body:""})});
+            const res=await fetch("/anfrage/api/send-offer-email.php",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({lead_id:leadId,company_id:STATE.companyId,recipient_email:email,recipient_name:name,subject:"Ihr Angebot - Bitte bestätigen",price_eur:offer.price||"",offer_text:offer.text||"",email_body:""})});
             const result=await res.json();
 if (result.ok) { showNotice("E-Mail erneut gesendet an "+email,"ok"); try { localStorage.setItem("ab_photo_reminder_"+leadId,String(Date.now())); } catch {} }
              else showNotice("Fehler: "+(result.error||""),"err");

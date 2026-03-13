@@ -3401,8 +3401,8 @@ async function init() {
   function sanitizeId(v) {
     return String(v).toLowerCase().replace(/[^a-z0-9]+/g, "_");
   }
-const API_LEAD_URL = "/anfrage/api/lead36.php";
-const PUBLIC_COMPANY_API = "/anfrage/api/public-company7.php";
+const API_LEAD_URL = "/anfrage/api/lead.php";
+const PUBLIC_COMPANY_API = "/anfrage/api/public-company.php";
 function ensureRoomQtyMap(room) {
     state.roomItemQty[room] = state.roomItemQty[room] || {};
     return state.roomItemQty[room];
