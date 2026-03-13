@@ -8,6 +8,7 @@ anfrage/api/_secrets.php
 anfrage/api/*.log
 
 # Rate limit data
+anfrage/api/ratelimit.json
 anfrage/api/ratelimit/*.json
 anfrage/api/ratelimit_offer/*.json
 
