@@ -1,0 +1,7 @@
+<Files "_secrets.php">
+  Require all denied
+</Files>
+
+<FilesMatch "\.(log|json)$">
+  Require all denied
+</FilesMatch>

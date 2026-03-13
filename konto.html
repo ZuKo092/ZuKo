@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Mein Konto — AnfrageBox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=General+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  window.SUPABASE_URL="https://uledkuegmaritmsjejlm.supabase.co";
+  window.SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+</script>
+<style>
+:root{--cream:#FDFBF7;--white:#fff;--ink:#1A1A18;--ink2:#2D2D28;--ink3:#4A4A42;--muted:#7A776E;--line:#DDD8CF;--green:#0D7C5F;--green2:#0A6B51;--gl:#E8F5EF;--gs:#C2E5D5;--accent:#E8A838;--red:#DC2626;--red-light:#FEF2F2;--h:'Barlow Condensed',sans-serif;--b:'General Sans',sans-serif;--rl:20px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--b);background:var(--cream);color:var(--ink);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}
+
+/* NAV */
+.nav{height:68px;display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--white)}.nav-inner{max-width:1000px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;width:100%}.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--h);font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);text-decoration:none}.nav-mark{width:32px;height:32px;background:var(--green);border-radius:9px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:7px}.nav-mark span{background:rgba(255,255,255,.9);border-radius:2px}.nav-right{display:flex;align-items:center;gap:12px}.nav-user{font-size:13px;color:var(--muted);font-weight:500}.nav-btn{font-size:13px;font-weight:600;color:var(--muted);background:none;border:1px solid var(--line);padding:7px 16px;border-radius:8px;cursor:pointer;transition:.15s;font-family:var(--b)}.nav-btn:hover{border-color:var(--ink);color:var(--ink)}.nav-btn.green{background:var(--green);color:white;border-color:var(--green)}.nav-btn.green:hover{background:var(--green2)}
+
+/* LAYOUT */
+.page{max-width:1000px;margin:0 auto;padding:40px 24px 120px}
+.page-title{font-family:var(--h);font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:-.03em;margin-bottom:8px}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:40px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--rl);padding:28px;position:relative}
+.card-title{font-family:var(--h);font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.card-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.card-row:last-child{border-bottom:none}
+.card-row .label{color:var(--muted);font-weight:500}
+.card-row .value{font-weight:700;color:var(--ink)}
+.card-row .value.green{color:var(--green)}
+.card-row .value.red{color:var(--red)}
+.card-row .value.muted{color:var(--muted);font-weight:500}
+
+/* STATUS BADGE */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px}
+.badge.active{background:var(--gl);color:var(--green)}
+.badge.trial{background:#FFF7ED;color:#C2410C}
+.badge.expired{background:var(--red-light);color:var(--red)}
+.badge.canceled{background:#F3F4F6;color:#6B7280}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+/* EMBED CODE */
+.embed-box{background:#F8F6F2;border:1px solid var(--line);border-radius:12px;padding:16px;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:12px;line-height:1.6;color:var(--ink3);word-break:break-all;position:relative;margin-top:12px}
+.embed-copy{position:absolute;top:10px;right:10px;background:var(--green);color:white;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--b)}.embed-copy:hover{background:var(--green2)}
+.embed-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+/* FORM */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:5px}
+.form-group input{width:100%;height:44px;background:var(--cream);border:1.5px solid var(--line);border-radius:10px;padding:0 14px;font-size:14px;color:var(--ink);font-family:var(--b);outline:none;transition:.15s}
+.form-group input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(13,124,95,.1)}
+.form-group input::placeholder{color:var(--muted)}
+.form-group input:disabled{background:#F3F4F6;color:var(--muted)}
+.btn{height:44px;background:var(--green);color:white;border:none;border-radius:10px;padding:0 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--b);transition:.15s}.btn:hover{background:var(--green2)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-outline{height:44px;background:none;color:var(--ink3);border:1.5px solid var(--line);border-radius:10px;padding:0 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--b);transition:.15s}.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.msg.ok{display:block;background:var(--gl);color:var(--green)}
+.msg.err{display:block;background:var(--red-light);color:var(--red)}
+
+/* AUTH WALL */
+.auth-wall{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 68px);padding:40px 24px}
+.auth-card{background:var(--white);border:1px solid var(--line);border-radius:var(--rl);padding:36px;max-width:400px;width:100%;text-align:center}
+.auth-card h2{font-family:var(--h);font-size:24px;font-weight:900;text-transform:uppercase;margin-bottom:8px}
+.auth-card p{font-size:14px;color:var(--muted);margin-bottom:24px}
+
+/* RESPONSIVE */
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav"><div class="nav-inner">
+  <a href="/" class="nav-brand"><div class="nav-mark"><span></span><span></span><span></span><span></span></div>AnfrageBox</a>
+  <div class="nav-right">
+    <span class="nav-user" id="navEmail">Laden...</span>
+    <a href="/anfrage/admin.html" class="nav-btn green">Admin Panel</a>
+    <button class="nav-btn" id="btnLogout">Logout</button>
+  </div>
+</div></nav>
+
+<!-- LOGGED OUT STATE -->
+<div class="auth-wall" id="authWall" style="display:none;">
+  <div class="auth-card">
+    <h2>Anmelden</h2>
+    <p>Melden Sie sich mit Ihrem AnfrageBox-Konto an.</p>
+    <div class="msg" id="loginMsg"></div>
+    <div class="form-group"><label>E-Mail</label><input type="email" id="loginEmail" placeholder="name@firma.de"/></div>
+    <div class="form-group"><label>Passwort</label><input type="password" id="loginPass" placeholder="Passwort"/></div>
+    <button class="btn" id="btnLogin" style="width:100%;margin-top:4px;">Anmelden</button>
+  </div>
+</div>
+
+<!-- LOGGED IN STATE -->
+<div class="page" id="dashboard" style="display:none;">
+  <div class="page-title">Mein Konto</div>
+  <div class="page-sub" id="welcomeText">Willkommen zurück.</div>
+
+  <div class="grid">
+
+    <!-- SUBSCRIPTION -->
+    <div class="card">
+      <div class="card-title">Abonnement</div>
+      <div class="card-sub">Ihr aktueller Plan und Status</div>
+      <div class="card-row"><span class="label">Plan</span><span class="value" id="subPlan">Laden...</span></div>
+      <div class="card-row"><span class="label">Status</span><span id="subStatus"><span class="badge trial"><span class="dot"></span>Laden...</span></span></div>
+      <div class="card-row"><span class="label">Preis</span><span class="value" id="subPrice">-</span></div>
+      <div class="card-row"><span class="label">Nächste Zahlung</span><span class="value" id="subNext">-</span></div>
+      <div class="card-row"><span class="label">Testphase endet</span><span class="value" id="subTrial">-</span></div>
+      <div style="margin-top:16px;">
+        <button class="btn" id="btnManageSub">Abonnement verwalten</button>
+      </div>
+    </div>
+
+    <!-- COMPANY INFO -->
+    <div class="card">
+      <div class="card-title">Firmendaten</div>
+      <div class="card-sub">Ihre Kontoinformationen</div>
+      <div class="card-row"><span class="label">Firma</span><span class="value" id="infoCompany">-</span></div>
+      <div class="card-row"><span class="label">E-Mail</span><span class="value" id="infoEmail">-</span></div>
+      <div class="card-row"><span class="label">Slug</span><span class="value" id="infoSlug">-</span></div>
+      <div class="card-row"><span class="label">Konto erstellt</span><span class="value" id="infoCreated">-</span></div>
+    </div>
+
+    <!-- EMBED CODE -->
+    <div class="card" style="grid-column:1/-1;">
+      <div class="card-title">Formular einbetten</div>
+      <div class="card-sub">Kopieren Sie diesen Code und fügen Sie ihn in Ihre Website ein</div>
+      <div class="embed-box" id="embedBox">
+        <button class="embed-copy" id="btnCopyEmbed">Kopieren</button>
+        <code id="embedCode">Laden...</code>
+      </div>
+      <div class="embed-hint">Fügen Sie diesen iframe-Code in den HTML-Quelltext Ihrer Website ein, dort wo das Anfrage-Formular erscheinen soll. Das Formular passt sich automatisch an die Breite Ihrer Seite an.</div>
+    </div>
+
+    <!-- CHANGE PASSWORD -->
+    <div class="card">
+      <div class="card-title">Passwort ändern</div>
+      <div class="card-sub">Neues Passwort festlegen</div>
+      <div class="msg" id="pwMsg"></div>
+      <div class="form-group"><label>Neues Passwort</label><input type="password" id="pwNew" placeholder="Min. 8 Zeichen" minlength="8"/></div>
+      <div class="form-group"><label>Passwort bestätigen</label><input type="password" id="pwConfirm" placeholder="Passwort wiederholen"/></div>
+      <button class="btn" id="btnChangePw">Passwort ändern</button>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="card">
+      <div class="card-title">Schnellzugriff</div>
+      <div class="card-sub">Wichtige Links</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="/anfrage/admin.html" class="btn" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;">Admin Panel öffnen →</a>
+        <a id="linkPublicForm" href="#" target="_blank" class="btn-outline" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;">Formular ansehen →</a>
+        <a href="mailto:info@anfragebox.de" class="btn-outline" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;">Support kontaktieren</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(()=>{
+  "use strict";
+  const SB_URL=window.SUPABASE_URL;
+  const SB_KEY=window.SUPABASE_ANON_KEY;
+  const PORTAL_URL="/anfrage/api/billing/create-portal-session.php";
+  const FORM_BASE="https://anfragebox.de/anfrage/index.html";
+
+  if(!window.supabase||!SB_URL||!SB_KEY){document.getElementById("authWall").style.display="flex";return;}
+
+  const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+
+  const $=id=>document.getElementById(id);
+
+  function formatDate(d){if(!d)return"-";const dt=new Date(d);if(isNaN(dt))return"-";return dt.toLocaleDateString("de-DE");}
+  function daysUntil(d){if(!d)return null;const dt=new Date(d);if(isNaN(dt))return null;return Math.ceil((dt-Date.now())/86400000);}
+
+  // LOGIN
+  $("btnLogin").addEventListener("click",async()=>{
+    const email=$("loginEmail").value.trim();
+    const pass=$("loginPass").value;
+    if(!email||!pass){showMsg("loginMsg","Bitte E-Mail und Passwort eingeben.","err");return;}
+    $("btnLogin").disabled=true;$("btnLogin").textContent="Laden...";
+    const{error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){showMsg("loginMsg",error.message||"Login fehlgeschlagen.","err");$("btnLogin").disabled=false;$("btnLogin").textContent="Anmelden";return;}
+    window.location.reload();
+  });
+  $("loginPass").addEventListener("keydown",e=>{if(e.key==="Enter")$("btnLogin").click();});
+  $("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginPass").focus();});
+
+  // LOGOUT
+  $("btnLogout").addEventListener("click",async()=>{await sb.auth.signOut();window.location.reload();});
+
+  // CHANGE PASSWORD
+  $("btnChangePw").addEventListener("click",async()=>{
+    const pw=$("pwNew").value;
+    const pw2=$("pwConfirm").value;
+    if(pw.length<8){showMsg("pwMsg","Passwort muss min. 8 Zeichen haben.","err");return;}
+    if(pw!==pw2){showMsg("pwMsg","Passwörter stimmen nicht überein.","err");return;}
+    $("btnChangePw").disabled=true;$("btnChangePw").textContent="Speichern...";
+    const{error}=await sb.auth.updateUser({password:pw});
+    if(error){showMsg("pwMsg",error.message||"Fehler.","err");}
+    else{showMsg("pwMsg","Passwort erfolgreich geändert.","ok");$("pwNew").value="";$("pwConfirm").value="";}
+    $("btnChangePw").disabled=false;$("btnChangePw").textContent="Passwort ändern";
+  });
+
+  // COPY EMBED
+  $("btnCopyEmbed").addEventListener("click",()=>{
+    const code=$("embedCode").textContent;
+    navigator.clipboard.writeText(code).then(()=>{$("btnCopyEmbed").textContent="Kopiert!";setTimeout(()=>{$("btnCopyEmbed").textContent="Kopieren";},2000);});
+  });
+
+  // MANAGE SUBSCRIPTION
+  $("btnManageSub").addEventListener("click",async()=>{
+    $("btnManageSub").disabled=true;$("btnManageSub").textContent="Laden...";
+    try{
+      const{data:{session}}=await sb.auth.getSession();
+      if(!session)throw new Error("Nicht angemeldet");
+      const r=await fetch(PORTAL_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},body:JSON.stringify({company_id:window._companyId||""})});
+      const d=await r.json();
+      if(d.url){window.location.href=d.url;}
+      else{alert(d.error||"Fehler beim Laden des Zahlungsportals.");}
+    }catch(e){alert(e.message||"Fehler.");}
+    $("btnManageSub").disabled=false;$("btnManageSub").textContent="Abonnement verwalten";
+  });
+
+  function showMsg(id,text,type){const el=$(id);el.textContent=text;el.className="msg "+type;}
+
+  // BOOT
+  async function boot(){
+    try{
+      console.log("[konto] boot start");
+      const{data,error:sessErr}=await sb.auth.getSession();
+      console.log("[konto] session:",data,sessErr);
+
+      if(sessErr||!data?.session||!data.session.user){
+        console.log("[konto] no session, showing login");
+        $("authWall").style.display="flex";
+        $("navEmail").textContent="";
+        return;
+      }
+
+      const user=data.session.user;
+      console.log("[konto] user:",user.email,user.id);
+      $("dashboard").style.display="block";
+      $("navEmail").textContent=user.email;
+
+      // Load company settings - try by email first, then by user id
+      let settings=null;
+      const{data:s1,error:e1}=await sb.from("company_settings").select("*").eq("email",user.email).maybeSingle();
+      console.log("[konto] settings by email:",s1,e1);
+
+      if(s1){
+        settings=s1;
+      }else{
+        // Try by user_id if email didn't match
+        const{data:s2,error:e2}=await sb.from("company_settings").select("*").eq("user_id",user.id).maybeSingle();
+        console.log("[konto] settings by user_id:",s2,e2);
+        if(s2) settings=s2;
+      }
+
+      if(settings){
+        window._companyId=settings.company_id;
+        $("infoCompany").textContent=settings.company_name||"-";
+        $("infoEmail").textContent=settings.email||user.email;
+        $("infoSlug").textContent=settings.slug||"-";
+        $("infoCreated").textContent=formatDate(settings.created_at);
+        $("welcomeText").textContent="Willkommen, "+(settings.company_name||user.email)+".";
+
+        // Embed code
+        const slug=settings.slug||"";
+        if(slug){
+          const iframeCode='<iframe src="'+FORM_BASE+"?slug="+slug+'" width="100%" height="900" frameborder="0" style="border:none;border-radius:12px;"><\/iframe>';
+          $("embedCode").textContent=iframeCode;
+          $("linkPublicForm").href=FORM_BASE+"?slug="+slug;
+        }else{
+          $("embedCode").textContent="Kein Formular-Slug gefunden. Bitte kontaktieren Sie den Support.";
+          $("linkPublicForm").style.display="none";
+        }
+
+        // Demo trial info
+        if(settings.is_demo&&settings.demo_expires_at){
+          const days=daysUntil(settings.demo_expires_at);
+          if(days!==null&&days>0){
+            $("subTrial").textContent=formatDate(settings.demo_expires_at)+" ("+days+" Tage)";
+          }else if(days!==null&&days<=0){
+            $("subTrial").innerHTML='<span style="color:var(--red)">Abgelaufen<\/span>';
+          }
+        }else{
+          $("subTrial").textContent="-";
+        }
+      }else{
+        console.log("[konto] no company_settings found for",user.email);
+        $("infoCompany").textContent="-";
+        $("infoEmail").textContent=user.email;
+        $("welcomeText").textContent="Willkommen, "+user.email+".";
+        $("embedCode").textContent="Kein Konto gefunden. Bitte registrieren Sie sich zuerst auf anfragebox.de";
+      }
+
+      // Load subscription
+      const companyId=window._companyId;
+      if(companyId){
+        const{data:sub,error:subErr}=await sb.from("subscriptions").select("*").eq("company_id",companyId).maybeSingle();
+        console.log("[konto] subscription:",sub,subErr);
+        if(sub){
+          const statusMap={trialing:{label:"Testphase",cls:"trial"},active:{label:"Aktiv",cls:"active"},past_due:{label:"Zahlung ausstehend",cls:"expired"},canceled:{label:"Gekündigt",cls:"canceled"},unpaid:{label:"Unbezahlt",cls:"expired"}};
+          const st=statusMap[sub.status]||{label:sub.status,cls:"trial"};
+          $("subPlan").textContent=(sub.plan_name||"Pro").charAt(0).toUpperCase()+(sub.plan_name||"pro").slice(1);
+          $("subStatus").innerHTML='<span class="badge '+st.cls+'"><span class="dot"><\/span>'+st.label+'<\/span>';
+          $("subPrice").textContent=sub.amount_eur?(sub.amount_eur/100).toLocaleString("de-DE",{style:"currency",currency:"EUR"})+" / Monat":"-";
+          $("subNext").textContent=formatDate(sub.current_period_end);
+          $("btnManageSub").textContent="Abonnement verwalten";
+        }else{
+          $("subPlan").textContent="Kein Plan";
+          $("subStatus").innerHTML='<span class="badge trial"><span class="dot"><\/span>Testphase<\/span>';
+          $("subPrice").textContent="14 Tage kostenlos";
+          $("subNext").textContent="-";
+          $("btnManageSub").textContent="Jetzt abonnieren";
+        }
+      }else{
+        $("subPlan").textContent="-";
+        $("subStatus").innerHTML='<span class="badge trial"><span class="dot"><\/span>Kein Abo<\/span>';
+      }
+
+      console.log("[konto] boot complete");
+    }catch(err){
+      console.error("[konto] boot error:",err);
+      // Show login as fallback
+      $("authWall").style.display="flex";
+      $("dashboard").style.display="none";
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

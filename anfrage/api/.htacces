@@ -1,0 +1,25 @@
+# Block all sensitive files
+<Files "_secrets.php">
+  Require all denied
+</Files>
+
+<FilesMatch "\.(log|json)$">
+  Require all denied
+</FilesMatch>
+
+<Files "authz.php">
+  Require all denied
+</Files>
+
+# Block directory listing
+Options -Indexes
+
+# Block direct access to phpmailer directory
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^phpmailer/ - [F,L]
+  RewriteRule ^ratelimit/ - [F,L]
+  RewriteRule ^ratelimit_offer/ - [F,L]
+  RewriteRule ^notify_dedup/ - [F,L]
+RewriteRule ^notify_ratelimit/ - [F,L]
+</IfModule>

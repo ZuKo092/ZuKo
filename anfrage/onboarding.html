@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AnfrageBox - Willkommen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/anfrage/login/auth10.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = "https://uledkuegmaritmsjejlm.supabase.co";
+    window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+  </script>
+  <style>
+    .ob-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+    .ob-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 800; color: #111827; }
+    .ob-card p { margin: 0; font-size: 13px; color: #6b7280; line-height: 1.6; }
+    .ob-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #047857; color: #fff; font-size: 13px; font-weight: 800; margin-right: 10px; flex-shrink: 0; }
+    .ob-code { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; font-family: monospace; font-size: 12px; line-height: 1.6; color: #1f2937; word-break: break-all; margin-top: 12px; position: relative; }
+    .ob-copy { position: absolute; top: 8px; right: 8px; background: #047857; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .ob-copy:hover { background: #065f46; }
+    .ob-success { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 2px solid #86efac; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px; }
+    .ob-success h2 { margin: 0 0 6px; font-size: 22px; font-weight: 900; color: #065f46; }
+    .ob-success p { margin: 0; font-size: 14px; color: #374151; }
+    .ob-canceled { background: #fef2f2; border: 2px solid #fecaca; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px; }
+    .ob-canceled h2 { margin: 0 0 6px; font-size: 22px; font-weight: 900; color: #991b1b; }
+    .ob-canceled p { margin: 0; font-size: 14px; color: #374151; }
+  </style>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-brand" aria-hidden="true">
+      <div class="brand-card">
+        <div class="brand-top">
+          <h1 class="brand-title">Fast geschafft!</h1>
+          <p class="brand-text">Richten Sie Ihr AnfrageBox-Konto ein und starten Sie sofort.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-card" style="max-width:500px;">
+
+        <!-- Success state -->
+        <div id="stateSuccess" style="display:none;">
+          <div class="ob-success">
+            <h2>Willkommen bei AnfrageBox!</h2>
+            <p>Ihr 14-tägiger Test hat begonnen. So richten Sie alles ein:</p>
+          </div>
+
+          <div class="ob-card">
+            <div style="display:flex;align-items:flex-start;">
+              <span class="ob-number">1</span>
+              <div>
+                <h3>Formular einbetten</h3>
+                <p>Kopieren Sie diesen Code und fügen Sie ihn auf Ihrer Website ein.</p>
+                <div class="ob-code" id="embedCodeBlock">
+                  <button class="ob-copy" id="btnCopyEmbed">Kopieren</button>
+                  <code id="embedCode"></code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ob-card">
+            <div style="display:flex;align-items:flex-start;">
+              <span class="ob-number">2</span>
+              <div>
+                <h3>Firmendaten ergänzen</h3>
+                <p>Logo, Adresse und Kontaktdaten im Admin-Panel eintragen.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ob-card">
+            <div style="display:flex;align-items:flex-start;">
+              <span class="ob-number">3</span>
+              <div>
+                <h3>Anfragen empfangen</h3>
+                <p>Sobald ein Kunde das Formular ausfüllt, erscheint die Anfrage im Dashboard.</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="/anfrage/admin.html" class="primary-btn" style="display:block;text-align:center;text-decoration:none;margin-top:20px;">Zum Admin-Panel</a>
+        </div>
+
+        <!-- Canceled state -->
+        <div id="stateCanceled" style="display:none;">
+          <div class="ob-canceled">
+            <h2>Zahlung abgebrochen</h2>
+            <p>Kein Problem. Ihr Konto wurde erstellt und Sie haben 14 Tage kostenlosen Zugang.</p>
+          </div>
+          <p style="font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:20px;">
+            Sie können die Zahlungsmethode jederzeit in den Einstellungen hinterlegen. Nach Ablauf der Testphase wird Ihr Konto pausiert.
+          </p>
+          <a href="/anfrage/admin.html" class="primary-btn" style="display:block;text-align:center;text-decoration:none;">Zum Admin-Panel</a>
+        </div>
+
+        <!-- Loading state -->
+        <div id="stateLoading">
+          <h2 class="auth-title">Wird geladen...</h2>
+          <div class="loading-bar" style="display:block;"><span></span></div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+<script>
+(async () => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status") || "";
+
+  const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+  // Get current user's company
+  const { data: sessionData } = await sb.auth.getSession();
+  const user = sessionData?.session?.user;
+
+  let slug = "";
+
+  if (user) {
+    const { data: membership } = await sb.from("company_users")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (membership?.company_id) {
+      const { data: company } = await sb.from("company_settings")
+        .select("slug")
+        .eq("company_id", membership.company_id)
+        .maybeSingle();
+      slug = company?.slug || "";
+    }
+  }
+
+  // Set embed code
+  const embedUrl = "https://anfragebox.de/anfrage/index.html?slug=" + encodeURIComponent(slug);
+  const embedCode = `<iframe src="${embedUrl}" width="100%" height="800" frameborder="0" style="border:none;border-radius:16px;"></iframe>`;
+  $("embedCode").textContent = embedCode;
+
+  // Copy button
+  $("btnCopyEmbed").addEventListener("click", () => {
+    navigator.clipboard.writeText(embedCode).then(() => {
+      $("btnCopyEmbed").textContent = "Kopiert!";
+      setTimeout(() => { $("btnCopyEmbed").textContent = "Kopieren"; }, 2000);
+    });
+  });
+
+  // Show correct state
+  $("stateLoading").style.display = "none";
+
+  if (status === "canceled") {
+    $("stateCanceled").style.display = "";
+  } else {
+    $("stateSuccess").style.display = "";
+  }
+})();
+</script>
+</body>
+</html>

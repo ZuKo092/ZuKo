@@ -1,0 +1,4821 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Umzugsanfrage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#f4f6f5;
+      --panel:#ffffff;
+      --text:#101214;
+      --muted:#667085;
+      --line:#e6ebe8;
+
+      --brand:#15803d;
+      --brand-2:#166534;
+      --brand-3:#14532d;
+      --brand-soft:#edf8f1;
+      --brand-soft-2:#e4f4ea;
+      --brand-border:#c9e5d2;
+
+      --sidebar:#166534;
+      --white:#ffffff;
+      --danger:#c62828;
+
+      --radius:14px;
+      --radius-lg:18px;
+      --shadow:0 8px 24px rgba(16,24,40,.06);
+
+      --topbar-h:96px;
+      --mobile-stepbar-h:58px;
+      --mobile-actions-h:88px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{-webkit-text-size-adjust:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,#f8faf9 0%, #f4f6f5 100%);
+      overflow-x:hidden;
+    }
+
+    button,input,select,textarea{font:inherit}
+    input,select,textarea{font-size:16px}
+
+    .topbar{
+      height:var(--topbar-h);
+      background:rgba(255,255,255,.9);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 24px;
+      gap:14px;
+      position:sticky;
+      top:0;
+      z-index:60;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      min-width:0;
+      flex:1 1 auto;
+    }
+
+    .brand img{
+      width:240px;
+      max-width:100%;
+      height:auto;
+      display:block;
+      object-fit:contain;
+      object-position:left center;
+    }
+
+    .topbar-right{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    .topbar-call{
+      color:#1f2937;
+      font-weight:600;
+      font-size:15px;
+    }
+
+    .topbar-phone{
+      color:#111827;
+      font-weight:800;
+      letter-spacing:-.01em;
+      font-size:18px;
+      text-decoration:none;
+    }
+
+    .lang{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:14px;
+      font-weight:700;
+    }
+    .lang span{
+      color:#6b7280;
+      cursor:pointer;
+      user-select:none;
+    }
+    .lang .active{
+      color:var(--brand);
+    }
+
+    .notice{
+      background:var(--brand-soft-2);
+      color:var(--brand-2);
+      border-bottom:1px solid #d2eadb;
+      min-height:42px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 14px;
+      font-size:14px;
+      font-weight:600;
+      text-align:center;
+      position:sticky;
+      top:var(--topbar-h);
+      z-index:55;
+    }
+    .notice.hidden{display:none}
+
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 410px;
+      min-height:calc(100vh - var(--topbar-h));
+    }
+
+    .main{
+      padding:16px 16px 24px;
+      min-width:0;
+    }
+
+    .shell{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 20px;
+      max-width:1100px;
+      margin:0 auto;
+      overflow:hidden;
+    }
+
+    .steps-bar{
+      margin:-2px -2px 14px;
+      position:sticky;
+      top:calc(var(--topbar-h) + 0px);
+      z-index:40;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.93));
+      border:1px solid #eef1f0;
+      border-radius:16px;
+      padding:10px;
+    }
+
+    .steps-scroll{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      scroll-snap-type:x proximity;
+      padding-bottom:2px;
+    }
+    .steps-scroll::-webkit-scrollbar{display:none}
+
+    .step-chip{
+      border:1px solid #dde4e1;
+      background:#fff;
+      color:#6b7280;
+      min-height:42px;
+      padding:0 14px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      flex:0 0 auto;
+      scroll-snap-align:start;
+      transition:.16s ease;
+    }
+    .step-chip:hover{
+      border-color:#d2dbd7;
+      background:#fbfcfb;
+    }
+    .step-chip .nr{
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-size:12px;
+      font-weight:800;
+      background:#f2f4f3;
+      color:#6b7280;
+      border:1px solid #e5e9e7;
+    }
+    .step-chip.done{
+      color:var(--brand-2);
+      border-color:#c8e5d2;
+      background:#f1fbf4;
+    }
+    .step-chip.done .nr{
+      background:#dff3e7;
+      color:var(--brand-2);
+      border-color:#c7e6d3;
+    }
+    .step-chip.active{
+      color:#fff;
+      border-color:var(--brand);
+      background:linear-gradient(180deg, #1a8b43, #15753a);
+      box-shadow:0 6px 18px rgba(21,128,61,.22);
+    }
+    .step-chip.active .nr{
+      background:rgba(255,255,255,.16);
+      border-color:rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+    .step-progress-line{
+      margin-top:8px;
+      height:6px;
+      background:#edf1ef;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid #e6ece9;
+    }
+    .step-progress-line > span{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #1c8f46, #15803d);
+      border-radius:999px;
+      transition:width .22s ease;
+    }
+
+    .step{
+      display:none;
+      animation:fade .14s ease;
+    }
+    .step.active{display:block}
+    @keyframes fade{
+      from{opacity:.4; transform:translateY(3px)}
+      to{opacity:1; transform:none}
+    }
+
+    .hero-placeholder{
+      width:100%;
+      height:148px;
+      border:1px dashed #d5ddd9;
+      border-radius:16px;
+      background:linear-gradient(180deg,#fafcfb,#f3f7f5);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#8a9490;
+      text-align:center;
+      font-weight:600;
+      margin-bottom:14px;
+      padding:12px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(28px, 3vw, 40px);
+      line-height:1.08;
+      font-weight:600;
+      letter-spacing:-.02em;
+    }
+    h1 strong{font-weight:800}
+    .subtext{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.45;
+      margin:0 0 16px;
+      max-width:760px;
+    }
+
+    .field{margin-bottom:14px}
+    .field label{
+      display:block;
+      margin-bottom:8px;
+      font-size:14px;
+      font-weight:700;
+      color:#27303a;
+    }
+    .field small{
+      color:#77808a;
+      font-weight:500;
+      margin-left:4px;
+    }
+
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+      width:100%;
+      border:1px solid #d7dfdb;
+      border-radius:12px;
+      background:#fff;
+      padding:14px 14px;
+      color:var(--text);
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+    textarea{
+      resize:vertical;
+      min-height:96px;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:#9eceaf;
+      box-shadow:0 0 0 4px rgba(21,128,61,.08);
+      background:#fff;
+    }
+
+    .field.has-error input,
+    .field.has-error select,
+    .field.has-error textarea{
+      border-color:#efb6b6;
+      box-shadow:0 0 0 4px rgba(198,40,40,.05);
+    }
+    .error-text{
+      display:none;
+      margin-top:6px;
+      color:var(--danger);
+      font-size:13px;
+      font-weight:600;
+    }
+    .field.has-error .error-text{display:block}
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .btn-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .pill-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px;
+    }
+
+    .choice-btn,.pill{
+      border:1px solid #dbe1de;
+      background:#fff;
+      color:#25303a;
+      min-height:52px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      padding:10px 12px;
+      transition:.15s ease;
+      text-align:center;
+      touch-action:manipulation;
+    }
+    .choice-btn:hover,.pill:hover{
+      background:#fbfcfb;
+      border-color:#d1dad6;
+    }
+    .choice-btn.active,.pill.active{
+      border-color:#a9d8b9;
+      background:#f0faf3;
+      color:var(--brand-2);
+      box-shadow:inset 0 0 0 1px rgba(21,128,61,.08);
+    }
+
+    .inline-card{
+      border:1px solid #e4e9e6;
+      border-radius:14px;
+      background:#fff;
+      padding:14px;
+    }
+
+    .eng-card{
+      border:1px solid #e4e9e6;
+      border-radius:16px;
+      background:#fff;
+      padding:14px;
+      box-shadow:0 2px 12px rgba(16,24,40,.02);
+    }
+    .eng-card-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .eng-card-header h3{
+      margin:0;
+      font-size:18px;
+      line-height:1.15;
+      letter-spacing:-.01em;
+    }
+    .eng-card-header p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.35;
+    }
+    .eng-ghost-btn{
+      border:1px solid #dbe1de;
+      background:#fff;
+      border-radius:12px;
+      min-height:44px;
+      padding:0 14px;
+      color:#27303a;
+      font-weight:700;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .room-cards{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .room-card{
+      border:1px solid #dbe1de;
+      background:#fff;
+      border-radius:14px;
+      min-height:146px;
+      padding:12px 10px 42px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      position:relative;
+      text-align:center;
+      transition:.14s ease;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .room-card:hover{
+      transform:translateY(-1px);
+      border-color:#d1d9d5;
+      background:#fbfcfb;
+    }
+    .room-card.active{
+      background:linear-gradient(180deg,#1a8b43,#15783b);
+      border-color:#167d3d;
+      color:#fff;
+      box-shadow:0 10px 20px rgba(21,128,61,.20);
+    }
+
+    .room-card .icon{
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      background:#f1f4f2;
+      color:#63716b;
+      display:grid;
+      place-items:center;
+      transition:.14s ease;
+    }
+    .room-card.active .icon{
+      background:rgba(255,255,255,.14);
+      color:#fff;
+    }
+    .room-card .icon svg{
+      width:22px;
+      height:22px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:1.9;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      display:block;
+    }
+    .room-card .name{
+      color:#27303a;
+      font-size:14px;
+      line-height:1.25;
+      font-weight:700;
+      letter-spacing:-.01em;
+      word-break:break-word;
+    }
+    .room-card.active .name{color:#fff}
+
+    .room-card .select-bar{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:38px;
+      border-top:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.04);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+    }
+    .room-card.active .select-bar{display:flex}
+    .room-card .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:#fff;
+      opacity:.95;
+    }
+    .room-card .count{
+      min-width:18px;
+      text-align:center;
+      color:#fff;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .room-tabs{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      padding-bottom:4px;
+      margin-bottom:12px;
+    }
+    .room-tabs::-webkit-scrollbar{display:none}
+    .room-tab{
+      flex:0 0 auto;
+      border:1px solid #dbe1de;
+      background:#fff;
+      border-radius:12px;
+      min-height:42px;
+      padding:0 12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      font-weight:700;
+      color:#27303a;
+      touch-action:manipulation;
+      white-space:nowrap;
+    }
+    .room-tab.active{
+      border-color:#a9d8b9;
+      background:#eff9f2;
+      color:var(--brand-2);
+    }
+    .room-tab .count{
+      border-radius:999px;
+      min-width:20px;
+      height:20px;
+      padding:0 6px;
+      display:grid;
+      place-items:center;
+      background:#f1f4f2;
+      color:#667085;
+      font-size:11px;
+      font-weight:800;
+    }
+    .room-tab.active .count{
+      background:#dff2e5;
+      color:var(--brand-2);
+    }
+
+    .check-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .check-item{
+      border:1px solid #e1e6e4;
+      border-radius:12px;
+      background:#fff;
+      min-height:54px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:12px 12px;
+    }
+    .check-item input{
+      margin-top:2px;
+      width:18px;
+      height:18px;
+      accent-color:var(--brand);
+      flex:0 0 auto;
+    }
+    .check-item label{
+      margin:0;
+      font-size:14px;
+      line-height:1.3;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .box-cards{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:8px;
+    }
+    .box-card{
+      border:1px solid #e2e7e4;
+      background:#fff;
+      border-radius:14px;
+      overflow:hidden;
+      transition:.14s ease;
+    }
+    .box-card.active{
+      border-color:#a7d7b8;
+      box-shadow:0 0 0 3px rgba(21,128,61,.06);
+    }
+    .box-img{
+      height:120px;
+      border-bottom:1px solid #edf1ef;
+      background:linear-gradient(180deg,#f8faf9,#f2f5f4);
+      display:grid;
+      place-items:center;
+      text-align:center;
+      color:#8a9490;
+      font-weight:700;
+      font-size:13px;
+      padding:10px;
+    }
+    .box-body{padding:12px}
+    .box-body h4{
+      margin:0 0 6px;
+      font-size:16px;
+      line-height:1.2;
+      letter-spacing:-.01em;
+    }
+    .box-body p{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      min-height:36px;
+    }
+.box-img{
+  position: relative;
+  overflow: hidden;
+}
+.box-img img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+}
+    .qty{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .qty button{
+      width:38px;
+      height:38px;
+      border:1px solid #d8dfdb;
+      background:#fff;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:20px;
+      font-weight:700;
+      color:#27303a;
+      touch-action:manipulation;
+    }
+    .qty input{
+      width:74px;
+      text-align:center;
+      border:1px solid #d8dfdb;
+      border-radius:10px;
+      padding:9px 8px;
+      font-weight:700;
+    }
+
+    .assembly-room{
+      border:1px solid #e4e9e6;
+      border-radius:14px;
+      background:#fff;
+      padding:12px;
+      margin-bottom:10px;
+    }
+    .assembly-room h4{
+      margin:0 0 10px;
+      font-size:17px;
+      letter-spacing:-.01em;
+    }
+    .assembly-list{
+      display:grid;
+      gap:10px;
+    }
+    .assembly-item{
+      border:1px solid #e5eae7;
+      border-radius:12px;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 220px;
+      gap:12px;
+      align-items:center;
+    }
+    .assembly-item .title{
+      font-weight:700;
+      font-size:14px;
+    }
+    .assembly-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .assembly-actions button{
+      border:1px solid #dbe1de;
+      background:#fff;
+      border-radius:10px;
+      min-height:40px;
+      cursor:pointer;
+      font-weight:700;
+      color:#27303a;
+      font-size:13px;
+      padding:0 8px;
+      touch-action:manipulation;
+    }
+    .assembly-actions button.active{
+      border-color:#a9d8b9;
+      background:#eff9f2;
+      color:var(--brand-2);
+    }
+
+    .summary-big{
+      margin-top:8px;
+      border:1px solid #e4e9e6;
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .summary-big-head{
+      background:#f7fbf8;
+      border-bottom:1px solid #ebf0ed;
+      color:var(--brand-2);
+      font-weight:800;
+      font-size:17px;
+      padding:12px 14px;
+    }
+    .summary-big-body{padding:12px 14px}
+    .summary-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid #f0f3f2;
+    }
+    .summary-row:last-child{border-bottom:none}
+    .summary-row .k{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:4px;
+      font-weight:700;
+    }
+    .summary-row .v{
+      font-weight:600;
+      font-size:14px;
+      line-height:1.4;
+      white-space:pre-line;
+      word-break:break-word;
+    }
+
+    .sendbar{
+      margin-top:12px;
+      border:1px solid #cfe8d8;
+      background:var(--brand-soft);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .sendbar > div > div{
+      font-weight:800;
+      color:var(--brand-2);
+      margin-bottom:4px;
+    }
+    .sendbar small{
+      color:#2f5e40;
+      line-height:1.35;
+      font-weight:500;
+    }
+    .sendbar button{
+      border:none;
+      background:linear-gradient(180deg,#1a8b43,#15793b);
+      color:#fff;
+      border-radius:12px;
+      min-height:46px;
+      padding:0 14px;
+      font-weight:800;
+      cursor:pointer;
+      touch-action:manipulation;
+      box-shadow:0 8px 18px rgba(21,128,61,.20);
+    }
+
+    .footer-actions{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+    .btn{
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      min-height:54px;
+      padding:0 20px;
+      font-size:15px;
+      font-weight:800;
+      transition:.15s ease;
+      white-space:nowrap;
+      touch-action:manipulation;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn-secondary{
+      background:#fff;
+      color:var(--brand);
+      border:1.5px solid #d9e1dc;
+      min-width:130px;
+    }
+    .btn-primary{
+      background:linear-gradient(180deg,#1a8b43,#157a3b);
+      color:#fff;
+      border:1px solid #15793b;
+      box-shadow:0 8px 18px rgba(21,128,61,.18);
+      min-width:140px;
+    }
+    .btn-primary:disabled,.btn-secondary:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .summary-panel{
+      background:linear-gradient(180deg,#176838,#145c31);
+      color:#fff;
+      padding:20px 18px 16px;
+      border-left:1px solid rgba(255,255,255,.06);
+      position:sticky;
+      top:var(--topbar-h);
+      height:calc(100vh - var(--topbar-h));
+      overflow:auto;
+      scrollbar-width:thin;
+    }
+
+    .progress-wrap{margin-bottom:14px}
+    .progress{
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.24);
+      overflow:hidden;
+    }
+    .progress > span{
+      display:block;
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background:#fff;
+      transition:width .2s ease;
+    }
+    .side-title{
+      margin:8px 0 12px;
+      font-size:21px;
+      font-weight:800;
+      letter-spacing:-.01em;
+    }
+    .side-section{margin:12px 0}
+    .side-label{
+      color:rgba(255,255,255,.85);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:4px;
+      text-transform:none;
+    }
+    .side-text{
+      color:#fff;
+      font-size:14px;
+      line-height:1.4;
+      font-weight:600;
+      word-break:break-word;
+    }
+    .side-muted{
+      color:rgba(255,255,255,.8);
+      font-size:13px;
+      line-height:1.35;
+      font-weight:600;
+    }
+    .side-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px 12px;
+    }
+
+    .submit-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.58);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:120;
+      padding:16px;
+    }
+    .submit-overlay.show{display:flex}
+    .submit-modal{
+      width:min(980px,100%);
+      background:#17191f;
+      color:#f1f5f9;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 22px 48px rgba(0,0,0,.35);
+      padding:30px 28px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:14px;
+      align-items:end;
+    }
+    .submit-modal h3{
+      margin:0 0 8px;
+      font-size:clamp(22px,2.1vw,34px);
+      line-height:1.15;
+      font-weight:800;
+      letter-spacing:-.02em;
+    }
+    .submit-modal p{
+      margin:0;
+      color:#e5e7eb;
+      font-size:16px;
+      line-height:1.45;
+      white-space:pre-line;
+    }
+    .submit-modal button{
+      border:none;
+      width:120px;
+      height:56px;
+      border-radius:999px;
+      background:#b5d3ff;
+      color:#0d2f73;
+      font-weight:800;
+      cursor:pointer;
+      border:3px solid #8cb9ff;
+    }
+
+    .hidden{display:none !important}
+
+    @media (max-width: 1280px){
+      .layout{grid-template-columns:minmax(0,1fr) 360px}
+      .room-cards{grid-template-columns:repeat(5, minmax(0,1fr))}
+      .brand img{width:220px}
+      .topbar-call{display:none}
+    }
+
+    @media (max-width: 1100px){
+      .layout{grid-template-columns:1fr}
+      .summary-panel{
+        position:relative;
+        top:0;
+        height:auto;
+        border-left:none;
+        border-top:1px solid rgba(255,255,255,.08);
+      }
+    }
+
+    @media (max-width: 900px){
+      :root{
+        --topbar-h:78px;
+      }
+
+      .topbar{
+        padding:8px 12px;
+        gap:10px;
+      }
+
+      .brand img{
+        width:170px;
+      }
+
+      .topbar-right{
+        gap:8px;
+        flex-direction:column;
+        align-items:flex-end;
+      }
+
+      .topbar-phone{
+        font-size:15px;
+      }
+
+      .lang{
+        font-size:13px;
+      }
+
+      .shell{
+        padding:12px;
+        border-radius:18px;
+      }
+
+      .steps-bar{
+        margin:0 0 12px;
+        padding:8px;
+        border-radius:14px;
+      }
+
+      .step-chip{
+        min-height:40px;
+        padding:0 12px;
+        font-size:13px;
+      }
+
+      .step-chip .nr{
+        width:20px;
+        height:20px;
+        font-size:11px;
+      }
+
+      .hero-placeholder{
+        height:104px;
+        border-radius:14px;
+        font-size:13px;
+      }
+
+      h1{
+        font-size:clamp(24px,8vw,34px);
+        line-height:1.08;
+      }
+
+      .subtext{
+        font-size:14px;
+        margin-bottom:14px;
+      }
+
+      .grid-2,
+      .btn-grid,
+      .check-grid{
+        grid-template-columns:1fr;
+      }
+
+      .pill-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+
+      .room-cards{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+      }
+
+      .room-card{
+        min-height:126px;
+        padding:10px 8px 38px;
+        border-radius:12px;
+      }
+      .room-card .icon{
+        width:42px;
+        height:42px;
+        border-radius:10px;
+      }
+      .room-card .icon svg{
+        width:20px;
+        height:20px;
+      }
+      .room-card .name{
+        font-size:13px;
+      }
+      .room-card .select-bar{
+        height:34px;
+      }
+
+      .box-cards{
+        grid-template-columns:1fr;
+      }
+      .box-img{
+        height:108px;
+      }
+
+      .assembly-item{
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+
+      .summary-row{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .summary-panel{
+        display:none;
+      }
+
+      .footer-actions{
+        position:sticky;
+        bottom:max(10px, env(safe-area-inset-bottom));
+        z-index:70;
+        background:rgba(255,255,255,.95);
+        backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px);
+        border:1px solid #e8eeeb;
+        border-radius:16px;
+        padding:8px;
+        box-shadow:0 12px 28px rgba(16,24,40,.08);
+        margin-top:16px;
+      }
+
+      .btn{
+        min-height:48px;
+        font-size:14px;
+      }
+      .btn-secondary, .btn-primary{
+        flex:1 1 0;
+        min-width:0;
+      }
+
+      .eng-card{
+        padding:12px;
+      }
+
+      .eng-card-header{
+        margin-bottom:10px;
+      }
+
+      .eng-ghost-btn{
+        width:100%;
+      }
+
+      .sendbar{
+        align-items:stretch;
+      }
+      .sendbar button{
+        width:100%;
+        min-height:48px;
+      }
+
+      .submit-modal{
+        grid-template-columns:1fr;
+        padding:20px 16px;
+        border-radius:18px;
+      }
+      .submit-modal p{
+        font-size:14px;
+      }
+      .submit-modal button{
+        width:100%;
+        height:48px;
+      }
+    }
+
+    @media (max-width: 520px){
+      .main{
+        padding:10px 10px 18px;
+      }
+
+      .shell{
+        border-radius:16px;
+        padding:10px;
+      }
+
+      .topbar{
+        padding:8px 10px;
+      }
+
+      .brand img{
+        width:150px;
+      }
+
+      .topbar-right{
+        gap:6px;
+      }
+
+      .topbar-phone{
+        font-size:14px;
+      }
+
+      .lang{
+        gap:8px;
+        font-size:12px;
+      }
+
+      .steps-bar{
+        border-radius:12px;
+        padding:6px;
+      }
+
+      .step-chip{
+        min-height:38px;
+        padding:0 10px;
+        gap:6px;
+        font-size:12px;
+      }
+
+      .step-chip .nr{
+        width:18px;
+        height:18px;
+        font-size:10px;
+      }
+
+      .field{
+        margin-bottom:12px;
+      }
+
+      .field label{
+        font-size:13px;
+      }
+
+      input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+        padding:13px 12px;
+        border-radius:10px;
+      }
+
+      .choice-btn,.pill{
+        min-height:48px;
+        border-radius:10px;
+        font-size:14px;
+        padding:8px 10px;
+      }
+
+      .pill-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+      }
+
+      .room-cards{
+        gap:8px;
+      }
+
+      .room-card{
+        min-height:118px;
+        border-radius:10px;
+        padding:8px 6px 34px;
+      }
+
+      .room-card .icon{
+        width:38px;
+        height:38px;
+        border-radius:9px;
+      }
+
+      .room-card .icon svg{
+        width:18px;
+        height:18px;
+      }
+
+      .room-card .name{
+        font-size:12px;
+      }
+
+      .room-tab{
+        min-height:40px;
+        border-radius:10px;
+        padding:0 10px;
+        font-size:13px;
+      }
+
+      .check-item{
+        min-height:50px;
+        border-radius:10px;
+        padding:10px;
+      }
+
+      .check-item label{
+        font-size:13px;
+      }
+
+      .assembly-actions button{
+        min-height:38px;
+        font-size:12px;
+      }
+
+      .footer-actions{
+        padding:6px;
+        gap:8px;
+        border-radius:14px;
+      }
+
+      .btn{
+        min-height:46px;
+        border-radius:999px;
+        font-size:13px;
+        padding:0 14px;
+      }
+    }
+
+    @media print{
+      .topbar,.notice,.steps-bar,.summary-panel,.footer-actions,.sendbar,.submit-overlay,.confirm-overlay{display:none !important}
+      .layout{display:block}
+      .main{padding:0}
+      .shell{border:none;box-shadow:none;padding:0;max-width:none}
+      .step{display:none !important}
+      #step-10{display:block !important}
+    }
+
+    /* =========================
+       ENGELMANN-LIKE COMPACT DESIGN PATCH
+       ========================= */
+
+    :root{
+      --line:#e3e6e8;
+      --line-2:#d8dde1;
+      --text:#1b1f23;
+      --muted:#6f7781;
+
+      --radius:10px;
+      --radius-lg:12px;
+      --shadow:0 4px 14px rgba(16,24,40,.04);
+
+      --topbar-h:84px;
+    }
+
+    body{
+      background:#f3f4f6;
+      color:var(--text);
+    }
+
+    .topbar{
+      height:var(--topbar-h);
+      padding:8px 18px;
+      background:#fff;
+      border-bottom:1px solid #dfe4e8;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+
+    .brand img{
+      width:220px;
+    }
+
+    .topbar-right{
+      gap:18px;
+    }
+
+    .topbar-phone{
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:0;
+    }
+
+    .lang{
+      gap:8px;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .notice{
+      min-height:36px;
+      font-size:13px;
+      padding:6px 10px;
+    }
+
+    .layout{
+      grid-template-columns:minmax(0,1fr) 350px;
+      min-height:calc(100vh - var(--topbar-h));
+    }
+
+    .main{
+      padding:10px 10px 18px;
+    }
+
+    .shell{
+      max-width:980px;
+      margin:0 auto;
+      background:#fff;
+      border:1px solid #e3e7ea;
+      border-radius:0;
+      box-shadow:none;
+      padding:12px 14px 14px;
+      overflow:visible;
+    }
+
+    .steps-bar{
+      position:sticky;
+      top:var(--topbar-h);
+      z-index:30;
+      margin:0 0 10px;
+      background:#fff;
+      border:none;
+      border-bottom:1px solid #eceff2;
+      border-radius:0;
+      padding:0 0 8px;
+    }
+
+    .steps-scroll{
+      gap:0;
+      padding-bottom:0;
+    }
+
+    .step-chip{
+      border:none;
+      border-radius:0;
+      background:transparent;
+      min-height:34px;
+      padding:0 10px;
+      color:#8a9098;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .step-chip .nr{
+      display:none;
+    }
+
+    .step-chip:hover{
+      background:transparent;
+      border:none;
+      color:#606771;
+    }
+
+    .step-chip.done{
+      color:#606771;
+      background:transparent;
+      border:none;
+    }
+
+    .step-chip.active{
+      color:var(--text);
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      font-weight:700;
+    }
+
+    .step-progress-line{
+      margin-top:8px;
+      height:3px;
+      border:1px solid rgba(0,0,0,0.06);
+      background:#eef1f3;
+      border-radius:999px;
+    }
+
+    .step-progress-line > span{
+      background:#ffffff;
+    }
+
+    .hero-placeholder{
+      height:170px;
+      border:1px solid #e4e7ea;
+      border-radius:8px;
+      background:#f7f8fa;
+      margin-bottom:12px;
+      padding:0;
+      overflow:hidden;
+      color:transparent;
+      font-size:0;
+      line-height:0;
+    }
+
+    .hero-placeholder.hero-has-image{
+      display:block;
+      position:relative;
+    }
+
+   .hero-placeholder.hero-has-image img{
+width:100%;
+height:100%;
+display:block;
+object-fit:cover;
+object-position:center;
+background:#f7f8fa;
+}
+
+    h1{
+      margin:0 0 6px;
+      font-size:clamp(20px, 2.1vw, 28px);
+      line-height:1.15;
+      letter-spacing:-0.01em;
+      font-weight:500;
+    }
+
+    h1 strong{
+      font-weight:700;
+    }
+
+    .subtext{
+      margin:0 0 10px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.35;
+      max-width:720px;
+    }
+
+    .field{
+      margin-bottom:10px;
+    }
+
+    .field label{
+      margin-bottom:6px;
+      font-size:13px;
+      font-weight:600;
+      color:#2d333a;
+    }
+
+    .field small{
+      color:#8a9199;
+      font-weight:500;
+    }
+
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+      border:1px solid var(--line-2);
+      border-radius:8px;
+      padding:10px 12px;
+      min-height:40px;
+      background:#fff;
+      color:var(--text);
+      box-shadow:none;
+    }
+
+    textarea{
+      min-height:74px;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#b4cfbf;
+      box-shadow:0 0 0 3px rgba(21,128,61,.08);
+      background:#fff;
+    }
+
+    .grid-2{
+      gap:10px;
+    }
+
+    .btn-grid{
+      gap:10px;
+    }
+
+    .pill-grid{
+      gap:8px;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .choice-btn,.pill{
+      min-height:44px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      background:#fff;
+      color:#30363d;
+      font-weight:500;
+      font-size:13px;
+      padding:8px 10px;
+      box-shadow:none;
+    }
+
+    .choice-btn:hover,.pill:hover{
+      border-color:#cdd3d8;
+      background:#fafbfc;
+    }
+
+    .choice-btn.active,.pill.active{
+      border-color:#b84534;
+      background:rgba(184,69,52,.08);
+      color:#8d2f23;
+      box-shadow:none;
+    }
+
+    .inline-card,
+    .eng-card,
+    .assembly-room,
+    .summary-big{
+      border:1px solid #e4e7ea;
+      border-radius:10px;
+      box-shadow:none;
+      background:#fff;
+    }
+
+    .inline-card{
+      padding:10px;
+    }
+
+    .eng-card{
+      padding:10px;
+    }
+
+    .eng-card-header{
+      margin-bottom:8px;
+    }
+
+    .eng-card-header h3{
+      font-size:15px;
+      font-weight:700;
+      margin:0;
+    }
+
+    .eng-card-header p{
+      margin:3px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .eng-ghost-btn{
+      min-height:38px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      font-size:12px;
+      font-weight:600;
+      padding:0 10px;
+    }
+
+    .room-cards{
+      grid-template-columns:repeat(6, minmax(0,1fr));
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .room-card{
+      min-height:106px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      padding:8px 6px 30px;
+      gap:6px;
+      background:#fff;
+    }
+
+    .room-card:hover{
+      transform:none;
+      border-color:#cfd5da;
+      background:#fafbfc;
+    }
+
+    .room-card.active{
+      box-shadow:none;
+      background:var(--brand);
+      border-color:var(--brand);
+    }
+
+    .room-card .icon{
+      width:34px;
+      height:34px;
+      border-radius:8px;
+    }
+
+    .room-card .icon svg{
+      width:17px;
+      height:17px;
+      stroke-width:1.8;
+    }
+
+    .room-card .name{
+      font-size:12px;
+      font-weight:600;
+      line-height:1.2;
+    }
+
+    .room-card .select-bar{
+      height:28px;
+      gap:8px;
+    }
+
+    .room-card .dot{
+      width:8px;
+      height:8px;
+    }
+
+    .room-card .count{
+      font-size:12px;
+    }
+
+    .room-tabs{
+      gap:6px;
+      margin-bottom:8px;
+    }
+
+    .room-tab{
+      min-height:36px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      padding:0 10px;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .room-tab .count{
+      min-width:18px;
+      height:18px;
+      font-size:10px;
+    }
+
+    .room-tab.active{
+      border-color:#b84534;
+      background:rgba(184,69,52,.08);
+      color:#8d2f23;
+    }
+
+    .check-grid{
+      gap:8px;
+    }
+
+    .check-item{
+      min-height:42px;
+      border-radius:8px;
+      border:1px solid #e4e7ea;
+      padding:8px 10px;
+      gap:8px;
+    }
+
+    .check-item input{
+      width:16px;
+      height:16px;
+      margin-top:1px;
+    }
+
+    .check-item label{
+      font-size:13px;
+      font-weight:500;
+      line-height:1.25;
+    }
+
+    .box-cards{
+      gap:10px;
+    }
+
+    .box-card{
+      border-radius:10px;
+      border:1px solid #e4e7ea;
+    }
+
+    .box-card.active{
+      box-shadow:none;
+      border-color:#b4cfbf;
+    }
+
+    .box-img{
+      height:96px;
+      border-bottom:1px solid #edf0f2;
+      background:#f7f8fa;
+    }
+
+    .box-body{
+      padding:10px;
+    }
+
+    .box-body h4{
+      font-size:14px;
+      margin:0 0 4px;
+      font-weight:700;
+    }
+
+    .box-body p{
+      font-size:12px;
+      min-height:auto;
+      margin:0 0 8px;
+      line-height:1.3;
+    }
+
+    .qty{
+      gap:6px;
+    }
+
+    .qty button{
+      width:32px;
+      height:32px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .qty input{
+      width:58px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      padding:6px 6px;
+      font-size:13px;
+    }
+
+    .assembly-room{
+      padding:10px;
+      margin-bottom:8px;
+    }
+
+    .assembly-room h4{
+      margin:0 0 8px;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .assembly-list{
+      gap:8px;
+    }
+
+    .assembly-item{
+      border:1px solid #e4e7ea;
+      border-radius:8px;
+      padding:8px 10px;
+      grid-template-columns:minmax(0,1fr) 210px;
+      gap:10px;
+    }
+
+    .assembly-item .title{
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .assembly-actions{
+      gap:6px;
+    }
+
+    .assembly-actions button{
+      min-height:34px;
+      border-radius:8px;
+      border:1px solid var(--line-2);
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .assembly-actions button.active{
+      border-color:#b84534;
+      background:rgba(184,69,52,.08);
+      color:#8d2f23;
+    }
+
+    .summary-big{
+      margin-top:6px;
+      border-radius:10px;
+    }
+
+    .summary-big-head{
+      padding:10px 12px;
+      font-size:14px;
+      font-weight:700;
+      background:#f7f8fa;
+      color:#2a3138;
+      border-bottom:1px solid #eceff2;
+    }
+
+    .summary-big-body{
+      padding:8px 12px;
+    }
+
+    .summary-row{
+      gap:10px;
+      padding:8px 0;
+      border-bottom:1px solid #eef1f3;
+    }
+
+    .summary-row .k{
+      font-size:11px;
+      font-weight:600;
+      color:#7a828b;
+      margin-bottom:3px;
+    }
+
+    .summary-row .v{
+      font-size:13px;
+      font-weight:500;
+      line-height:1.3;
+    }
+
+    .sendbar{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #d5e8dc;
+      box-shadow:none;
+    }
+
+    .sendbar > div > div{
+      font-size:14px;
+      margin-bottom:2px;
+    }
+
+    .sendbar small{
+      font-size:12px;
+      line-height:1.3;
+    }
+
+    .sendbar button{
+      min-height:40px;
+      border-radius:999px;
+      padding:0 14px;
+      font-size:13px;
+      font-weight:700;
+      box-shadow:none;
+    }
+
+    .footer-actions{
+      margin-top:10px;
+      padding-top:2px;
+    }
+
+    .btn{
+      min-height:42px;
+      border-radius:999px;
+      padding:0 16px;
+      font-size:13px;
+      font-weight:700;
+      box-shadow:none;
+    }
+
+    .btn-secondary{
+      border:1px solid #d2d8dd;
+    }
+
+    .btn-primary{
+      box-shadow:none;
+    }
+
+    .summary-panel{
+      background:linear-gradient(180deg,#166534,#14532d);
+      padding:14px 14px 12px;
+      top:var(--topbar-h);
+      height:calc(100vh - var(--topbar-h));
+      border-left:1px solid rgba(255,255,255,.08);
+    }
+
+    .progress-wrap{
+      margin-bottom:10px;
+    }
+
+    .progress{
+      height:7px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.32);
+    }
+
+    .progress > span{
+      background:#fff;
+    }
+
+    .side-title{
+      margin:6px 0 10px;
+      font-size:17px;
+      font-weight:700;
+      letter-spacing:0;
+    }
+
+    .side-section{
+      margin:9px 0;
+    }
+
+    .side-label{
+      font-size:12px;
+      font-weight:600;
+      color:rgba(255,255,255,.9);
+      margin-bottom:2px;
+    }
+
+    .side-text{
+      font-size:13px;
+      line-height:1.3;
+      font-weight:500;
+    }
+
+    .side-muted{
+      font-size:12px;
+    }
+
+    .side-grid{
+      gap:8px 10px;
+    }
+
+    .submit-modal{
+      width:min(840px,100%);
+      border-radius:14px;
+      padding:18px 18px;
+    }
+
+    .submit-modal h3{
+      font-size:22px;
+      margin:0 0 6px;
+    }
+
+    .submit-modal p{
+      font-size:14px;
+    }
+
+    .submit-modal button{
+      width:104px;
+      height:42px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      border-width:2px;
+    }
+
+    @media (max-width: 1280px){
+      .layout{
+        grid-template-columns:minmax(0,1fr) 320px;
+      }
+      .shell{
+        max-width:920px;
+      }
+      .room-cards{
+        grid-template-columns:repeat(5,minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 1100px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+      .summary-panel{
+        display:none;
+      }
+      .shell{
+        max-width:none;
+      }
+    }
+
+    @media (max-width: 900px){
+      :root{
+        --topbar-h:70px;
+      }
+
+      .topbar{
+        padding:6px 10px;
+      }
+
+      .brand img{
+        width:160px;
+      }
+
+      .topbar-right{
+        gap:6px;
+        flex-direction:column;
+        align-items:flex-end;
+      }
+
+      .topbar-phone{
+        font-size:13px;
+      }
+
+      .lang{
+        font-size:12px;
+      }
+
+      .main{
+        padding:8px 8px 14px;
+      }
+
+      .shell{
+        padding:10px;
+        border-radius:12px;
+      }
+
+      .steps-bar{
+        top:70px;
+        margin-bottom:8px;
+        padding-bottom:6px;
+      }
+
+      .step-chip{
+        min-height:30px;
+        padding:0 8px;
+        font-size:12px;
+      }
+
+      .hero-placeholder{
+        height:112px;
+        border-radius:8px;
+        margin-bottom:10px;
+      }
+
+      h1{
+        font-size:22px;
+        line-height:1.15;
+        margin-bottom:4px;
+      }
+
+      .subtext{
+        font-size:12px;
+        margin-bottom:8px;
+      }
+
+      .grid-2,
+      .btn-grid,
+      .check-grid{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .pill-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+      }
+
+      .room-cards{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+      }
+
+      .room-card{
+        min-height:98px;
+      }
+
+      .box-cards{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .box-img{
+        height:86px;
+      }
+
+      .assembly-item{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+
+      .summary-row{
+        grid-template-columns:1fr;
+      }
+
+      .footer-actions{
+        position:sticky;
+        bottom:max(8px, env(safe-area-inset-bottom));
+        z-index:70;
+        background:rgba(255,255,255,.96);
+        border:1px solid #e4e7ea;
+        border-radius:12px;
+        padding:6px;
+        box-shadow:0 6px 18px rgba(16,24,40,.06);
+      }
+
+      .btn{
+        min-height:40px;
+        font-size:13px;
+      }
+
+      .sendbar{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .sendbar button{
+        width:100%;
+      }
+    }
+
+    /* =========================
+       PATCH: qty obiecte + modal confirmare
+       ========================= */
+
+    .check-item{
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .check-item-left{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-width:0;
+      flex:1 1 auto;
+    }
+
+    .check-item-right{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+    }
+
+    .item-qty{
+      display:none;
+      align-items:center;
+      gap:6px;
+    }
+
+    .item-qty.show{
+      display:flex;
+    }
+
+    .item-qty button{
+      width:30px;
+      height:30px;
+      border:1px solid #d8dde2;
+      border-radius:8px;
+      background:#fff;
+      cursor:pointer;
+      font-weight:700;
+      font-size:16px;
+      line-height:1;
+      color:#2c333a;
+      min-height:auto;
+      padding:0;
+    }
+
+    .item-qty input{
+      width:52px;
+      height:30px;
+      border:1px solid #d8dde2;
+      border-radius:8px;
+      text-align:center;
+      padding:0 6px;
+      font-size:13px;
+      font-weight:700;
+      min-height:auto;
+    }
+
+    @media (max-width: 900px){
+      .check-item{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:8px;
+      }
+
+      .check-item-right{
+        width:100%;
+        justify-content:flex-end;
+      }
+
+      .item-qty button{
+        width:28px;
+        height:28px;
+      }
+
+      .item-qty input{
+        width:48px;
+        height:28px;
+      }
+    }
+
+    .confirm-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.5);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:130;
+      padding:16px;
+    }
+
+    .confirm-overlay.show{
+      display:flex;
+    }
+
+    .confirm-modal{
+      width:min(620px, 100%);
+      background:#fff;
+      color:#111827;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      box-shadow:0 20px 40px rgba(0,0,0,.18);
+      padding:16px;
+    }
+
+    .confirm-modal h3{
+      margin:0 0 8px;
+      font-size:18px;
+      line-height:1.2;
+      font-weight:700;
+    }
+
+    .confirm-modal p{
+      margin:0;
+      color:#4b5563;
+      font-size:14px;
+      line-height:1.4;
+      white-space:pre-line;
+    }
+
+    .confirm-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .confirm-btn{
+      border:none;
+      cursor:pointer;
+      min-height:40px;
+      padding:0 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .confirm-btn.secondary{
+      background:#fff;
+      color:#374151;
+      border:1px solid #d1d5db;
+    }
+
+    .confirm-btn.primary{
+      background:linear-gradient(180deg,#1a8b43,#157a3b);
+      color:#fff;
+      border:1px solid #157a3b;
+    }
+  
+/* STEP 10 FINAL LOOK */
+#step-10 .final-note{
+  border:1px solid var(--brand-border);
+  background:linear-gradient(180deg, var(--brand-soft), #fff);
+  border-radius:16px;
+  padding:14px 16px;
+  margin:12px 0;
+}
+#step-10 .final-note-title{
+  font-weight:900;
+  color:var(--brand-2);
+  letter-spacing:-.01em;
+  margin-bottom:6px;
+}
+#step-10 .final-note-text{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.45;
+  font-weight:600;
+}
+
+#step-10 .final-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 8px 18px rgba(16,24,40,.04);
+  position:relative;
+  overflow:hidden;
+}
+#step-10 .final-card:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:6px;
+  background:linear-gradient(180deg, rgba(21,128,61,.25), rgba(21,128,61,.08));
+}
+#step-10 .final-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-left:10px;
+  margin-bottom:12px;
+}
+#step-10 .final-card-title{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+#step-10 .final-card-sub{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+  margin-top:2px;
+}
+
+#step-10 .final-addr-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-left:10px;
+}
+#step-10 .final-addr{
+  border:1px solid #e5ebe8;
+  border-radius:14px;
+  background:#fbfdfc;
+  padding:12px;
+}
+#step-10 .final-addr-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+#step-10 .final-addr-label{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
+#step-10 .final-addr-value{
+  white-space:pre-line;
+  font-weight:700;
+  color:var(--text);
+}
+
+#step-10 .final-summary{
+  border-radius:16px;
+  box-shadow:0 8px 18px rgba(16,24,40,.04);
+}
+#step-10 .final-contact{
+  border-radius:16px;
+  border:1px solid var(--line);
+  box-shadow:0 8px 18px rgba(16,24,40,.04);
+}
+#step-10 .final-sendbar{
+  border-radius:16px;
+  border:1px solid var(--brand-border);
+  background:linear-gradient(180deg, var(--brand-soft), #fff);
+}
+
+/* NEXT STEPS BIG, with line */
+#step-10 .next-steps{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:20px 18px;
+  margin:14px 0 2px;
+  position:relative;
+  overflow:hidden;
+}
+#step-10 .next-steps:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(21,128,61,.06), rgba(21,128,61,0));
+  pointer-events:none;
+}
+#step-10 .next-steps-title{
+  position:relative;
+  font-size:34px;
+  line-height:1.05;
+  letter-spacing:-.02em;
+  font-weight:500;
+  margin:0 0 16px;
+}
+#step-10 .next-steps-title strong{ font-weight:900; }
+
+#step-10 .next-steps-list{
+  position:relative;
+  display:grid;
+  gap:20px;
+  padding-left:0;
+}
+#step-10 .next-steps-list:before{
+  content:"";
+  position:absolute;
+  left:27px;
+  top:56px;
+  bottom:56px;
+  width:2px;
+  background:rgba(21,128,61,.22);
+}
+#step-10 .next-step{
+  position:relative;
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:16px;
+  align-items:flex-start;
+}
+#step-10 .ns-badge{
+  width:54px;
+  height:54px;
+  border-radius:999px;
+  border:2px solid var(--brand);
+  color:var(--brand);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:16px;
+  background:#fff;
+}
+#step-10 .ns-head{
+  font-size:22px;
+  font-weight:900;
+  line-height:1.15;
+  margin:2px 0 8px;
+}
+#step-10 .ns-sub{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.55;
+  font-weight:600;
+}
+
+@media (max-width: 900px){
+  #step-10 .final-addr-grid{ grid-template-columns:1fr; }
+  #step-10 .next-steps{ padding:16px; }
+  #step-10 .next-steps-title{ font-size:26px; margin-bottom:12px; }
+  #step-10 .next-steps-list:before{ left:24px; top:52px; bottom:52px; }
+  #step-10 .next-step{ grid-template-columns:56px 1fr; gap:12px; }
+  #step-10 .ns-badge{ width:48px; height:48px; font-size:15px; }
+  #step-10 .ns-head{ font-size:18px; }
+  #step-10 .ns-sub{ font-size:14px; }
+}
+/* STEP 10: help block */
+#step-10 .final-help{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:18px 18px;
+  margin:14px 0 2px;
+  box-shadow:0 8px 18px rgba(16,24,40,.04);
+}
+#step-10 .final-help-title{
+  font-size:30px;
+  line-height:1.05;
+  letter-spacing:-.02em;
+  font-weight:500;
+  margin:0 0 10px;
+}
+#step-10 .final-help-title strong{ font-weight:800; }
+#step-10 .final-help-text{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.6;
+  font-weight:600;
+  max-width:880px;
+}
+#step-10 .final-help-phone{
+  margin-top:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--brand-border);
+  background:linear-gradient(180deg, var(--brand-soft), #fff);
+}
+#step-10 .final-help-phone a{
+  color:var(--brand-2);
+  font-weight:600;
+  font-size:18px;
+  text-decoration:none;
+  letter-spacing:-.01em;
+}
+
+/* Make next-steps typography less bold */
+#step-10 .ns-head{ font-weight:500; }
+#step-10 .ns-sub{ font-weight:300; }
+#step-10 .ns-badge{ font-weight:500; }
+#step-10 .next-steps-title{ font-weight:250; }
+#step-10 .next-steps-title strong{ font-weight:500; }
+
+@media (max-width: 900px){
+  #step-10 .final-help-title{ font-size:20px; }
+  #step-10 .final-help-phone a{ font-size:13px; }
+}
+/* RESULT MODAL (success/error) */
+.submit-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:120;
+  padding:16px;
+}
+.submit-overlay.show{display:flex}
+
+.result-modal{
+  width:min(760px,100%);
+  background:#fff;
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:18px;
+  box-shadow:0 26px 60px rgba(0,0,0,.28);
+  padding:18px;
+  display:grid;
+  grid-template-columns:84px 1fr;
+  gap:14px;
+  align-items:center;
+  transform:translateY(6px);
+  opacity:0;
+  animation:modalIn .18s ease forwards;
+}
+@keyframes modalIn{
+  to{ transform:translateY(0); opacity:1; }
+}
+
+.result-icon{
+  width:84px;
+  height:84px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(180deg, rgba(21,128,61,.10), rgba(21,128,61,.04));
+  border:1px solid rgba(21,128,61,.16);
+}
+
+.result-check{ width:56px; height:56px; }
+.result-check .c{
+  fill:none;
+  stroke:rgba(21,128,61,.35);
+  stroke-width:3;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation:circleDraw .45s ease forwards;
+}
+.result-check .p{
+  fill:none;
+  stroke:#15803d;
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation:checkDraw .35s ease .18s forwards;
+}
+@keyframes circleDraw{ to{ stroke-dashoffset:0; } }
+@keyframes checkDraw{ to{ stroke-dashoffset:0; } }
+
+.result-content{ min-width:0; }
+.result-title{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.01em;
+  color:#0f172a;
+  margin:0 0 6px;
+}
+.result-text{
+  color:#475569;
+  font-size:15px;
+  line-height:1.5;
+  font-weight:600;
+  margin:0;
+}
+.result-meta{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(15,23,42,.08);
+  background:#f8fafc;
+  color:#0f172a;
+  font-weight:700;
+  font-size:13px;
+  line-height:1.45;
+  white-space:pre-line;
+}
+
+.result-actions{
+  margin-top:12px;
+  display:flex;
+  justify-content:flex-end;
+}
+.result-btn{
+  border:none;
+  background:linear-gradient(180deg,#1a8b43,#157a3b);
+  color:#fff;
+  border-radius:999px;
+  min-height:44px;
+  padding:0 18px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+@media (max-width: 700px){
+  .result-modal{ grid-template-columns:1fr; }
+  .result-icon{ width:72px; height:72px; border-radius:16px; }
+  .result-actions{ justify-content:stretch; }
+  .result-btn{ width:100%; }
+}
+#resultMeta:empty{ display:none; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/img/logo1-umzug.png" alt="Logo Umzug"
+           onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block'">
+      <div id="logoFallback" style="display:none;font-weight:800;font-size:22px;color:var(--brand)">UMZUG</div>
+    </div>
+
+    <div class="topbar-right">
+      <a class="topbar-phone" href="tel:+4917660867975">+49 176 60867975</a>
+      <div class="lang">
+        <span class="active">DE</span>
+      </div>
+    </div>
+  </header>
+
+  <div id="topNotice" class="notice hidden"></div>
+
+  <div class="layout">
+    <main class="main">
+      <div class="shell">
+        <div class="steps-bar">
+          <div class="steps-scroll" id="stepsNav"></div>
+          <div class="step-progress-line"><span id="topStepProgress"></span></div>
+        </div>
+
+        <form id="wizardForm" novalidate>
+            <input id="hp" type="text" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+          <section class="step active" id="step-1">
+            <div class="hero-placeholder">Bild Platzhalter Seite 1<br>Beladestelle</div>
+            <h1>Wo möchten Sie <strong>ausziehen</strong>?</h1>
+            <p class="subtext">Bitte geben Sie die aktuelle Adresse ein, von der die Möbel abgeholt werden.</p>
+
+            <div class="field">
+              <label for="pickupStreet">Straße</label>
+              <input id="pickupStreet" type="text" placeholder="Straße" />
+              <div class="error-text">Bitte Straße eingeben.</div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="pickupNumber">Nr</label>
+                <input id="pickupNumber" type="text" placeholder="Nr" />
+                <div class="error-text">Bitte Hausnummer eingeben.</div>
+              </div>
+              <div class="field">
+                <label for="pickupZip">PLZ</label>
+                <input id="pickupZip" type="text" placeholder="PLZ" />
+                <div class="error-text">Bitte PLZ eingeben.</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="pickupCity">Stadt</label>
+                <input id="pickupCity" type="text" placeholder="Stadt" />
+                <div class="error-text">Bitte Stadt eingeben.</div>
+              </div>
+              <div class="field">
+                <label for="pickupCountry">Land</label>
+                <input id="pickupCountry" type="text" placeholder="Land" value="Deutschland" />
+              </div>
+            </div>
+          </section>
+
+          <section class="step" id="step-2">
+            <div class="hero-placeholder">Bild Platzhalter Seite 2<br>Details Beladestelle</div>
+            <h1>Details zur <strong>Auszugsadresse</strong></h1>
+
+            <div class="field">
+              <label>Wie wohnen Sie aktuell?</label>
+              <div class="btn-grid" id="pickupHousingType"></div>
+            </div>
+
+            <div class="field">
+              <label>In welchem Stock wohnen Sie?</label>
+              <div class="pill-grid" id="pickupFloorButtons"></div>
+            </div>
+
+            <div class="field">
+              <label>Gibt es einen Aufzug?</label>
+              <div class="btn-grid" id="pickupElevatorButtons"></div>
+            </div>
+
+            <div class="field">
+              <label for="pickupAreaM2">Wohnfläche <small>(optional)</small></label>
+              <input id="pickupAreaM2" type="text" inputmode="numeric" placeholder="Größe in m²" />
+            </div>
+
+            <div class="field">
+              <label>Vorderhaus oder Hinterhof?</label>
+              <div class="btn-grid" id="pickupParkingTypeButtons"></div>
+            </div>
+
+            <div class="field">
+              <label for="pickupNotes">Weitere Hinweise <small>(optional)</small></label>
+              <textarea id="pickupNotes" placeholder="z.B. enge Treppen, wenig Haltemöglichkeit"></textarea>
+            </div>
+          </section>
+
+          <section class="step" id="step-3">
+            <div class="hero-placeholder">Bild Platzhalter Seite 3<br>Entladestelle</div>
+            <h1>Wo möchten Sie <strong>einziehen</strong>?</h1>
+            <p class="subtext">Bitte geben Sie die neue Adresse ein, an die der Umzug geliefert wird.</p>
+
+            <div class="field">
+              <label for="dropoffStreet">Straße</label>
+              <input id="dropoffStreet" type="text" placeholder="Straße" />
+              <div class="error-text">Bitte Straße eingeben.</div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="dropoffNumber">Nr</label>
+                <input id="dropoffNumber" type="text" placeholder="Nr" />
+                <div class="error-text">Bitte Hausnummer eingeben.</div>
+              </div>
+              <div class="field">
+                <label for="dropoffZip">PLZ</label>
+                <input id="dropoffZip" type="text" placeholder="PLZ" />
+                <div class="error-text">Bitte PLZ eingeben.</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="dropoffCity">Stadt</label>
+                <input id="dropoffCity" type="text" placeholder="Stadt" />
+                <div class="error-text">Bitte Stadt eingeben.</div>
+              </div>
+              <div class="field">
+                <label for="dropoffCountry">Land</label>
+                <input id="dropoffCountry" type="text" placeholder="Land" value="Deutschland" />
+              </div>
+            </div>
+          </section>
+
+          <section class="step" id="step-4">
+            <div class="hero-placeholder">Bild Platzhalter Seite 4<br>Details Entladestelle</div>
+            <h1>Details zur <strong>Einzugsadresse</strong></h1>
+
+            <div class="field">
+              <label>Wie werden Sie wohnen?</label>
+              <div class="btn-grid" id="dropoffHousingType"></div>
+            </div>
+
+            <div class="field">
+              <label>In welchem Stock werden Sie wohnen?</label>
+              <div class="pill-grid" id="dropoffFloorButtons"></div>
+            </div>
+
+            <div class="field">
+              <label>Gibt es einen Aufzug?</label>
+              <div class="btn-grid" id="dropoffElevatorButtons"></div>
+            </div>
+
+            <div class="field">
+              <label for="dropoffAreaM2">Wohnfläche <small>(optional)</small></label>
+              <input id="dropoffAreaM2" type="text" inputmode="numeric" placeholder="Größe in m²" />
+            </div>
+
+            <div class="field">
+              <label>Vorderhaus oder Hinterhof?</label>
+              <div class="btn-grid" id="dropoffParkingTypeButtons"></div>
+            </div>
+
+            <div class="field">
+              <label for="dropoffNotes">Weitere Hinweise <small>(optional)</small></label>
+              <textarea id="dropoffNotes" placeholder="z.B. Baustelle, viele Stufen"></textarea>
+            </div>
+          </section>
+
+          <section class="step" id="step-5">
+            <div class="hero-placeholder">Bild Platzhalter Seite 5<br>Umzugsdatum</div>
+            <h1>Gewünschtes <strong>Umzugsdatum</strong></h1>
+
+            <div class="field">
+              <label>Wie möchten Sie den Termin angeben?</label>
+              <div class="btn-grid" id="moveDateTypeButtons"></div>
+            </div>
+
+            <div id="moveDateExactWrap">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="moveDate">Datum <small>(ZZ.MM)</small></label>
+                  <input id="moveDate" type="text" inputmode="numeric" placeholder="z.B. 24.03" maxlength="5" />
+                  <div class="error-text">Bitte Datum im Format ZZ.MM eingeben.</div>
+                </div>
+                <div class="field">
+                  <label for="moveDateAlt">Alternativ <small>(optional, ZZ.MM)</small></label>
+                  <input id="moveDateAlt" type="text" inputmode="numeric" placeholder="z.B. 26.03" maxlength="5" />
+                </div>
+              </div>
+            </div>
+
+            <div id="moveDateWindowWrap" class="hidden">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="moveDateFrom">Von <small>(ZZ.MM)</small></label>
+                  <input id="moveDateFrom" type="text" inputmode="numeric" placeholder="z.B. 20.03" maxlength="5" />
+                  <div class="error-text">Bitte Datum im Format ZZ.MM eingeben.</div>
+                </div>
+                <div class="field">
+                  <label for="moveDateTo">Bis <small>(ZZ.MM)</small></label>
+                  <input id="moveDateTo" type="text" inputmode="numeric" placeholder="z.B. 25.03" maxlength="5" />
+                  <div class="error-text">Bitte Datum im Format ZZ.MM eingeben.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="timeWindow">Bevorzugte Tageszeit <small>(optional)</small></label>
+              <select id="timeWindow">
+                <option value="">Bitte wählen</option>
+                <option value="Vormittag">Vormittag</option>
+                <option value="Mittag">Mittag</option>
+                <option value="Nachmittag">Nachmittag</option>
+                <option value="Ganztägig flexibel">Ganztägig flexibel</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="step" id="step-6">
+            <div class="hero-placeholder">Bild Platzhalter Seite 6<br>Räume</div>
+            <h1>Wählen Sie die <strong>Räume</strong> Ihrer Auszugsadresse</h1>
+            <p class="subtext">Bitte wählen Sie alle relevanten Räume. Danach wählen Sie pro Raum die Gegenstände aus.</p>
+
+            <div class="room-cards" id="roomCards"></div>
+
+            <div class="inline-card" style="margin-top:12px">
+              <div class="field" style="margin:0">
+                <label for="additionalRooms">Weitere Räume / Hinweise <small>(optional)</small></label>
+                <textarea id="additionalRooms" placeholder="z.B. Gartenhaus, Lagerraum, zusätzlicher Keller"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" id="step-7">
+            <div class="hero-placeholder">Bild Platzhalter Seite 7<br>Möbel</div>
+            <h1>Möbelauswahl <strong>pro Raum</strong></h1>
+            <p class="subtext">Wählen Sie oben den Raum und darunter die Gegenstände, die transportiert werden sollen.</p>
+
+            <div id="roomItemsEmpty" class="inline-card">
+              Bitte wählen Sie zuerst mindestens einen Raum aus.
+            </div>
+
+            <div id="roomItemsContent" class="hidden">
+              <div class="room-tabs" id="roomTabs"></div>
+
+              <div class="eng-card">
+                <div class="eng-card-header">
+                  <div>
+                    <h3 id="currentRoomTitle">Raum</h3>
+                    <p>Mehrfachauswahl möglich.</p>
+                  </div>
+                  <button class="eng-ghost-btn" type="button" id="toggleAllItemsBtn">Alle auswählen</button>
+                </div>
+                <div class="check-grid" id="roomItemsGrid"></div>
+              </div>
+
+              <div class="field" style="margin-top:12px">
+                <label for="roomItemsNotes">Zusätzliche Möbelhinweise <small>(optional)</small></label>
+                <textarea id="roomItemsNotes" placeholder="z.B. empfindlich, schwer, Glasfront"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" id="step-8">
+            <div class="hero-placeholder">Bild Platzhalter Seite 8<br>Kartons</div>
+            <h1>Kartons und <strong>Verpackungsmaterial</strong></h1>
+
+            <div class="field">
+              <label>Benötigen Sie Umzugskartons?</label>
+              <div class="btn-grid" id="needBoxesButtons"></div>
+            </div>
+
+            <div id="boxOptionsWrap" class="hidden">
+              <div class="box-cards" id="boxCards"></div>
+
+              <div class="field" style="margin-top:12px">
+                <label for="boxDeliveryDate">Wunschdatum Lieferung <small>(optional, ZZ.MM)</small></label>
+                <input id="boxDeliveryDate" type="text" inputmode="numeric" placeholder="z.B. 18.03" maxlength="5" />
+              </div>
+
+              <div class="field">
+                <label for="boxNotes">Hinweise <small>(optional)</small></label>
+                <textarea id="boxNotes" placeholder="z.B. nur Kartons, kein Packservice"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" id="step-9">
+            <div class="hero-placeholder">Bild Platzhalter Seite 9<br>Services</div>
+            <h1>Montage und Demontage <strong>pro Möbelstück</strong></h1>
+            <p class="subtext">Wählen Sie pro Gegenstand, welche Leistung benötigt wird.</p>
+
+            <div id="assemblyEmpty" class="inline-card">
+              Keine Möbel ausgewählt. Bitte zuerst Räume und Möbel auswählen.
+            </div>
+
+            <div id="assemblyContent" class="hidden"></div>
+
+            <div class="field">
+              <label for="assemblyNotes">Zusätzliche Hinweise <small>(optional)</small></label>
+              <textarea id="assemblyNotes" placeholder="z.B. Aufbau in anderem Zimmer"></textarea>
+            </div>
+          </section>
+
+          <section class="step" id="step-10">
+  <div class="hero-placeholder">Bild Platzhalter Seite 10<br>Anfrage</div>
+  <h1>Ihre <strong>Umzugsanfrage</strong></h1>
+  <p class="subtext">Bitte prüfen Sie Ihre Angaben und senden Sie danach die Anfrage ab.</p>
+
+  <div class="final-note">
+    <div class="final-note-title">Kurz-Check</div>
+    <div class="final-note-text">
+      Prüfen Sie Adresse, Datum und Leistungen. Danach senden Sie die Anfrage.
+      Sie erhalten anschließend ein unverbindliches Angebot per E-Mail.
+    </div>
+  </div>
+
+  <div class="final-card">
+    <div class="final-card-head">
+      <div>
+        <div class="final-card-title">Adressen</div>
+        <div class="final-card-sub">Falls etwas nicht stimmt, direkt bearbeiten.</div>
+      </div>
+    </div>
+
+    <div class="final-addr-grid">
+      <div class="final-addr">
+        <div class="final-addr-head">
+          <div class="final-addr-label">Von</div>
+          <button type="button" class="eng-ghost-btn" id="editPickupBtn">Bearbeiten</button>
+        </div>
+        <div id="reviewPickupAddr" class="final-addr-value">-</div>
+      </div>
+
+      <div class="final-addr">
+        <div class="final-addr-head">
+          <div class="final-addr-label">Nach</div>
+          <button type="button" class="eng-ghost-btn" id="editDropoffBtn">Bearbeiten</button>
+        </div>
+        <div id="reviewDropoffAddr" class="final-addr-value">-</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-big final-summary">
+    <div class="summary-big-head">Zusammenfassung</div>
+    <div class="summary-big-body" id="fullSummary"></div>
+  </div>
+
+  <div class="inline-card final-contact">
+    <div class="final-card-title" style="margin-bottom:10px">Kontaktdaten</div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label for="customerName">Ihr Name</label>
+        <input id="customerName" type="text" placeholder="Max Mustermann" />
+        <div class="error-text">Bitte Namen eingeben.</div>
+      </div>
+      <div class="field">
+        <label for="customerPhone">Telefon</label>
+        <input id="customerPhone" type="tel" placeholder="0176..." />
+        <div class="error-text">Bitte Telefonnummer eingeben.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label for="customerEmail">E-Mail</label>
+        <input id="customerEmail" type="email" placeholder="mail@example.com" />
+        <div class="error-text">Bitte E-Mail eingeben.</div>
+      </div>
+      <div class="field">
+        <label for="customerCompany">Firma <small>(optional)</small></label>
+        <input id="customerCompany" type="text" placeholder="Firmenname" />
+      </div>
+    </div>
+
+    <div class="field" style="margin:0">
+      <label for="customerMessage">Weitere Nachricht <small>(optional)</small></label>
+      <textarea id="customerMessage" placeholder="Weitere Informationen zur Anfrage"></textarea>
+    </div>
+  </div>
+
+  <div class="sendbar final-sendbar">
+    <div>
+      <div>Anfrage senden</div>
+      <small>Ihre Anfrage wird gespeichert und im Admin sichtbar.</small>
+    </div>
+    <button type="button" id="btnSubmitLead">Anfrage senden</button>
+  </div>
+
+  <div class="next-steps">
+    <div class="next-steps-title">Das passiert als <strong>nächstes</strong></div>
+
+    <div class="next-steps-list">
+      <div class="next-step">
+        <div class="ns-badge">01.</div>
+        <div class="ns-content">
+          <div class="ns-head">Unverbindliches Angebot erhalten</div>
+          <div class="ns-sub">Auf Basis Ihrer Angaben senden wir Ihnen ein unverbindliches Angebot via Mail zu.</div>
+        </div>
+      </div>
+
+      <div class="next-step">
+        <div class="ns-badge">02.</div>
+        <div class="ns-content">
+          <div class="ns-head">Auf Wunsch: Beratungstermin vereinbaren</div>
+          <div class="ns-sub">Telefonisch oder Vor-Ort. Wenn Sie es wünschen, klären wir Details gemeinsam.</div>
+        </div>
+      </div>
+
+      <div class="next-step">
+        <div class="ns-badge">03.</div>
+        <div class="ns-content">
+          <div class="ns-head">Entspannt umziehen</div>
+          <div class="ns-sub">Sobald Ihr Termin frei ist, bestätigen wir und planen den Umzug.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="final-help">
+  <div class="final-help-text">
+    Wir sind für Sie da und beantworten Ihre Fragen schnell und unkompliziert.
+    Kontaktieren Sie uns gerne telefonisch.
+  </div>
+  <div class="final-help-phone">
+    <a href="tel:+4917660867975">+49 176 60867975</a>
+  </div>
+</div>
+</section>
+
+          <div class="footer-actions">
+            <button type="button" class="btn btn-secondary" id="btnPrev">Zurück</button>
+            <button type="button" class="btn btn-primary" id="btnNext">Weiter</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <aside class="summary-panel">
+      <div class="progress-wrap">
+        <div class="progress"><span id="progressBar"></span></div>
+      </div>
+
+      <div class="side-title">Übersicht</div>
+
+      <div class="side-section">
+        <div class="side-label">Beladestelle</div>
+        <div class="side-text" id="sidePickupAddress">-</div>
+      </div>
+
+      <div class="side-grid">
+        <div><div class="side-label">Art</div><div class="side-text" id="sidePickupType">-</div></div>
+        <div><div class="side-label">Stockwerk</div><div class="side-text" id="sidePickupFloor">-</div></div>
+        <div><div class="side-label">Aufzug</div><div class="side-text" id="sidePickupElevator">-</div></div>
+        <div><div class="side-label">Wohnfläche</div><div class="side-text" id="sidePickupArea">-</div></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-label">Entladestelle</div>
+        <div class="side-text" id="sideDropoffAddress">-</div>
+      </div>
+
+      <div class="side-grid">
+        <div><div class="side-label">Art</div><div class="side-text" id="sideDropoffType">-</div></div>
+        <div><div class="side-label">Stockwerk</div><div class="side-text" id="sideDropoffFloor">-</div></div>
+        <div><div class="side-label">Aufzug</div><div class="side-text" id="sideDropoffElevator">-</div></div>
+        <div><div class="side-label">Wohnfläche</div><div class="side-text" id="sideDropoffArea">-</div></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-label">Umzugsdatum</div>
+        <div class="side-text" id="sideMoveDate">-</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-label">Räume / Möbel</div>
+        <div class="side-text" id="sideRooms">-</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-label">Kartons</div>
+        <div class="side-text" id="sideBoxes">-</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-label">Services</div>
+        <div class="side-text" id="sideServices">-</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-muted">Schritt <span id="sideStepNum">1</span> von <span id="sideStepTotal">10</span></div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="submit-overlay" id="submitOverlay">
+  <div class="result-modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-icon" id="resultIcon">
+      <svg class="result-check" viewBox="0 0 52 52" aria-hidden="true">
+        <circle class="c" cx="26" cy="26" r="24"></circle>
+        <path class="p" d="M16 27.5 L23 34.5 L37 19"></path>
+      </svg>
+    </div>
+
+    <div class="result-content">
+      <div class="result-title" id="resultTitle">Anfrage gesendet</div>
+      <div class="result-text" id="resultText">
+        Vielen Dank. Wir melden uns schnellstmöglich bei Ihnen.
+      </div>
+
+      <div class="result-meta" id="resultMeta"></div>
+
+      <div class="result-actions">
+        <button type="button" class="result-btn" id="submitOverlayOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-modal">
+      <h3 id="confirmTitle">Bestätigung</h3>
+      <p id="confirmText">Text</p>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-btn secondary" id="confirmBackBtn">Zurück</button>
+        <button type="button" class="confirm-btn primary" id="confirmNextBtn">Weiter</button>
+      </div>
+    </div>
+  </div>
+ <script>
+  const SUPABASE_URL = "https://uledkuegmaritmsjejlm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+  const LEADS_TABLE = "leads";
+
+  const supabaseClient =
+    window.supabase &&
+    SUPABASE_URL &&
+    SUPABASE_URL.startsWith("https://") &&
+    SUPABASE_ANON_KEY &&
+    SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY_HERE"
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+  const STEP_TITLES = [
+    "Beladestelle",
+    "Details Beladestelle",
+    "Entladestelle",
+    "Details Entladestelle",
+    "Umzugsdatum",
+    "Räume",
+    "Möbel",
+    "Kartons",
+    "Services",
+    "Anfrage"
+  ];
+
+  const HOUSING_TYPES = ["Wohnung", "Haus", "WG Zimmer", "Maisonette"];
+  const FLOOR_OPTIONS = ["EG", "1", "2", "3", "4", "5+"];
+  const YES_NO = ["Ja", "Nein"];
+  const PARKING_TYPES = ["Vorderhaus", "Hinterhof"];
+
+  const ROOM_DEFS = [
+    { key: "Wohnzimmer", iconKey: "living" },
+    { key: "Esszimmer", iconKey: "dining" },
+    { key: "Flur", iconKey: "hall" },
+    { key: "Schlafzimmer", iconKey: "bed" },
+    { key: "Badezimmer", iconKey: "bath" },
+    { key: "Küche", iconKey: "kitchen" },
+    { key: "Kinderzimmer", iconKey: "kids" },
+    { key: "Gästezimmer", iconKey: "guest" },
+    { key: "Büro", iconKey: "office" },
+    { key: "Terrasse", iconKey: "terrace" },
+    { key: "Balkon", iconKey: "balcony" },
+    { key: "Garten", iconKey: "garden" },
+    { key: "Kammer", iconKey: "storage" },
+    { key: "Garage", iconKey: "garage" },
+    { key: "WC", iconKey: "wc" },
+    { key: "Keller", iconKey: "basement" },
+    { key: "Waschkeller", iconKey: "laundry" },
+    { key: "Dachboden", iconKey: "attic" },
+    { key: "Hobby", iconKey: "hobby" },
+    { key: "Wintergarten", iconKey: "wintergarden" },
+    { key: "Allg. Raum", iconKey: "grid" }
+  ];
+
+  const SVG_WRAP = (inner) =>
+    `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"
+      fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+
+  const ROOM_ICON_SVGS = {
+    living: SVG_WRAP(`<path d="M6 12v6"></path><path d="M18 12v6"></path><path d="M5 12a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"></path><path d="M7 10V8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path><path d="M4 18h16"></path>`),
+    dining: SVG_WRAP(`<path d="M7 21v-7"></path><path d="M17 21v-7"></path><path d="M4 14h16"></path><path d="M8 3v7"></path><path d="M16 3v7"></path><path d="M10 7h4"></path>`),
+    hall: SVG_WRAP(`<path d="M7 21V4a1 1 0 0 1 .8-1L16 1.2A1 1 0 0 1 17 2v19"></path><path d="M7 21h10"></path><path d="M13 11h.01"></path>`),
+    bed: SVG_WRAP(`<path d="M4 12h16"></path><path d="M4 12v7"></path><path d="M20 12v7"></path><path d="M6 12V9a2 2 0 0 1 2-2h3"></path><path d="M11 7h7a2 2 0 0 1 2 2v3"></path>`),
+    bath: SVG_WRAP(`<path d="M5 13h14"></path><path d="M7 13v2a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4v-2"></path><path d="M8 13V8a2 2 0 0 1 2-2h2"></path><path d="M14 6a2 2 0 1 1 4 0"></path>`),
+    kitchen: SVG_WRAP(`<path d="M7 4h10v16H7z"></path><path d="M10 8h4"></path><path d="M10 12h4"></path><path d="M9 6h.01"></path>`),
+    kids: SVG_WRAP(`<path d="M12 12a4 4 0 1 0-4-4"></path><path d="M10 9h.01"></path><path d="M14 9h.01"></path><path d="M9 14a7 7 0 0 0 6 0"></path><path d="M6 20a6 6 0 0 1 12 0"></path>`),
+    guest: SVG_WRAP(`<path d="M8 10a4 4 0 1 1 8 0"></path><path d="M6 21a6 6 0 0 1 12 0"></path><path d="M7 10h10"></path>`),
+    office: SVG_WRAP(`<path d="M7 7h10v8H7z"></path><path d="M9 15v6"></path><path d="M15 15v6"></path><path d="M4 11h16"></path>`),
+    terrace: SVG_WRAP(`<path d="M4 20h16"></path><path d="M6 20v-6h12v6"></path><path d="M8 14V8h8v6"></path><path d="M10 11h4"></path>`),
+    balcony: SVG_WRAP(`<path d="M5 20h14"></path><path d="M6 20v-8h12v8"></path><path d="M9 12V6h6v6"></path><path d="M9 16h6"></path>`),
+    garden: SVG_WRAP(`<path d="M7 20c7 0 12-4 12-12-8 0-12 5-12 12z"></path><path d="M7 20c2-3 5-5 9-7"></path><path d="M5 20h14"></path>`),
+    storage: SVG_WRAP(`<path d="M4 7l8-4 8 4-8 4-8-4z"></path><path d="M4 7v10l8 4 8-4V7"></path><path d="M12 11v10"></path>`),
+    garage: SVG_WRAP(`<path d="M4 11l8-6 8 6"></path><path d="M6 10v10h12V10"></path><path d="M9 20v-5h6v5"></path>`),
+    wc: SVG_WRAP(`<path d="M8 6h6a2 2 0 0 1 2 2v2"></path><path d="M8 10h10"></path><path d="M10 10v4a4 4 0 0 0 4 4"></path><path d="M12 18h4"></path>`),
+    basement: SVG_WRAP(`<path d="M6 4h12"></path><path d="M8 4v7l4 4 4-4V4"></path><path d="M12 15v5"></path>`),
+    laundry: SVG_WRAP(`<path d="M6 3h12v18H6z"></path><path d="M9 7h.01"></path><path d="M12 7h3"></path><circle cx="12" cy="13" r="4"></circle>`),
+    attic: SVG_WRAP(`<path d="M4 12l8-7 8 7"></path><path d="M7 10v10h10V10"></path><path d="M10 20v-4h4v4"></path>`),
+    hobby: SVG_WRAP(`<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.6-7 10-7 10z"></path>`),
+    wintergarden: SVG_WRAP(`<path d="M5 5h14v14H5z"></path><path d="M12 5v14"></path><path d="M5 12h14"></path>`),
+    grid: SVG_WRAP(`<path d="M5 5h6v6H5z"></path><path d="M13 5h6v6h-6z"></path><path d="M5 13h6v6H5z"></path><path d="M13 13h6v6h-6z"></path>`)
+  };
+
+  const ROOM_ITEMS_LIBRARY = {
+    Wohnzimmer: ["Sofa", "Sessel", "Couchtisch", "TV", "TV Möbel", "Sideboard", "Regal", "Esstisch", "Stühle", "Vitrine", "Lampe", "Teppich"],
+    Esszimmer: ["Esstisch", "Stühle", "Sideboard", "Vitrine", "Regal", "Lampe"],
+    Flur: ["Schuhschrank", "Garderobe", "Spiegel", "Kommode", "Bank"],
+    Schlafzimmer: ["Bett", "Matratze", "Kleiderschrank", "Kommode", "Nachttisch", "Spiegel", "Regal", "Schreibtisch", "Stuhl", "TV"],
+    Badezimmer: ["Waschmaschine", "Trockner", "Badschrank", "Spiegelschrank", "Regal", "Wäschekorb"],
+    Küche: ["Kühlschrank", "Gefrierschrank", "Waschmaschine", "Trockner", "Geschirrspüler", "Mikrowelle", "Backofen", "Küchentisch", "Stühle", "Küchenregal"],
+    Kinderzimmer: ["Kinderbett", "Kleiderschrank", "Kommode", "Regal", "Schreibtisch", "Stuhl", "Spielzeugkiste", "Wickeltisch"],
+    Gästezimmer: ["Bett", "Schrank", "Kommode", "Schreibtisch", "Stuhl", "Regal"],
+    Büro: ["Schreibtisch", "Bürostuhl", "Regal", "Aktenschrank", "PC", "Monitor", "Drucker", "Sideboard"],
+    Terrasse: ["Tisch", "Stühle", "Liege", "Pflanzenkübel", "Grill", "Sonnenschirm"],
+    Balkon: ["Balkontisch", "Stühle", "Pflanzenkübel", "Regal", "Kiste"],
+    Garten: ["Gartenmöbel", "Grill", "Pflanzenkübel", "Gerätehaus Inhalt", "Liege", "Tisch", "Stühle"],
+    Kammer: ["Regal", "Kisten", "Staubsauger", "Haushaltsgeräte", "Vorräte"],
+    Garage: ["Fahrrad", "Motorrad", "Regale", "Werkzeug", "Reifen", "Kisten", "Gartengeräte"],
+    WC: ["Spiegelschrank", "Regal", "Kleinmöbel"],
+    Keller: ["Regal", "Werkbank", "Werkzeugkiste", "Fahrrad", "Reifen", "Kisten", "Gefrierschrank"],
+    Waschkeller: ["Waschmaschine", "Trockner", "Regal", "Wäschekorb", "Putzmittel"],
+    Dachboden: ["Kisten", "Koffer", "Regal", "Kommode", "Saisonartikel"],
+    Hobby: ["Sportgeräte", "Werkbank", "Musikinstrumente", "Regal", "Kisten"],
+    Wintergarten: ["Tisch", "Stühle", "Regal", "Pflanzen", "Sessel"],
+    "Allg. Raum": ["Kisten", "Sondergut", "Sportgeräte", "Musikinstrumente", "Deko", "Sonstige Möbel"]
+  };
+
+  const BOX_PRODUCTS = [
+    { key: "small", title: "1 bis 2 Zimmer Paket", desc: "Kartons für kleinen Umzug", includes: "ca. 20 Kartons + Klebeband + Packpapier", img: "/img/box.png" },
+    { key: "medium", title: "2 bis 3 Zimmer Paket", desc: "Kartons für mittleren Umzug", includes: "ca. 40 Kartons + Klebeband + Packpapier", img: "/img/box.png" },
+    { key: "large", title: "3 bis 4 Zimmer Paket", desc: "Kartons für größeren Umzug", includes: "ca. 60 Kartons + Klebeband + Packpapier", img: "/img/box.png" }
+  ];
+
+  const ASSEMBLY_ALLOW_RX = /(schrank|kleiderschrank|aktenschrank|regal|bett|kinderbett|kommode|sideboard|vitrine|garderobe|schreibtisch|tisch|tv\s*möbel|werkbank|küchenregal|badschrank|spiegelschrank|wickeltisch)/i;
+  const ASSEMBLY_DENY_RX = /(fahrrad|motorrad|reifen|kiste|kisten|karton|kartons|waschmaschine|trockner|kühlschrank|gefrierschrank|geschirrspüler|mikrowelle|backofen|pc|monitor|drucker|tv\b|lampe|teppich|spiegel\b|stuhl|stühle|sofa|sessel|couchtisch|pflanzen|grill|sonnenschirm|liege|gerätehaus|vorräte|sondergut|deko|sportgeräte|musikinstrumente|werkzeug|werkzeugkiste)/i;
+
+  function isAssemblyEligible(item) {
+    const s = String(item || "");
+    if (ASSEMBLY_DENY_RX.test(s)) return false;
+    return ASSEMBLY_ALLOW_RX.test(s);
+  }
+
+ const state = {
+  currentStep: 1,
+
+  publicCompany: {
+    company_id: "",
+    company_name: "",
+    slug: ""
+  },
+
+  pickup: { street: "", number: "", zip: "", city: "", country: "Deutschland", housingType: "", floor: "", elevator: "", areaM2: "", parkingType: "", notes: "" },
+  dropoff: { street: "", number: "", zip: "", city: "", country: "Deutschland", housingType: "", floor: "", elevator: "", areaM2: "", parkingType: "", notes: "" },
+  moveDate: { mode: "exact", date: "", altDate: "", windowFrom: "", windowTo: "", timeWindow: "" },
+  rooms: [],
+  additionalRooms: "",
+  roomItems: {},
+  roomItemQty: {},
+  roomItemsNotes: "",
+  roomItemsActiveRoom: "",
+  boxes: { needed: "", items: { small: 0, medium: 0, large: 0 }, deliveryDate: "", notes: "" },
+  assembly: { perRoom: {}, notes: "" },
+  customer: { name: "", phone: "", email: "", company: "", message: "" },
+  navLock: false
+};
+
+  const q = (id) => document.getElementById(id);
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function escapeHtml(v) {
+    return String(v ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+function lockPublicForm(message) {
+  const shell = document.querySelector(".shell");
+  if (!shell) return;
+  shell.innerHTML = `
+    <div style="padding:40px 24px;text-align:center">
+      <h1 style="margin:0 0 10px">Demo-Link ungültig</h1>
+      <p style="margin:0;color:#667085">${message}</p>
+    </div>
+  `;
+}
+
+async function init() {
+  try {
+    await loadPublicCompany();
+
+  } catch (err) {
+    console.error(err);
+    lockPublicForm("Bitte verwenden Sie den vollständigen Demo-Link aus der E-Mail.");
+    return;
+  }
+
+  buildStepsNav();
+  bindInputs();
+  buildChoiceGroups();
+  buildRoomCards();
+  buildBoxCards();
+  applyHeroImages();
+  updateMoveDateModeUI();
+  updateBoxesVisibility();
+  initButtons();
+  initOverlay();
+  initEditButtonsOnStep10();
+  updateFooterButtons();
+  updateProgress();
+  renderSummarySidebar();
+
+  q("wizardForm").addEventListener("submit", (e) => e.preventDefault());
+
+  window.addEventListener("resize", () => {
+    clearTimeout(init._resizeT);
+    init._resizeT = setTimeout(centerActiveStepChip, 80);
+  });
+}
+  function sanitizeId(v) {
+    return String(v).toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  }
+const API_LEAD_URL = "/anfrage/api/lead36.php";
+const PUBLIC_COMPANY_API = "/anfrage/api/public-company7.php";
+function ensureRoomQtyMap(room) {
+    state.roomItemQty[room] = state.roomItemQty[room] || {};
+    return state.roomItemQty[room];
+  }
+
+  function getItemQty(room, item) {
+    const map = ensureRoomQtyMap(room);
+    const n = Number(map[item] || 1);
+    return n > 0 ? n : 1;
+  }
+
+  function setItemQty(room, item, qty) {
+    const map = ensureRoomQtyMap(room);
+    const n = Math.max(1, Number(qty || 1));
+    map[item] = n;
+  }
+
+  function removeItemQty(room, item) {
+    if (state.roomItemQty[room]) delete state.roomItemQty[room][item];
+  }
+
+  function getRoomsWithoutItems() {
+    return state.rooms.filter((room) => (state.roomItems[room] || []).length === 0);
+  }
+
+  function showNotice(msg, type = "success") {
+    const el = q("topNotice");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("hidden");
+
+    if (type === "error") {
+      el.style.background = "#fef2f2";
+      el.style.color = "#991b1b";
+      el.style.borderBottomColor = "#fecaca";
+    } else {
+      el.style.background = "var(--brand-soft-2)";
+      el.style.color = "var(--brand-2)";
+      el.style.borderBottomColor = "#d2eadb";
+    }
+
+    clearTimeout(showNotice._t);
+    showNotice._t = setTimeout(() => el.classList.add("hidden"), 3200);
+  }
+
+  function showConfirmModal({ title, text, okLabel = "Weiter", cancelLabel = "Zurück" }) {
+    return new Promise((resolve) => {
+      const overlay = q("confirmOverlay");
+      const titleEl = q("confirmTitle");
+      const textEl = q("confirmText");
+      const btnOk = q("confirmNextBtn");
+      const btnCancel = q("confirmBackBtn");
+
+      titleEl.textContent = title || "Bestätigung";
+      textEl.textContent = text || "";
+      btnOk.textContent = okLabel;
+      btnCancel.textContent = cancelLabel;
+
+      const cleanup = () => {
+        overlay.classList.remove("show");
+        btnOk.removeEventListener("click", onOk);
+        btnCancel.removeEventListener("click", onCancel);
+        overlay.removeEventListener("click", onOverlay);
+        document.removeEventListener("keydown", onKey);
+      };
+
+      const onOk = () => { cleanup(); resolve(true); };
+      const onCancel = () => { cleanup(); resolve(false); };
+      const onOverlay = (e) => { if (e.target === overlay) { cleanup(); resolve(false); } };
+      const onKey = (e) => {
+        if (e.key === "Escape") { cleanup(); resolve(false); }
+        if (e.key === "Enter") { cleanup(); resolve(true); }
+      };
+
+      btnOk.addEventListener("click", onOk);
+      btnCancel.addEventListener("click", onCancel);
+      overlay.addEventListener("click", onOverlay);
+      document.addEventListener("keydown", onKey);
+      overlay.classList.add("show");
+    });
+  }
+
+  function clearAllErrors() {
+    qsa(".field.has-error").forEach((f) => f.classList.remove("has-error"));
+  }
+
+  function clearFieldError(input) {
+    const field = input?.closest(".field");
+    if (field) field.classList.remove("has-error");
+  }
+
+  function markFieldError(input, msg) {
+    const field = input?.closest(".field");
+    if (!field) return;
+    field.classList.add("has-error");
+    if (msg) {
+      const err = qs(".error-text", field);
+      if (err) err.textContent = msg;
+    }
+  }
+
+  function markGroupError(containerId, msg) {
+    const wrap = q(containerId);
+    const field = wrap?.closest(".field");
+    if (!field) return;
+
+    field.classList.add("has-error");
+
+    let err = qs(".error-text", field);
+    if (!err) {
+      err = document.createElement("div");
+      err.className = "error-text";
+      field.appendChild(err);
+    }
+    err.textContent = msg || "Bitte auswählen.";
+  }
+
+  function clearGroupError(containerId) {
+    const wrap = q(containerId);
+    const field = wrap?.closest(".field");
+    if (field) field.classList.remove("has-error");
+  }
+
+  function buildStepsNav() {
+    const nav = q("stepsNav");
+    nav.innerHTML = STEP_TITLES.map((t, i) => {
+      const n = i + 1;
+      return `
+        <button type="button" class="step-chip ${n === state.currentStep ? "active" : ""}" data-step="${n}">
+          <span class="nr">${n}</span>
+          <span>${escapeHtml(t)}</span>
+        </button>
+      `;
+    }).join("");
+
+    qsa(".step-chip", nav).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const n = Number(btn.dataset.step);
+        if (n < state.currentStep) goToStep(n, false);
+      });
+    });
+
+    updateStepStatesInNav();
+    centerActiveStepChip();
+  }
+
+  function updateStepStatesInNav() {
+    qsa(".step-chip", q("stepsNav")).forEach((chip, i) => {
+      const n = i + 1;
+      chip.classList.toggle("active", n === state.currentStep);
+      chip.classList.toggle("done", n < state.currentStep);
+    });
+  }
+
+  function centerActiveStepChip() {
+    const nav = q("stepsNav");
+    const chip = qs(".step-chip.active", nav);
+    if (!nav || !chip) return;
+    const left = chip.offsetLeft - nav.clientWidth / 2 + chip.clientWidth / 2;
+    nav.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+  }
+
+  function updateFooterButtons() {
+    const prev = q("btnPrev");
+    const next = q("btnNext");
+    prev.disabled = state.currentStep === 1;
+
+    if (state.currentStep === 10) next.classList.add("hidden");
+    else next.classList.remove("hidden");
+  }
+
+  function updateProgress() {
+    const pct = (state.currentStep / 10) * 100;
+    q("progressBar").style.width = `${pct}%`;
+    q("topStepProgress").style.width = `${pct}%`;
+    q("sideStepNum").textContent = String(state.currentStep);
+    q("sideStepTotal").textContent = "10";
+  }
+
+  function goToStep(step, validate = true) {
+    if (validate && !validateCurrentStep()) return;
+
+    state.currentStep = Math.max(1, Math.min(10, step));
+
+    qsa(".step").forEach((el) => el.classList.remove("active"));
+    q(`step-${state.currentStep}`).classList.add("active");
+
+    updateStepStatesInNav();
+    updateFooterButtons();
+    updateProgress();
+    renderSummarySidebar();
+
+    if (state.currentStep === 7) renderRoomItemsStep();
+    if (state.currentStep === 9) renderAssemblyStep();
+    if (state.currentStep === 10) renderFinalSummary();
+
+    centerActiveStepChip();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function normalizeShortDateInput(v) {
+    let s = String(v || "").replace(/[^\d.]/g, "");
+    s = s.replace(/\.+/g, ".");
+    if (s.includes(".")) {
+      const parts = s.split(".");
+      const d = (parts[0] || "").slice(0, 2);
+      const m = (parts[1] || "").slice(0, 2);
+      return m.length ? `${d}.${m}` : d;
+    }
+    const digits = s.replace(/\D/g, "").slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+  }
+
+  function parseShortDate(value) {
+    if (!value) return null;
+    const m = String(value).trim().match(/^(\d{1,2})\.(\d{1,2})$/);
+    if (!m) return null;
+    const day = Number(m[1]);
+    const month = Number(m[2]);
+    if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+    return { day, month };
+  }
+
+  function formatShortDate(value) {
+    const p = parseShortDate(value);
+    if (!p) return "";
+    return `${String(p.day).padStart(2, "0")}.${String(p.month).padStart(2, "0")}`;
+  }
+
+  function shortDateSortKey(value) {
+    const p = parseShortDate(value);
+    if (!p) return null;
+    return p.month * 100 + p.day;
+  }
+
+  function toIsoDateFromShort(value) {
+    const p = parseShortDate(value);
+    if (!p) return null;
+
+    const now = new Date();
+    let year = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const currentDay = now.getDate();
+
+    if (p.month < currentMonth || (p.month === currentMonth && p.day < currentDay)) year += 1;
+
+    const mm = String(p.month).padStart(2, "0");
+    const dd = String(p.day).padStart(2, "0");
+    return `${year}-${mm}-${dd}`;
+  }
+
+  function toIsoDateFromShortWithFixedYear(value, year) {
+    const p = parseShortDate(value);
+    if (!p) return null;
+    const mm = String(p.month).padStart(2, "0");
+    const dd = String(p.day).padStart(2, "0");
+    return `${year}-${mm}-${dd}`;
+  }
+
+  function bindInputs() {
+    const map = [
+      ["pickupStreet", ["pickup", "street"]],
+      ["pickupNumber", ["pickup", "number"]],
+      ["pickupZip", ["pickup", "zip"]],
+      ["pickupCity", ["pickup", "city"]],
+      ["pickupCountry", ["pickup", "country"]],
+      ["pickupAreaM2", ["pickup", "areaM2"]],
+      ["pickupNotes", ["pickup", "notes"]],
+
+      ["dropoffStreet", ["dropoff", "street"]],
+      ["dropoffNumber", ["dropoff", "number"]],
+      ["dropoffZip", ["dropoff", "zip"]],
+      ["dropoffCity", ["dropoff", "city"]],
+      ["dropoffCountry", ["dropoff", "country"]],
+      ["dropoffAreaM2", ["dropoff", "areaM2"]],
+      ["dropoffNotes", ["dropoff", "notes"]],
+
+      ["moveDate", ["moveDate", "date"]],
+      ["moveDateAlt", ["moveDate", "altDate"]],
+      ["moveDateFrom", ["moveDate", "windowFrom"]],
+      ["moveDateTo", ["moveDate", "windowTo"]],
+      ["timeWindow", ["moveDate", "timeWindow"]],
+
+      ["additionalRooms", ["additionalRooms"]],
+      ["roomItemsNotes", ["roomItemsNotes"]],
+
+      ["boxDeliveryDate", ["boxes", "deliveryDate"]],
+      ["boxNotes", ["boxes", "notes"]],
+
+      ["assemblyNotes", ["assembly", "notes"]],
+
+      ["customerName", ["customer", "name"]],
+      ["customerPhone", ["customer", "phone"]],
+      ["customerEmail", ["customer", "email"]],
+      ["customerCompany", ["customer", "company"]],
+      ["customerMessage", ["customer", "message"]]
+    ];
+
+    const shortDateIds = new Set(["moveDate", "moveDateAlt", "moveDateFrom", "moveDateTo", "boxDeliveryDate"]);
+
+    map.forEach(([id, path]) => {
+      const el = q(id);
+      if (!el) return;
+
+      el.value = path.length === 1 ? state[path[0]] || "" : state[path[0]][path[1]] || "";
+
+      const handler = () => {
+        if (shortDateIds.has(id)) el.value = normalizeShortDateInput(el.value);
+
+        if (path.length === 1) state[path[0]] = el.value;
+        else state[path[0]][path[1]] = el.value;
+
+        clearFieldError(el);
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      };
+
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+      el.addEventListener("blur", handler);
+    });
+  }
+
+  function createChoiceButtons(containerId, options, getValue, setValue, type = "choice") {
+    const wrap = q(containerId);
+    if (!wrap) return;
+
+    wrap.innerHTML = "";
+    options.forEach((opt) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = type === "pill" ? "pill" : "choice-btn";
+      b.textContent = opt;
+      if (getValue() === opt) b.classList.add("active");
+
+      b.addEventListener("click", () => {
+        clearGroupError(containerId);
+        setValue(opt);
+        qsa("button", wrap).forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      });
+
+      wrap.appendChild(b);
+    });
+  }
+
+  function updateMoveDateModeUI() {
+    q("moveDateExactWrap").classList.toggle("hidden", state.moveDate.mode !== "exact");
+    q("moveDateWindowWrap").classList.toggle("hidden", state.moveDate.mode !== "window");
+  }
+
+  function updateBoxesVisibility() {
+    const show = state.boxes.needed === "Ja";
+    q("boxOptionsWrap").classList.toggle("hidden", !show);
+
+    if (!show) {
+      state.boxes.items.small = 0;
+      state.boxes.items.medium = 0;
+      state.boxes.items.large = 0;
+      renderSummarySidebar();
+      if (state.currentStep === 10) renderFinalSummary();
+      buildBoxCards();
+    }
+  }
+
+  function buildChoiceGroups() {
+    createChoiceButtons("pickupHousingType", HOUSING_TYPES, () => state.pickup.housingType, (v) => (state.pickup.housingType = v));
+    createChoiceButtons("dropoffHousingType", HOUSING_TYPES, () => state.dropoff.housingType, (v) => (state.dropoff.housingType = v));
+
+    createChoiceButtons("pickupElevatorButtons", YES_NO, () => state.pickup.elevator, (v) => (state.pickup.elevator = v));
+    createChoiceButtons("dropoffElevatorButtons", YES_NO, () => state.dropoff.elevator, (v) => (state.dropoff.elevator = v));
+
+    createChoiceButtons("pickupParkingTypeButtons", PARKING_TYPES, () => state.pickup.parkingType, (v) => (state.pickup.parkingType = v));
+    createChoiceButtons("dropoffParkingTypeButtons", PARKING_TYPES, () => state.dropoff.parkingType, (v) => (state.dropoff.parkingType = v));
+
+    createChoiceButtons(
+      "moveDateTypeButtons",
+      ["Genaues Datum", "Zeitraum"],
+      () => (state.moveDate.mode === "exact" ? "Genaues Datum" : "Zeitraum"),
+      (v) => {
+        state.moveDate.mode = v === "Zeitraum" ? "window" : "exact";
+        updateMoveDateModeUI();
+      }
+    );
+
+    createChoiceButtons(
+      "needBoxesButtons",
+      ["Ja", "Nein"],
+      () => state.boxes.needed,
+      (v) => {
+        state.boxes.needed = v;
+        updateBoxesVisibility();
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      }
+    );
+
+    createChoiceButtons("pickupFloorButtons", FLOOR_OPTIONS, () => state.pickup.floor, (v) => (state.pickup.floor = v), "pill");
+    createChoiceButtons("dropoffFloorButtons", FLOOR_OPTIONS, () => state.dropoff.floor, (v) => (state.dropoff.floor = v), "pill");
+  }
+
+  function buildRoomCards() {
+    const wrap = q("roomCards");
+    wrap.innerHTML = ROOM_DEFS.map((room) => {
+      const active = state.rooms.includes(room.key);
+      const icon = ROOM_ICON_SVGS[room.iconKey] || ROOM_ICON_SVGS.grid;
+
+      let qtyTotal = 0;
+      (state.roomItems[room.key] || []).forEach((item) => { qtyTotal += getItemQty(room.key, item); });
+
+      return `
+        <button type="button" class="room-card ${active ? "active" : ""}" data-room="${escapeHtml(room.key)}" aria-pressed="${active ? "true" : "false"}">
+          <div class="icon">${icon}</div>
+          <div class="name">${escapeHtml(room.key)}</div>
+          <div class="select-bar">
+            <span class="dot"></span>
+            <span class="count">${active ? qtyTotal : 0}</span>
+            <span class="dot"></span>
+          </div>
+        </button>
+      `;
+    }).join("");
+
+    qsa(".room-card", wrap).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const room = btn.dataset.room;
+        const idx = state.rooms.indexOf(room);
+
+        if (idx >= 0) {
+          state.rooms.splice(idx, 1);
+          delete state.roomItems[room];
+          delete state.roomItemQty[room];
+          delete state.assembly.perRoom[room];
+          if (state.roomItemsActiveRoom === room) state.roomItemsActiveRoom = state.rooms[0] || "";
+        } else {
+          state.rooms.push(room);
+          state.roomItems[room] = state.roomItems[room] || [];
+          state.roomItemQty[room] = state.roomItemQty[room] || {};
+          state.assembly.perRoom[room] = state.assembly.perRoom[room] || {};
+          if (!state.roomItemsActiveRoom) state.roomItemsActiveRoom = room;
+        }
+
+        buildRoomCards();
+        renderSummarySidebar();
+      });
+    });
+  }
+
+  function renderRoomItemsStep() {
+    const empty = q("roomItemsEmpty");
+    const content = q("roomItemsContent");
+
+    if (state.rooms.length === 0) {
+      empty.classList.remove("hidden");
+      content.classList.add("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+    content.classList.remove("hidden");
+
+    if (!state.roomItemsActiveRoom || !state.rooms.includes(state.roomItemsActiveRoom)) {
+      state.roomItemsActiveRoom = state.rooms[0];
+    }
+
+    const tabs = q("roomTabs");
+    tabs.innerHTML = state.rooms.map((room) => {
+      const items = state.roomItems[room] || [];
+      let qtyTotal = 0;
+      items.forEach((item) => { qtyTotal += getItemQty(room, item); });
+
+      return `
+        <button type="button" class="room-tab ${room === state.roomItemsActiveRoom ? "active" : ""}" data-room="${escapeHtml(room)}">
+          <span>${escapeHtml(room)}</span>
+          <span class="count">${qtyTotal || 0}</span>
+        </button>
+      `;
+    }).join("");
+
+    qsa(".room-tab", tabs).forEach((tab) => {
+      tab.addEventListener("click", () => {
+        state.roomItemsActiveRoom = tab.dataset.room;
+        renderRoomItemsStep();
+      });
+    });
+
+    const room = state.roomItemsActiveRoom;
+    q("currentRoomTitle").textContent = room;
+
+    const items = ROOM_ITEMS_LIBRARY[room] || ["Sonstiges Möbelstück"];
+    const selected = state.roomItems[room] || [];
+    const grid = q("roomItemsGrid");
+    ensureRoomQtyMap(room);
+
+    grid.innerHTML = items.map((item, i) => {
+      const id = `ri_${sanitizeId(room)}_${i}`;
+      const checked = selected.includes(item);
+      const qty = getItemQty(room, item);
+
+      return `
+        <div class="check-item" data-item="${escapeHtml(item)}">
+          <div class="check-item-left">
+            <input id="${id}" type="checkbox" ${checked ? "checked" : ""}>
+            <label for="${id}">${escapeHtml(item)}</label>
+          </div>
+          <div class="check-item-right">
+            <div class="item-qty ${checked ? "show" : ""}">
+              <button type="button" data-act="minus">-</button>
+              <input type="number" min="1" step="1" value="${qty}">
+              <button type="button" data-act="plus">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    qsa(".check-item", grid).forEach((row, idx) => {
+      const item = items[idx];
+      const cb = qs('input[type="checkbox"]', row);
+      const qtyWrap = qs(".item-qty", row);
+      const qtyInput = qs('.item-qty input', row);
+      const btnMinus = qs('.item-qty [data-act="minus"]', row);
+      const btnPlus = qs('.item-qty [data-act="plus"]', row);
+
+      const syncQtyUI = () => {
+        const arr = state.roomItems[room] || [];
+        const isChecked = arr.includes(item);
+        qtyWrap.classList.toggle("show", isChecked);
+        if (isChecked) qtyInput.value = String(getItemQty(room, item));
+      };
+
+      cb.addEventListener("change", () => {
+        const arr = state.roomItems[room] || [];
+
+        if (cb.checked) {
+          if (!arr.includes(item)) arr.push(item);
+          setItemQty(room, item, getItemQty(room, item));
+        } else {
+          const i = arr.indexOf(item);
+          if (i >= 0) arr.splice(i, 1);
+          removeItemQty(room, item);
+          if (state.assembly.perRoom[room]) delete state.assembly.perRoom[room][item];
+        }
+
+        state.roomItems[room] = arr;
+        syncQtyUI();
+        renderRoomItemsStep();
+        buildRoomCards();
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      });
+
+      btnMinus.addEventListener("click", () => {
+        const n = Math.max(1, Number(qtyInput.value || 1) - 1);
+        qtyInput.value = String(n);
+        setItemQty(room, item, n);
+        renderRoomItemsStep();
+        buildRoomCards();
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      });
+
+      btnPlus.addEventListener("click", () => {
+        const n = Math.max(1, Number(qtyInput.value || 1) + 1);
+        qtyInput.value = String(n);
+        setItemQty(room, item, n);
+        renderRoomItemsStep();
+        buildRoomCards();
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      });
+
+      qtyInput.addEventListener("input", () => {
+        const n = Math.max(1, Number(qtyInput.value || 1));
+        qtyInput.value = String(n);
+        setItemQty(room, item, n);
+        buildRoomCards();
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      });
+
+      syncQtyUI();
+    });
+
+    const allSelected = items.length > 0 && items.every((item) => (state.roomItems[room] || []).includes(item));
+    const toggleBtn = q("toggleAllItemsBtn");
+    toggleBtn.textContent = allSelected ? "Alle abwählen" : "Alle auswählen";
+
+    toggleBtn.onclick = () => {
+      if (allSelected) {
+        state.roomItems[room] = [];
+        state.roomItemQty[room] = {};
+        state.assembly.perRoom[room] = {};
+      } else {
+        state.roomItems[room] = [...items];
+        state.roomItemQty[room] = state.roomItemQty[room] || {};
+        items.forEach((item) => { if (!state.roomItemQty[room][item]) state.roomItemQty[room][item] = 1; });
+        state.assembly.perRoom[room] = state.assembly.perRoom[room] || {};
+      }
+
+      renderRoomItemsStep();
+      buildRoomCards();
+      renderSummarySidebar();
+    };
+  }
+
+  function buildBoxCards() {
+    const wrap = q("boxCards");
+    wrap.innerHTML = BOX_PRODUCTS.map((prod) => {
+      const qty = Number(state.boxes.items[prod.key] || 0);
+
+      const imgHtml = prod.img
+        ? `<img src="${prod.img}" alt="${escapeHtml(prod.title)}" loading="lazy" onerror="this.style.display='none'">`
+        : `Bild Platzhalter<br>${escapeHtml(prod.title)}`;
+
+      return `
+        <div class="box-card ${qty > 0 ? "active" : ""}" data-key="${prod.key}">
+          <div class="box-img">${imgHtml}</div>
+          <div class="box-body">
+            <h4>${escapeHtml(prod.title)}</h4>
+            <p>${escapeHtml(prod.desc)}<br>${escapeHtml(prod.includes)}</p>
+            <div class="qty">
+              <button type="button" data-act="minus">-</button>
+              <input type="number" min="0" step="1" value="${qty}">
+              <button type="button" data-act="plus">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    qsa(".box-card", wrap).forEach((card) => {
+      const key = card.dataset.key;
+      const input = qs("input", card);
+
+      const sync = () => {
+        const n = Math.max(0, Number(input.value || 0));
+        input.value = String(n);
+        state.boxes.items[key] = n;
+        card.classList.toggle("active", n > 0);
+        renderSummarySidebar();
+        if (state.currentStep === 10) renderFinalSummary();
+      };
+
+      qs('[data-act="minus"]', card).addEventListener("click", () => {
+        input.value = String(Math.max(0, Number(input.value || 0) - 1));
+        sync();
+      });
+
+      qs('[data-act="plus"]', card).addEventListener("click", () => {
+        input.value = String(Math.max(0, Number(input.value || 0) + 1));
+        sync();
+      });
+
+      input.addEventListener("input", sync);
+    });
+  }
+
+  function renderAssemblyStep() {
+    const empty = q("assemblyEmpty");
+    const content = q("assemblyContent");
+
+    const roomsWithEligible = state.rooms.filter((room) => (state.roomItems[room] || []).some(isAssemblyEligible));
+
+    if (roomsWithEligible.length === 0) {
+      empty.classList.remove("hidden");
+      content.classList.add("hidden");
+      content.innerHTML = "";
+      return;
+    }
+
+    empty.classList.add("hidden");
+    content.classList.remove("hidden");
+
+    roomsWithEligible.forEach((room) => {
+      state.assembly.perRoom[room] = state.assembly.perRoom[room] || {};
+      const keep = new Set((state.roomItems[room] || []).filter(isAssemblyEligible));
+      Object.keys(state.assembly.perRoom[room] || {}).forEach((k) => { if (!keep.has(k)) delete state.assembly.perRoom[room][k]; });
+    });
+
+    content.innerHTML = roomsWithEligible.map((room) => {
+      state.assembly.perRoom[room] = state.assembly.perRoom[room] || {};
+      const items = (state.roomItems[room] || []).filter(isAssemblyEligible);
+
+      return `
+        <div class="assembly-room" data-room="${escapeHtml(room)}">
+          <h4>${escapeHtml(room)}</h4>
+          <div class="assembly-list">
+            ${items.map((item) => {
+              const current = state.assembly.perRoom[room][item] || "kein";
+              const qty = getItemQty(room, item);
+
+              return `
+                <div class="assembly-item" data-item="${escapeHtml(item)}">
+                  <div>
+                    <div class="title">${escapeHtml(item)}${qty > 1 ? ` (${qty}x)` : ""}</div>
+                  </div>
+                  <div class="assembly-actions">
+                    <button type="button" data-val="demontage" class="${current === "demontage" ? "active" : ""}">Demontage</button>
+                    <button type="button" data-val="montage" class="${current === "montage" ? "active" : ""}">Montage</button>
+                    <button type="button" data-val="beides" class="${current === "beides" ? "active" : ""}">Beides</button>
+                    <button type="button" data-val="kein" class="${current === "kein" ? "active" : ""}">Kein Service</button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    qsa(".assembly-room", content).forEach((roomEl) => {
+      const room = roomEl.dataset.room;
+
+      qsa(".assembly-item", roomEl).forEach((itemEl) => {
+        const item = itemEl.dataset.item;
+
+        qsa("button", itemEl).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.assembly.perRoom[room] = state.assembly.perRoom[room] || {};
+            state.assembly.perRoom[room][item] = btn.dataset.val;
+
+            qsa("button", itemEl).forEach((x) => x.classList.remove("active"));
+            btn.classList.add("active");
+
+            renderSummarySidebar();
+            if (state.currentStep === 10) renderFinalSummary();
+          });
+        });
+      });
+    });
+  }
+
+  function formatAddressSingleLine(addr) {
+    const left = [addr.street, addr.number].filter(Boolean).join(" ");
+    const right = [addr.zip, addr.city].filter(Boolean).join(" ");
+    return [left, right].filter(Boolean).join(", ") || "-";
+  }
+
+  function formatAddressMulti(addr) {
+    const l1 = [addr.street, addr.number].filter(Boolean).join(" ");
+    const l2 = [addr.zip, addr.city].filter(Boolean).join(" ");
+    const l3 = addr.country || "";
+    return [l1, l2, l3].filter(Boolean).join("\n") || "-";
+  }
+
+  function getMoveDateLabel() {
+    if (state.moveDate.mode === "window") {
+      const from = formatShortDate(state.moveDate.windowFrom);
+      const to = formatShortDate(state.moveDate.windowTo);
+      const range = [from, to].filter(Boolean).join(" bis ");
+      const t = state.moveDate.timeWindow ? ` (${state.moveDate.timeWindow})` : "";
+      return range ? `Zeitraum: ${range}${t}` : "-";
+    }
+
+    const d = formatShortDate(state.moveDate.date);
+    const alt = formatShortDate(state.moveDate.altDate);
+    const t = state.moveDate.timeWindow ? `, ${state.moveDate.timeWindow}` : "";
+
+    if (!d) return "-";
+    return alt ? `${d}${t}, alternativ ${alt}` : `${d}${t}`;
+  }
+
+  function getRoomsSidebarText() {
+    if (state.rooms.length === 0) return "-";
+
+    return state.rooms.map((room) => {
+      const items = state.roomItems[room] || [];
+      const countTypes = items.length;
+      let countQty = 0;
+      items.forEach((item) => { countQty += getItemQty(room, item); });
+
+      if (countTypes === 0) return escapeHtml(room);
+      return escapeHtml(`${room} (${countTypes} Obj., ${countQty}x)`);
+    }).join("<br>");
+  }
+
+  function getBoxesSidebarText() {
+    if (state.boxes.needed === "Nein") return "Keine Kartons";
+    if (state.boxes.needed !== "Ja") return "-";
+
+    const lines = BOX_PRODUCTS.map((p) => {
+      const qty = Number(state.boxes.items[p.key] || 0);
+      return qty > 0 ? `${qty}x ${p.title}` : null;
+    }).filter(Boolean);
+
+    return lines.length ? lines.join(", ") : "Kartons gewünscht";
+  }
+
+  function getServicesSidebarText() {
+    let total = 0;
+    Object.keys(state.assembly.perRoom || {}).forEach((room) => {
+      const items = state.assembly.perRoom[room] || {};
+      Object.values(items).forEach((v) => { if (v && v !== "kein") total += 1; });
+    });
+    return total ? `${total}x Service ausgewählt` : "-";
+  }
+
+  function renderSummarySidebar() {
+    q("sidePickupAddress").textContent = formatAddressSingleLine(state.pickup);
+    q("sidePickupType").textContent = state.pickup.housingType || "-";
+    q("sidePickupFloor").textContent = state.pickup.floor || "-";
+    q("sidePickupElevator").textContent = state.pickup.elevator || "-";
+    q("sidePickupArea").textContent = state.pickup.areaM2 ? `${state.pickup.areaM2} m²` : "-";
+
+    q("sideDropoffAddress").textContent = formatAddressSingleLine(state.dropoff);
+    q("sideDropoffType").textContent = state.dropoff.housingType || "-";
+    q("sideDropoffFloor").textContent = state.dropoff.floor || "-";
+    q("sideDropoffElevator").textContent = state.dropoff.elevator || "-";
+    q("sideDropoffArea").textContent = state.dropoff.areaM2 ? `${state.dropoff.areaM2} m²` : "-";
+
+    q("sideMoveDate").textContent = getMoveDateLabel();
+    q("sideRooms").innerHTML = getRoomsSidebarText();
+    q("sideBoxes").textContent = getBoxesSidebarText();
+    q("sideServices").textContent = getServicesSidebarText();
+  }
+
+  function detailsBlock(addr) {
+    return [
+      `Art: ${addr.housingType || "-"}`,
+      `Stockwerk: ${addr.floor || "-"}`,
+      `Aufzug: ${addr.elevator || "-"}`,
+      `Wohnfläche: ${addr.areaM2 ? `${addr.areaM2} m²` : "-"}`,
+      `Lage: ${addr.parkingType || "-"}`,
+      addr.notes ? `Hinweis: ${addr.notes}` : null
+    ].filter(Boolean).join("\n");
+  }
+
+  function getAssemblyLines() {
+    const lines = [];
+    Object.keys(state.assembly.perRoom || {}).forEach((room) => {
+      const items = state.assembly.perRoom[room] || {};
+      const roomLines = [];
+
+      Object.keys(items).forEach((item) => {
+        const v = items[item];
+        if (!v || v === "kein") return;
+
+        const label =
+          v === "demontage" ? "Demontage" :
+          v === "montage" ? "Montage" :
+          "Montage + Demontage";
+
+        const qty = getItemQty(room, item);
+        roomLines.push(`${item}${qty > 1 ? ` (${qty}x)` : ""}: ${label}`);
+      });
+
+      if (roomLines.length) {
+        lines.push(room);
+        roomLines.forEach((r) => lines.push(`- ${r}`));
+      }
+    });
+
+    return lines.join("\n");
+  }
+
+  function rowPair(k1, v1, k2, v2) {
+    return `
+      <div class="summary-row">
+        <div>
+          <div class="k">${escapeHtml(k1)}</div>
+          <div class="v">${escapeHtml(v1)}</div>
+        </div>
+        <div>
+          <div class="k">${escapeHtml(k2)}</div>
+          <div class="v">${escapeHtml(v2)}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFinalSummary() {
+    const full = q("fullSummary");
+
+    const a1 = q("reviewPickupAddr");
+    const a2 = q("reviewDropoffAddr");
+    if (a1) a1.textContent = formatAddressMulti(state.pickup);
+    if (a2) a2.textContent = formatAddressMulti(state.dropoff);
+
+    const selectedRoomsText = state.rooms.length ? state.rooms.join(", ") : "-";
+
+    const roomItemsText = state.rooms.map((room) => {
+      const items = state.roomItems[room] || [];
+      if (!items.length) return null;
+
+      const list = items.map((item) => {
+        const qty = getItemQty(room, item);
+        return qty > 1 ? `${item} (${qty}x)` : item;
+      });
+
+      return `${room}: ${list.join(", ")}`;
+    }).filter(Boolean).join("\n") || "-";
+
+    const boxText =
+      BOX_PRODUCTS.map((p) => {
+        const qty = Number(state.boxes.items[p.key] || 0);
+        return qty > 0 ? `${qty}x ${p.title}` : null;
+      }).filter(Boolean).join("\n") ||
+      (state.boxes.needed === "Nein" ? "Keine Kartons" : "-");
+
+    const servicesText = getAssemblyLines() || "-";
+
+    full.innerHTML = [
+      rowPair("Beladestelle", formatAddressMulti(state.pickup), "Details Beladestelle", detailsBlock(state.pickup)),
+      rowPair("Entladestelle", formatAddressMulti(state.dropoff), "Details Entladestelle", detailsBlock(state.dropoff)),
+      rowPair("Umzugsdatum", getMoveDateLabel(), "Räume", selectedRoomsText),
+      rowPair("Möbel pro Raum", roomItemsText, "Kartons / Material", boxText),
+      rowPair(
+        "Montage / Demontage",
+        servicesText,
+        "Weitere Hinweise",
+        [state.additionalRooms, state.roomItemsNotes, state.boxes.notes, state.assembly.notes]
+          .filter(Boolean)
+          .join("\n") || "-"
+      )
+    ].join("");
+  }
+
+  function validateCurrentStep() {
+    clearAllErrors();
+    let ok = true;
+
+    if (state.currentStep === 1) {
+      if (!state.pickup.street.trim()) { markFieldError(q("pickupStreet")); ok = false; }
+      if (!state.pickup.number.trim()) { markFieldError(q("pickupNumber")); ok = false; }
+      if (!state.pickup.zip.trim()) { markFieldError(q("pickupZip")); ok = false; }
+      if (!state.pickup.city.trim()) { markFieldError(q("pickupCity")); ok = false; }
+    }
+
+    if (state.currentStep === 2) {
+      if (!state.pickup.housingType) { markGroupError("pickupHousingType", "Bitte Wohnform auswählen."); ok = false; }
+      if (!state.pickup.floor) { markGroupError("pickupFloorButtons", "Bitte Stockwerk auswählen."); ok = false; }
+      if (!state.pickup.elevator) { markGroupError("pickupElevatorButtons", "Bitte Aufzug auswählen."); ok = false; }
+      if (!state.pickup.parkingType) { markGroupError("pickupParkingTypeButtons", "Bitte Lage auswählen."); ok = false; }
+    }
+
+    if (state.currentStep === 3) {
+      if (!state.dropoff.street.trim()) { markFieldError(q("dropoffStreet")); ok = false; }
+      if (!state.dropoff.number.trim()) { markFieldError(q("dropoffNumber")); ok = false; }
+      if (!state.dropoff.zip.trim()) { markFieldError(q("dropoffZip")); ok = false; }
+      if (!state.dropoff.city.trim()) { markFieldError(q("dropoffCity")); ok = false; }
+    }
+
+    if (state.currentStep === 4) {
+      if (!state.dropoff.housingType) { markGroupError("dropoffHousingType", "Bitte Wohnform auswählen."); ok = false; }
+      if (!state.dropoff.floor) { markGroupError("dropoffFloorButtons", "Bitte Stockwerk auswählen."); ok = false; }
+      if (!state.dropoff.elevator) { markGroupError("dropoffElevatorButtons", "Bitte Aufzug auswählen."); ok = false; }
+      if (!state.dropoff.parkingType) { markGroupError("dropoffParkingTypeButtons", "Bitte Lage auswählen."); ok = false; }
+    }
+
+    if (state.currentStep === 5) {
+      if (state.moveDate.mode === "exact") {
+        if (!parseShortDate(state.moveDate.date)) {
+          markFieldError(q("moveDate"), "Bitte Datum im Format ZZ.MM eingeben.");
+          ok = false;
+        }
+      } else {
+        const fromOk = parseShortDate(state.moveDate.windowFrom);
+        const toOk = parseShortDate(state.moveDate.windowTo);
+
+        if (!fromOk) { markFieldError(q("moveDateFrom"), "Bitte Datum im Format ZZ.MM eingeben."); ok = false; }
+        if (!toOk) { markFieldError(q("moveDateTo"), "Bitte Datum im Format ZZ.MM eingeben."); ok = false; }
+
+        const a = shortDateSortKey(state.moveDate.windowFrom);
+        const b = shortDateSortKey(state.moveDate.windowTo);
+        if (a && b && a > b) {
+          markFieldError(q("moveDateFrom"), "Zeitraum ist ungültig.");
+          markFieldError(q("moveDateTo"), "Zeitraum ist ungültig.");
+          ok = false;
+        }
+      }
+    }
+
+    if (state.currentStep === 10) {
+      if (!state.customer.name.trim()) { markFieldError(q("customerName")); ok = false; }
+      if (!state.customer.phone.trim()) { markFieldError(q("customerPhone")); ok = false; }
+      if (!state.customer.email.trim()) { markFieldError(q("customerEmail")); ok = false; }
+
+      if (state.customer.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.customer.email.trim())) {
+        markFieldError(q("customerEmail"), "Bitte gültige E-Mail eingeben.");
+        ok = false;
+      }
+    }
+
+    return ok;
+  }
+
+  function collectLeadPayload() {
+  const selectedRooms = [...state.rooms];
+  const roomItems = {};
+  const roomItemQuantities = {};
+
+  selectedRooms.forEach((r) => {
+    roomItems[r] = [...(state.roomItems[r] || [])];
+    roomItemQuantities[r] = {};
+    (state.roomItems[r] || []).forEach((item) => {
+      roomItemQuantities[r][item] = getItemQty(r, item);
+    });
+  });
+
+  const assemblyRequest = {};
+  Object.keys(state.assembly.perRoom || {}).forEach((room) => {
+    const src = state.assembly.perRoom[room] || {};
+    const clean = {};
+    Object.keys(src).forEach((item) => {
+      if (src[item] && src[item] !== "kein") clean[item] = src[item];
+    });
+    if (Object.keys(clean).length) assemblyRequest[room] = clean;
+  });
+
+  const exactDateIso = state.moveDate.mode === "exact" ? toIsoDateFromShort(state.moveDate.date) : null;
+  const exactAltDateIso = state.moveDate.mode === "exact" ? toIsoDateFromShort(state.moveDate.altDate) : null;
+
+  let windowFromIso = null;
+  let windowToIso = null;
+
+  if (state.moveDate.mode === "window") {
+    const fromParts = parseShortDate(state.moveDate.windowFrom);
+    const toParts = parseShortDate(state.moveDate.windowTo);
+
+    if (fromParts && toParts) {
+      const now = new Date();
+      let year = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+
+      if (fromParts.month < currentMonth || (fromParts.month === currentMonth && fromParts.day < currentDay)) {
+        year += 1;
+      }
+
+      windowFromIso = toIsoDateFromShortWithFixedYear(state.moveDate.windowFrom, year);
+
+      let toYear = year;
+      const fromSort = shortDateSortKey(state.moveDate.windowFrom);
+      const toSort = shortDateSortKey(state.moveDate.windowTo);
+      if (fromSort && toSort && toSort < fromSort) toYear += 1;
+
+      windowToIso = toIsoDateFromShortWithFixedYear(state.moveDate.windowTo, toYear);
+    }
+  }
+
+  return {
+    company_id: state.publicCompany.company_id || null,
+    slug: state.publicCompany.slug || null,
+    company_name: state.publicCompany.company_name || null,
+
+    status: "neu",
+    customer_name: state.customer.name || null,
+    customer_email: state.customer.email || null,
+    customer_phone: state.customer.phone || null,
+
+    move_date_type: state.moveDate.mode === "exact" ? "exact_date" : "time_window",
+    move_date: exactDateIso,
+    move_date_alt: exactAltDateIso,
+    move_window_from: windowFromIso,
+    move_window_to: windowToIso,
+    move_time_window: state.moveDate.timeWindow || null,
+    desired_date_note: state.moveDate.mode === "window"
+      ? [formatShortDate(state.moveDate.windowFrom), formatShortDate(state.moveDate.windowTo)].filter(Boolean).join(" bis ")
+      : null,
+
+    pickup_address: {
+      street: state.pickup.street || null,
+      number: state.pickup.number || null,
+      zip: state.pickup.zip || null,
+      city: state.pickup.city || null,
+      country: state.pickup.country || null,
+      floor: state.pickup.floor || null,
+      lift: state.pickup.elevator || null
+    },
+    pickup_details: {
+      housingType: state.pickup.housingType || null,
+      floor: state.pickup.floor || null,
+      elevator: state.pickup.elevator || null,
+      areaM2: state.pickup.areaM2 || null,
+      parkingType: state.pickup.parkingType || null,
+      notes: state.pickup.notes || null
+    },
+
+    dropoff_address: {
+      street: state.dropoff.street || null,
+      number: state.dropoff.number || null,
+      zip: state.dropoff.zip || null,
+      city: state.dropoff.city || null,
+      country: state.dropoff.country || null,
+      floor: state.dropoff.floor || null,
+      lift: state.dropoff.elevator || null
+    },
+    dropoff_details: {
+      housingType: state.dropoff.housingType || null,
+      floor: state.dropoff.floor || null,
+      elevator: state.dropoff.elevator || null,
+      areaM2: state.dropoff.areaM2 || null,
+      parkingType: state.dropoff.parkingType || null,
+      notes: state.dropoff.notes || null
+    },
+
+    selected_rooms: selectedRooms,
+    room_items: roomItems,
+    room_item_quantities: roomItemQuantities,
+
+    box_request: {
+      needed: state.boxes.needed || null,
+      items: { ...state.boxes.items },
+      deliveryDate: toIsoDateFromShort(state.boxes.deliveryDate),
+      notes: state.boxes.notes || null
+    },
+
+    assembly_request: assemblyRequest,
+
+    notes: [
+      state.additionalRooms ? `Weitere Räume: ${state.additionalRooms}` : null,
+      state.roomItemsNotes ? `Möbelhinweise: ${state.roomItemsNotes}` : null,
+      state.assembly.notes ? `Servicehinweise: ${state.assembly.notes}` : null,
+      state.customer.company ? `Firma: ${state.customer.company}` : null,
+      state.customer.message ? `Kundennachricht: ${state.customer.message}` : null
+    ].filter(Boolean).join("\n") || null,
+
+    summary_text: [
+      `Beladestelle: ${formatAddressSingleLine(state.pickup)}`,
+      `Entladestelle: ${formatAddressSingleLine(state.dropoff)}`,
+      `Umzugsdatum: ${getMoveDateLabel()}`,
+      `Räume: ${selectedRooms.join(", ") || "-"}`,
+      `Kartons: ${getBoxesSidebarText()}`,
+      `Services: ${getServicesSidebarText()}`
+    ].join("\n"),
+
+    raw_payload: JSON.parse(JSON.stringify(state))
+  };
+}
+ async function loadPublicCompany() {
+  const slug = new URLSearchParams(window.location.search).get("slug") || "";
+  if (!slug) {
+    throw new Error("Slug fehlt in URL");
+  }
+
+  const res = await fetch(`${PUBLIC_COMPANY_API}?slug=${encodeURIComponent(slug)}`, {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+  });
+
+  const raw = await res.text();
+  let out = {};
+  try {
+    out = JSON.parse(raw);
+  } catch (e) {
+    console.error("Invalid JSON:", raw);
+    throw new Error("Ungültige API-Antwort");
+  }
+
+if (!res.ok || !out.ok || !out.company || !out.company.company_id) {
+    console.error("loadPublicCompany failed:", out);
+    throw new Error(out.error || "Public company konnte nicht geladen werden");
+  }
+
+ state.publicCompany = {
+  company_id: String(out.company.company_id || ""),
+  company_name: String(out.company.company_name || ""),
+  slug: String(out.company.slug || slug)
+};
+
+  return state.publicCompany;
+}
+async function submitLead() {
+  if (!validateCurrentStep()) return;
+
+  if (!state.publicCompany.company_id) {
+    showNotice("Firma konnte nicht geladen werden.", "error");
+    return;
+  }
+
+  const btn = q("btnSubmitLead");
+  const oldText = btn ? btn.textContent : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Senden...";
+  }
+
+  const fullPayload = collectLeadPayload();
+
+  const moveDate = state.moveDate.mode === "exact" ? toIsoDateFromShort(state.moveDate.date) : null;
+  const altDate = state.moveDate.mode === "exact" ? toIsoDateFromShort(state.moveDate.altDate) : null;
+  const dateMode = state.moveDate.mode === "exact" ? "date" : "window";
+
+  const payload = {
+    hp: q("hp") ? q("hp").value : "",
+    company_id: state.publicCompany.company_id || null,
+    slug: state.publicCompany.slug || null,
+    customer_name: state.customer.name || null,
+    customer_phone: state.customer.phone || null,
+    customer_email: state.customer.email || null,
+    move_date: moveDate,
+    alt_date: altDate,
+    date_mode: dateMode,
+    notes: fullPayload.notes || null,
+    payload: fullPayload
+  };
+  const overlay = q("submitOverlay");
+  const titleEl = q("resultTitle");
+  const textEl = q("resultText");
+  const metaEl = q("resultMeta");
+  const iconWrap = q("resultIcon");
+
+  const showResult = (mode, mainText, metaText) => {
+    if (titleEl) titleEl.textContent = mode === "success" ? "Anfrage gesendet" : "Fehler beim Speichern";
+    if (textEl) textEl.textContent = mainText;
+
+    const m = String(metaText || "");
+    if (metaEl) {
+      metaEl.textContent = m;
+      metaEl.style.display = m ? "" : "none";
+    }
+
+    if (iconWrap) {
+      iconWrap.style.display = "none";
+      void iconWrap.offsetHeight;
+      iconWrap.style.display = "";
+    }
+
+    if (overlay) overlay.classList.add("show");
+  };
+
+  try {
+    const res = await fetch(API_LEAD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+  const raw = await res.text();
+let out = {};
+try { out = JSON.parse(raw); } catch(e) {}
+
+if (!res.ok || !out.ok) {
+  console.error("API error status:", res.status, "body:", raw);
+  throw new Error(out.error || raw.slice(0, 300) || "Unbekannter Fehler");
+}
+
+    showNotice("Anfrage erfolgreich gespeichert.", "success");
+
+    showResult(
+      "success",
+      "Vielen Dank. Wir melden uns schnellstmöglich bei Ihnen.",
+      ""
+    );
+  } catch (err) {
+    console.error(err);
+    showNotice("Fehler beim Speichern.", "error");
+
+    showResult(
+      "error",
+      "Bitte versuchen Sie es erneut oder rufen Sie uns an.",
+      ""
+    );
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = oldText; }
+  }
+}
+ function initOverlay() {
+  const overlay = q("submitOverlay");
+  const okBtn = q("submitOverlayOk");
+
+  if (okBtn) {
+    okBtn.addEventListener("click", () => {
+      window.location.href = "https://umzuege-84.com/";
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove("show");
+      }
+    });
+  }
+}
+
+  function initButtons() {
+    q("btnPrev").addEventListener("click", () => {
+      if (state.currentStep > 1) goToStep(state.currentStep - 1, false);
+    });
+
+    q("btnNext").addEventListener("click", async () => {
+      if (state.navLock) return;
+      if (state.currentStep >= 10) return;
+
+      state.navLock = true;
+      try {
+        const nextStep = state.currentStep + 1;
+
+        if (state.currentStep === 6) {
+          if (state.rooms.length === 0) {
+            const yes = await showConfirmModal({
+              title: "Keine Räume ausgewählt",
+              text: "Sie haben noch keinen Raum ausgewählt.\nMöchten Sie trotzdem weitergehen?",
+              okLabel: "Ja, weiter",
+              cancelLabel: "Zurück"
+            });
+
+            if (!yes) {
+              showNotice("Bitte wählen Sie mindestens einen Raum aus.", "error");
+              return;
+            }
+
+            goToStep(nextStep, false);
+            return;
+          }
+        }
+
+        if (state.currentStep === 7) {
+          const emptyRooms = getRoomsWithoutItems();
+
+          if (emptyRooms.length > 0) {
+            const yes = await showConfirmModal({
+              title: "Räume ohne Objekte",
+              text: `Es gibt ausgewählte Räume ohne Möbel/Objekte:\n${emptyRooms.join(", ")}\n\nMöchten Sie trotzdem weitergehen?`,
+              okLabel: "Ja, weiter",
+              cancelLabel: "Zurück"
+            });
+
+            if (!yes) {
+              showNotice("Bitte prüfen Sie die Möbelauswahl pro Raum.", "error");
+              return;
+            }
+
+            goToStep(nextStep, false);
+            return;
+          }
+        }
+
+        goToStep(nextStep, true);
+      } finally {
+        state.navLock = false;
+      }
+    });
+
+    q("btnSubmitLead").addEventListener("click", submitLead);
+  }
+
+  function applyHeroImages() {
+    const heroImages = {
+      1: "/img/umzug-84-1.png",
+      2: "/img/umzug-84-2.png",
+      3: "/img/umzug-84-3.png",
+      4: "/img/umzug-84-4.png",
+      5: "/img/umzug-84-5.png",
+      6: "/img/umzug-84-1.png",
+      7: "/img/umzug-84-2.png",
+      8: "/img/umzug-84-3.png",
+      9: "/img/umzug-84-4.png",
+      10: "/img/umzug-84-5.png"
+    };
+
+    for (let i = 1; i <= 10; i++) {
+      const stepEl = q(`step-${i}`);
+      if (!stepEl) continue;
+
+      const hero = qs(".hero-placeholder", stepEl);
+      if (!hero) continue;
+
+      const src = heroImages[i];
+      if (!src) continue;
+
+      hero.classList.add("hero-has-image");
+      hero.innerHTML = `<img src="${src}" alt="Umzug Illustration Schritt ${i}" loading="lazy" onerror="this.style.display='none'">`;
+    }
+  }
+
+  function initEditButtonsOnStep10() {
+    const ep = q("editPickupBtn");
+    if (ep) ep.addEventListener("click", () => { goToStep(1, false); setTimeout(() => q("pickupStreet")?.focus(), 60); });
+
+    const ed = q("editDropoffBtn");
+    if (ed) ed.addEventListener("click", () => { goToStep(3, false); setTimeout(() => q("dropoffStreet")?.focus(), 60); });
+  }
+
+async function init() {
+  try {
+    await loadPublicCompany();
+
+  } catch (err) {
+    console.error(err);
+    showNotice("Firma konnte nicht geladen werden.", "error");
+  }
+
+  buildStepsNav();
+  bindInputs();
+  buildChoiceGroups();
+  buildRoomCards();
+  buildBoxCards();
+  applyHeroImages();
+  updateMoveDateModeUI();
+  updateBoxesVisibility();
+  initButtons();
+  initOverlay();
+  initEditButtonsOnStep10();
+  updateFooterButtons();
+  updateProgress();
+  renderSummarySidebar();
+
+  q("wizardForm").addEventListener("submit", (e) => e.preventDefault());
+
+  window.addEventListener("resize", () => {
+    clearTimeout(init._resizeT);
+    init._resizeT = setTimeout(centerActiveStepChip, 80);
+  });
+}
+
+init();
+</script>
+
+</body>
+</html>
