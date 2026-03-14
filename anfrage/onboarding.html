@@ -47,7 +47,7 @@
         <div id="stateSuccess" style="display:none;">
           <div class="ob-success">
             <h2>Willkommen bei AnfrageBox!</h2>
-            <p>Ihr 14-tägiger Test hat begonnen. So richten Sie alles ein:</p>
+            <p>Ihr 14-tägiger Test hat begonnen. 3 kurze Schritte und Sie sind startklar:</p>
           </div>
 
           <div class="ob-card">
@@ -60,6 +60,9 @@
                   <button class="ob-copy" id="btnCopyEmbed">Kopieren</button>
                   <code id="embedCode"></code>
                 </div>
+                <p style="margin-top:8px;">
+                  <a id="linkPreviewForm" href="#" target="_blank" style="color:#047857;font-weight:700;font-size:12px;">Formular-Vorschau ansehen &rarr;</a>
+                </p>
               </div>
             </div>
           </div>
@@ -69,7 +72,7 @@
               <span class="ob-number">2</span>
               <div>
                 <h3>Firmendaten ergänzen</h3>
-                <p>Logo, Adresse und Kontaktdaten im Admin-Panel eintragen.</p>
+                <p>Logo, Adresse und Kontaktdaten im Admin-Panel unter Einstellungen eintragen.</p>
               </div>
             </div>
           </div>
@@ -78,23 +81,27 @@
             <div style="display:flex;align-items:flex-start;">
               <span class="ob-number">3</span>
               <div>
-                <h3>Anfragen empfangen</h3>
-                <p>Sobald ein Kunde das Formular ausfüllt, erscheint die Anfrage im Dashboard.</p>
+                <h3>Testanfrage stellen</h3>
+                <p>Öffnen Sie Ihr Formular, stellen Sie eine Testanfrage und sehen Sie, wie alles im Dashboard erscheint.</p>
               </div>
             </div>
           </div>
 
           <a href="/anfrage/admin.html" class="primary-btn" style="display:block;text-align:center;text-decoration:none;margin-top:20px;">Zum Admin-Panel</a>
+
+          <p style="font-size:11px;color:#9ca3af;text-align:center;margin-top:12px;line-height:1.5;">
+            Testphase: 14 Tage kostenlos. Sie werden vorher per E-Mail erinnert.
+          </p>
         </div>
 
         <!-- Canceled state -->
         <div id="stateCanceled" style="display:none;">
           <div class="ob-canceled">
             <h2>Zahlung abgebrochen</h2>
-            <p>Kein Problem. Ihr Konto wurde erstellt und Sie haben 14 Tage kostenlosen Zugang.</p>
+            <p>Kein Problem — Ihr Konto ist trotzdem bereit.</p>
           </div>
           <p style="font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:20px;">
-            Sie können die Zahlungsmethode jederzeit in den Einstellungen hinterlegen. Nach Ablauf der Testphase wird Ihr Konto pausiert.
+            Sie haben 14 Tage kostenlosen Zugang. Zahlungsmethode können Sie jederzeit unter Einstellungen hinterlegen.
           </p>
           <a href="/anfrage/admin.html" class="primary-btn" style="display:block;text-align:center;text-decoration:none;">Zum Admin-Panel</a>
         </div>
@@ -142,10 +149,11 @@
     }
   }
 
-  // Set embed code
+  // Set embed code + preview link
   const embedUrl = "https://anfragebox.de/anfrage/index.html?slug=" + encodeURIComponent(slug);
   const embedCode = `<iframe src="${embedUrl}" width="100%" height="800" frameborder="0" style="border:none;border-radius:16px;"></iframe>`;
   $("embedCode").textContent = embedCode;
+  $("linkPreviewForm").href = embedUrl;
 
   // Copy button
   $("btnCopyEmbed").addEventListener("click", () => {

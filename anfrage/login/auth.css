@@ -473,3 +473,68 @@ button{
     height:50px;
   }
 }
+
+/* ── Loading / disabled button state ── */
+.primary-btn:disabled,
+.small-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none !important;
+}
+
+/* ── Onboarding mobile overrides ── */
+@media (max-width:640px){
+  .ob-card{
+    padding:16px;
+    border-radius:12px;
+  }
+
+  .ob-code{
+    font-size:11px;
+    padding:12px;
+    word-break:break-all;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .ob-success h2,
+  .ob-canceled h2{
+    font-size:18px;
+  }
+
+  .ob-success,
+  .ob-canceled{
+    padding:18px;
+    border-radius:12px;
+  }
+
+  .ob-number{
+    width:24px;
+    height:24px;
+    font-size:12px;
+    margin-right:8px;
+  }
+
+  .ob-card h3{
+    font-size:14px;
+  }
+
+  .ob-card p{
+    font-size:12px;
+  }
+}
+
+/* ── Notice classes (err/ok shorthand) ── */
+.notice.err{
+  display:block;
+  background:var(--danger-soft);
+  color:var(--danger);
+  border-color:#f7d6d2;
+}
+
+.notice.ok{
+  display:block;
+  background:var(--green-soft);
+  color:var(--green);
+  border-color:#d7eadc;
+}
