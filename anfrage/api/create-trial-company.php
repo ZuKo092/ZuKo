@@ -38,9 +38,9 @@ function rand_str(int $len = 8): string {
 
 function make_uuid(): string {
   return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-    mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-    mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000,
-    mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+    random_int(0, 0xffff), random_int(0, 0xffff), random_int(0, 0xffff),
+    random_int(0, 0x0fff) | 0x4000, random_int(0, 0x3fff) | 0x8000,
+    random_int(0, 0xffff), random_int(0, 0xffff), random_int(0, 0xffff));
 }
 
 function curl_json(string $url, string $method, array $headers, ?array $body = null): array {
@@ -110,6 +110,26 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 if (strlen($password) < 8) {
   out(400, ['ok' => false, 'error' => 'Passwort muss mindestens 8 Zeichen haben.']);
+}
+if ($otpToken === '') {
+  out(400, ['ok' => false, 'error' => 'OTP-Token fehlt. Bitte zuerst E-Mail verifizieren.']);
+}
+
+/* ── VALIDATE OTP TOKEN ── */
+$otpCheckPath = '/rest/v1/demo_otp'
+  . '?id=eq.' . urlencode($otpToken)
+  . '&email=eq.' . urlencode($email)
+  . '&used=eq.true'
+  . '&select=id'
+  . '&limit=1';
+
+$otpCheck = curl_json($BASE_URL . $otpCheckPath, 'GET', [
+  'apikey: ' . $SERVICE_ROLE,
+  'Authorization: Bearer ' . $SERVICE_ROLE,
+]);
+
+if ($otpCheck['http'] !== 200 || !is_array($otpCheck['json']) || count($otpCheck['json']) === 0) {
+  out(403, ['ok' => false, 'error' => 'OTP-Token ungültig oder nicht verifiziert. Bitte E-Mail erneut verifizieren.']);
 }
 
 /* ── VALUES ── */

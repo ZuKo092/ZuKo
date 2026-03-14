@@ -12,7 +12,6 @@
     html.classList.add("ab-auth-ready");
     const overlay = document.getElementById("ab-login-overlay");
     if (overlay) overlay.remove();
-    console.log("GUARD OK. Admin unlocked.");
   }
 
   function showLoginForm(message) {
@@ -115,10 +114,7 @@
   async function boot() {
     try {
       const { data: sessionData, error: sessionError } = await sb.auth.getSession();
-      console.log("SESSION RES:", sessionData, sessionError);
-
       if (sessionError) {
-        console.error("SESSION ERROR:", sessionError);
         showLoginForm("Sitzung abgelaufen. Bitte erneut anmelden.");
         return;
       }
@@ -131,18 +127,29 @@
         return;
       }
 
-      console.log("SESSION USER:", user.id, user.email);
+      // Fetch actual role from company_users
+      let companyCtx = { company_id: null, role: "unknown", is_active: false, mfa_required: false };
+      try {
+        const { data: members, error: memErr } = await sb
+          .from("company_users")
+          .select("company_id, role, is_active, mfa_required")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (!memErr && members) {
+          companyCtx = {
+            company_id: members.company_id || null,
+            role: members.role || "staff",
+            is_active: members.is_active ?? true,
+            mfa_required: members.mfa_required ?? false,
+          };
+        }
+      } catch {}
 
       try {
-        localStorage.setItem(
-          "ab_company_context",
-          JSON.stringify({
-            company_id: null,
-            role: "demo_admin",
-            is_active: true,
-            mfa_required: false,
-          })
-        );
+        localStorage.setItem("ab_company_context", JSON.stringify(companyCtx));
       } catch {}
 
       markReady();

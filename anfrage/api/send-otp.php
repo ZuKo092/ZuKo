@@ -67,39 +67,7 @@ if ($countHttp === 200) {
 $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 $expiresAt = date('c', time() + ($OTP_EXPIRY_MINUTES * 60));
 
-/* ── STORE IN SUPABASE ── */
-$insertData = json_encode([
-    'email'      => $email,
-    'code'       => $code,
-    'used'       => false,
-    'expires_at' => $expiresAt,
-]);
-
-$ich = curl_init(rtrim($SB_URL, '/') . '/rest/v1/demo_otp');
-curl_setopt_array($ich, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_TIMEOUT        => 10,
-    CURLOPT_HTTPHEADER     => [
-        'Content-Type: application/json',
-        'apikey: ' . $SB_KEY,
-        'Authorization: Bearer ' . $SB_KEY,
-        'Prefer: return=minimal',
-    ],
-    CURLOPT_POSTFIELDS => $insertData,
-]);
-$insertResult = curl_exec($ich);
-$insertHttp   = (int)curl_getinfo($ich, CURLINFO_HTTP_CODE);
-curl_close($ich);
-
-if ($insertHttp < 200 || $insertHttp >= 300) {
-    error_log('[send-otp] Supabase insert failed HTTP=' . $insertHttp . ' body=' . $insertResult);
-    http_response_code(500);
-    echo json_encode(['ok'=>false,'error'=>'Interner Fehler. Bitte erneut versuchen.']);
-    exit;
-}
-
-/* ── SEND EMAIL VIA PHPMAILER ── */
+/* ── SEND EMAIL VIA PHPMAILER (before DB insert to avoid orphaned OTPs) ── */
 $pmDir = __DIR__ . '/phpmailer';
 $pmOk  = is_readable($pmDir . '/PHPMailer.php')
       && is_readable($pmDir . '/SMTP.php')
@@ -168,6 +136,38 @@ try {
     error_log('[send-otp] PHPMailer error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['ok'=>false,'error'=>'E-Mail konnte nicht gesendet werden. Bitte erneut versuchen.']);
+    exit;
+}
+
+/* ── STORE IN SUPABASE (only after email sent successfully) ── */
+$insertData = json_encode([
+    'email'      => $email,
+    'code'       => $code,
+    'used'       => false,
+    'expires_at' => $expiresAt,
+]);
+
+$ich = curl_init(rtrim($SB_URL, '/') . '/rest/v1/demo_otp');
+curl_setopt_array($ich, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_TIMEOUT        => 10,
+    CURLOPT_HTTPHEADER     => [
+        'Content-Type: application/json',
+        'apikey: ' . $SB_KEY,
+        'Authorization: Bearer ' . $SB_KEY,
+        'Prefer: return=minimal',
+    ],
+    CURLOPT_POSTFIELDS => $insertData,
+]);
+$insertResult = curl_exec($ich);
+$insertHttp   = (int)curl_getinfo($ich, CURLINFO_HTTP_CODE);
+curl_close($ich);
+
+if ($insertHttp < 200 || $insertHttp >= 300) {
+    error_log('[send-otp] Supabase insert failed HTTP=' . $insertHttp . ' body=' . $insertResult);
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'error'=>'Interner Fehler. E-Mail wurde gesendet, aber Code konnte nicht gespeichert werden. Bitte erneut versuchen.']);
     exit;
 }
 

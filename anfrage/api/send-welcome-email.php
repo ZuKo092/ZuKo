@@ -54,7 +54,8 @@ $pmDir = __DIR__ . '/phpmailer';
 $pmOk = is_readable($pmDir.'/PHPMailer.php') && is_readable($pmDir.'/SMTP.php') && is_readable($pmDir.'/Exception.php');
 
 if (!$pmOk || SMTP_PASS === '') {
-  echo json_encode(['ok' => true, 'sent' => false, 'reason' => 'SMTP not configured']);
+  http_response_code(503);
+  echo json_encode(['ok' => false, 'sent' => false, 'error' => 'SMTP not configured']);
   exit;
 }
 
@@ -151,5 +152,6 @@ try {
   echo json_encode(['ok' => true, 'sent' => true]);
 } catch (\Throwable $e) {
   log_error('Welcome email failed: ' . $e->getMessage());
-  echo json_encode(['ok' => true, 'sent' => false, 'reason' => 'Mail error']);
+  http_response_code(500);
+  echo json_encode(['ok' => false, 'sent' => false, 'error' => 'Mail send failed']);
 }

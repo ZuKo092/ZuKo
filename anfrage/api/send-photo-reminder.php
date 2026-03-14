@@ -25,8 +25,23 @@ function h($s): string {
 }
 
 function check_origin(array $allowed): void {
+  $method = $_SERVER['REQUEST_METHOD'] ?? '';
   $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-  if (!is_string($origin) || $origin === '') return;
+
+  if ($method === 'OPTIONS') {
+    // Preflight: allow even without origin
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    if (is_string($origin) && $origin !== '' && in_array($origin, $allowed, true)) {
+      header('Access-Control-Allow-Origin: ' . $origin);
+    }
+    respond(200, ['ok' => true]);
+  }
+
+  // POST and other methods: require Origin header
+  if (!is_string($origin) || $origin === '') {
+    respond(403, ['ok' => false, 'error' => 'Missing Origin header']);
+  }
   if (!in_array($origin, $allowed, true)) {
     respond(403, ['ok' => false, 'error' => 'Forbidden origin']);
   }
@@ -121,11 +136,17 @@ if ($leadId === '' || $companyId === '' || $recipientEmail === '') {
   respond(400, ['ok' => false, 'error' => 'Missing required fields']);
 }
 
-/* ── Verify user belongs to company ── */
-$memberPath = '/rest/v1/company_users?select=id&user_id=eq.' . rawurlencode($user['id'])
+/* ── Verify user belongs to company and has appropriate role ── */
+$memberPath = '/rest/v1/company_users?select=id,role&user_id=eq.' . rawurlencode($user['id'])
   . '&company_id=eq.' . rawurlencode($companyId) . '&is_active=eq.true&limit=1';
 $member = sb_get($SUPABASE_URL, $memberPath, $SERVICE_ROLE);
 if (!$member) respond(403, ['ok' => false, 'error' => 'No access']);
+
+$allowedRoles = ['owner', 'admin', 'staff'];
+$memberRole = trim((string)($member['role'] ?? ''));
+if (!in_array($memberRole, $allowedRoles, true)) {
+  respond(403, ['ok' => false, 'error' => 'Insufficient permissions']);
+}
 
 /* ── Load company branding ── */
 $settingsPath = '/rest/v1/company_settings?select=company_name,phone,email,logo_url'

@@ -21,8 +21,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST')    { http_response_code(405);
 /* ── CONFIG ──────────────────────────────────────────────────────── */
 $SB_URL  = SUPABASE_URL;
 $SB_KEY  = SUPABASE_SERVICE_ROLE_KEY;
-$ADMIN_REDIRECT  = 'https://anfragebox.de/anfrage/admin.html';
-$PUBLIC_FORM_BASE = 'https://anfragebox.de/anfrage/index.html';
+$SITE_URL = rtrim(env('SITE_URL', 'https://anfragebox.de'), '/');
+$ADMIN_REDIRECT   = $SITE_URL . '/anfrage/admin.html';
+$PUBLIC_FORM_BASE = $SITE_URL . '/anfrage/index.html';
+$MAX_VERIFY_ATTEMPTS = 5;
+$VERIFY_WINDOW_SECONDS = 600;
 
 /* ── INPUT ───────────────────────────────────────────────────────── */
 $body  = json_decode(file_get_contents('php://input') ?: '', true);
@@ -39,6 +42,41 @@ if (strlen($code) !== 6) {
     echo json_encode(['ok'=>false,'error'=>'Ungültiges Code-Format.']);
     exit;
 }
+
+/* ── RATE LIMIT: max attempts per email in window ────────────────── */
+$windowStart = date('c', time() - $VERIFY_WINDOW_SECONDS);
+$rlPath = '/rest/v1/demo_otp_attempts'
+    . '?email=eq.' . urlencode($email)
+    . '&attempted_at=gte.' . urlencode($windowStart)
+    . '&select=id';
+
+$rlch = curl_init(rtrim($SB_URL,'/') . $rlPath);
+curl_setopt_array($rlch, [
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10,
+    CURLOPT_HTTPHEADER => ['apikey: '.$SB_KEY, 'Authorization: Bearer '.$SB_KEY],
+]);
+$rlBody = curl_exec($rlch);
+$rlHttp = (int)curl_getinfo($rlch, CURLINFO_HTTP_CODE);
+curl_close($rlch);
+
+if ($rlHttp === 200) {
+    $rlRows = json_decode((string)$rlBody, true);
+    if (is_array($rlRows) && count($rlRows) >= $MAX_VERIFY_ATTEMPTS) {
+        http_response_code(429);
+        echo json_encode(['ok'=>false,'error'=>'Zu viele Versuche. Bitte warten Sie 10 Minuten.']);
+        exit;
+    }
+}
+
+/* ── LOG ATTEMPT ─────────────────────────────────────────────────── */
+$ach = curl_init(rtrim($SB_URL,'/') . '/rest/v1/demo_otp_attempts');
+curl_setopt_array($ach, [
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_TIMEOUT => 10,
+    CURLOPT_HTTPHEADER => ['Content-Type: application/json','apikey: '.$SB_KEY,'Authorization: Bearer '.$SB_KEY,'Prefer: return=minimal'],
+    CURLOPT_POSTFIELDS => json_encode(['email' => $email, 'ip' => $_SERVER['REMOTE_ADDR'] ?? '']),
+]);
+curl_exec($ach);
+curl_close($ach);
 
 /* ── OTP SUCHEN ──────────────────────────────────────────────────── */
 $now  = date('c');
@@ -83,8 +121,16 @@ curl_setopt_array($pch, [
     CURLOPT_HTTPHEADER => ['Content-Type: application/json','apikey: '.$SB_KEY,'Authorization: Bearer '.$SB_KEY,'Prefer: return=minimal'],
     CURLOPT_POSTFIELDS => json_encode(['used' => true]),
 ]);
-curl_exec($pch);
+$patchRes = curl_exec($pch);
+$patchHttp = (int)curl_getinfo($pch, CURLINFO_HTTP_CODE);
 curl_close($pch);
+
+if ($patchHttp < 200 || $patchHttp >= 300) {
+    error_log('[verify-otp] Failed to mark OTP as used HTTP=' . $patchHttp);
+    http_response_code(500);
+    echo json_encode(['ok'=>false,'error'=>'Interner Fehler. Bitte erneut versuchen.']);
+    exit;
+}
 
 /* ── CLEANUP OTP VECHI ───────────────────────────────────────────── */
 $dch = curl_init(rtrim($SB_URL,'/') . '/rest/v1/demo_otp?email=eq.' . urlencode($email) . '&used=eq.true');
@@ -92,8 +138,12 @@ curl_setopt_array($dch, [
     CURLOPT_RETURNTRANSFER => true, CURLOPT_CUSTOMREQUEST => 'DELETE', CURLOPT_TIMEOUT => 8,
     CURLOPT_HTTPHEADER => ['apikey: '.$SB_KEY,'Authorization: Bearer '.$SB_KEY],
 ]);
-curl_exec($dch);
+$delRes = curl_exec($dch);
+$delHttp = (int)curl_getinfo($dch, CURLINFO_HTTP_CODE);
 curl_close($dch);
+if ($delHttp >= 300) {
+    error_log('[verify-otp] OTP cleanup DELETE failed HTTP=' . $delHttp);
+}
 
 /* ── VERIFICĂ DACĂ EMAILUL ARE DEMO ACTIV ────────────────────────── */
 $demoPath = '/rest/v1/company_settings'
