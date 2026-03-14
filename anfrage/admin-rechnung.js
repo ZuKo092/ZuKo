@@ -1131,8 +1131,8 @@ const photoReminderKey="ab_photo_reminder_"+leadId; const lastPhotoReminder=loca
   // =========================
   function setActiveNav(which,opts) {
     const o=opts||{}; const target=String(which||"start").trim()||"start";
-      const map=[["start",UI.navStart,UI.viewStart,"Start","Übersicht"],["leads",UI.navLeads,UI.viewLeads,"Leads","Liste"],["portal",$("navPortal"),$("viewPortal"),"Kundenportal","Links & Status"],["calendar",$("navCalendar"),$("viewCalendar"),"Kalender","Umzüge & Termine"],["rechnungen",$("navRechnungen"),$("viewRechnungen"),"Rechnungen","Alle Rechnungen"],["offer",UI.navOffer,UI.viewOffer,"Angebot","Erstellen"],["billing",$("navBilling"),$("viewBilling"),"Abo & Zahlung","Abonnement verwalten"],["settings",UI.navSettings,UI.viewSettings,"Settings","Firmendaten"]];
-    map.forEach(([key,btn,view])=>{ if (!btn||!view) return; if (key==="settings"&&!STATE.isAdmin) { btn.classList.remove("active"); view.classList.remove("active"); return; } const on=key===target; btn.classList.toggle("active",on); view.classList.toggle("active",on); });
+      const map=[["start",UI.navStart,UI.viewStart,"Start","Übersicht"],["leads",UI.navLeads,UI.viewLeads,"Leads","Liste"],["portal",null,$("viewPortal"),"Kundenportal","Links & Status"],["calendar",$("navCalendar"),$("viewCalendar"),"Kalender","Umzüge & Termine"],["rechnungen",$("navRechnungen"),$("viewRechnungen"),"Rechnungen","Alle Rechnungen"],["offer",UI.navOffer,UI.viewOffer,"Angebot","Erstellen"],["billing",null,$("viewBilling"),"Abo & Zahlung","Abonnement verwalten"],["settings",UI.navSettings,UI.viewSettings,"Settings","Firmendaten"]];
+    map.forEach(([key,btn,view])=>{ if (!view) return; if (key==="settings"&&!STATE.isAdmin) { if (btn) btn.classList.remove("active"); view.classList.remove("active"); return; } const on=key===target; if (btn) btn.classList.toggle("active",on); view.classList.toggle("active",on); });
  
     STATE.view=target; const found=map.find(x=>x[0]===target); if (UI.pageTitle) UI.pageTitle.textContent=found?.[3]||"Start"; if (UI.pageSub) UI.pageSub.textContent=found?.[4]||"";
     closeDrawer(); if (UI.sidebar) UI.sidebar.classList.remove("open");
