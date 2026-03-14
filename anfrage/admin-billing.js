@@ -174,7 +174,7 @@
     if (btnManage) btnManage.addEventListener("click", openStripePortal);
 
     const btnRefresh = $("btnRefreshBilling");
-    if (btnRefresh) btnRefresh.addEventListener("click", loadBilling);
+    if (btnRefresh) btnRefresh.addEventListener("click", async () => { await loadBilling(); showNotice("Abo-Daten aktualisiert.", "ok"); });
 
     const btnCopy = $("btnCopyEmbedAdmin");
     if (btnCopy) btnCopy.addEventListener("click", () => {

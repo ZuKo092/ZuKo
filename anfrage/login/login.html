@@ -136,6 +136,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("viewReset").style.display = "none";
     $("viewUpdate").style.display = "block";
   } else {
+    // Show logout message if redirected from logout
+    if (new URLSearchParams(window.location.search).get("logout") === "1") {
+      if (msg) { msg.textContent = "Erfolgreich abgemeldet."; msg.style.color = "#047857"; msg.style.display = "block"; }
+      const url = new URL(window.location.href); url.searchParams.delete("logout"); window.history.replaceState({}, "", url.pathname + url.search);
+    }
     // Normal flow: check existing session
     try {
       const { data } = await sb.auth.getSession();
@@ -184,11 +189,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
-        if (msg) msg.textContent = error.message || "Login fehlgeschlagen.";
+        const errMap = {"Invalid login credentials":"Ungültige E-Mail oder Passwort.","Email not confirmed":"E-Mail noch nicht bestätigt.","Too many requests":"Zu viele Versuche. Bitte warten."};
+        if (msg) { msg.textContent = errMap[error.message] || error.message || "Login fehlgeschlagen."; msg.style.color = "#b42318"; msg.style.display = "block"; }
         $("loginBtn").disabled = false;
         $("loginBtn").textContent = "Anmelden";
         return;
       }
+      if (msg) { msg.textContent = "Anmeldung erfolgreich..."; msg.style.color = "#047857"; msg.style.display = "block"; }
       window.location.replace(getNext());
     });
   }

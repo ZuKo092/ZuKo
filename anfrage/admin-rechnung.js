@@ -38,8 +38,8 @@
     btnRefresh: $("btnRefresh"), btnExport: $("btnExport"), btnLogout: $("btnLogout"),
     kpiTotal: $("kpiTotal"), kpiNew: $("kpiNew"), kpiToday: $("kpiToday"), kpiVisible: $("kpiVisible"), kpiHint: $("kpiHint"),
     latestLeads: $("latestLeads"), latestCount: $("latestCount"),
-    qSearch: $("qSearch"), qStatus: $("qStatus"), qDate: $("qDate"), qSort: $("qSort"),
-    btnReset: $("btnReset"), countHint: $("countHint"),
+    qSearch: $("qSearch"), qStatus: $("qStatus"),
+    countHint: $("countHint"),
     leadTbody: $("leadTbody"),
     leadDrawer: $("leadDrawer"), drawerOverlay: $("drawerOverlay"), drawerBody: $("drawerBody"),
     drawerClose: $("drawerClose"),
@@ -47,7 +47,7 @@
     s_company_name: $("s_company_name"), s_phone: $("s_phone"), s_email: $("s_email"),
     s_country: $("s_country"), s_street: $("s_street"), s_cityline: $("s_cityline"),
     s_tax: $("s_tax"), s_vat: $("s_vat"), s_iban: $("s_iban"), s_bic: $("s_bic"), s_footer: $("s_footer"),
-    btnSaveSettings: $("btnSaveSettings"), btnResetSettings: $("btnResetSettings"), settingsHint: $("settingsHint"),
+    btnSaveSettings: $("btnSaveSettings"), settingsHint: $("settingsHint"),
     pdfModal: $("pdfModal"), printArea: $("printArea"), btnPrint: $("btnPrint"), btnPdfClose: $("btnPdfClose"),
     contactModal: $("contactModal"), contactBody: $("contactBody"), btnContactClose: $("btnContactClose"),
     editModal: $("editModal"), editBody: $("editBody"),
@@ -792,12 +792,11 @@ const photoReminderKey="ab_photo_reminder_"+leadId; const lastPhotoReminder=loca
   // FILTERS + KPIs + LIST
   // =========================
   function applyFilters() {
-    const q=String(UI.qSearch?.value||"").trim().toLowerCase(); const st=String(UI.qStatus?.value||"").trim(); const df=String(UI.qDate?.value||"").trim(); const sort=String(UI.qSort?.value||"newest").trim();
+    const q=String(UI.qSearch?.value||"").trim().toLowerCase(); const st=String(UI.qStatus?.value||"").trim();
     let arr=STATE.rows.slice();
     if (st) arr=arr.filter(r=>normalizeStatus(r.status)===st);
-    if (df) { const now=Date.now(); const maxAge=df==="today"?86400000:df==="7d"?604800000:2592000000; arr=arr.filter(r=>{ const t=new Date(r.created_at).getTime(); if (!Number.isFinite(t)) return false; if (df==="today") return ymd(r.created_at)===todayKey(); return now-t<=maxAge; }); }
     if (q) arr=arr.filter(r=>{ const p=getPayload(r); return [customerName(r),customerPhone(r),customerEmail(r),routeText(r),r.source,r.summary_text,p.summary_text,p.notes].filter(Boolean).join(" ").toLowerCase().includes(q); });
-    arr.sort((a,b)=>{ if (sort==="name_asc") return String(customerName(a)||"").localeCompare(String(customerName(b)||""),"de"); const ta=new Date(a.created_at||0).getTime(),tb=new Date(b.created_at||0).getTime(); return sort==="oldest"?ta-tb:tb-ta; });
+    arr.sort((a,b)=>{ const ta=new Date(a.created_at||0).getTime(),tb=new Date(b.created_at||0).getTime(); return tb-ta; });
     STATE.filtered=arr; if (UI.countHint) UI.countHint.textContent=`${STATE.filtered.length} sichtbar`;
   }
 
@@ -1308,7 +1307,7 @@ if (result.ok) { showNotice("E-Mail erneut gesendet an "+email,"ok"); try { loca
     });
   }
 
-  async function logout() { if (STATE.sb) await STATE.sb.auth.signOut(); }
+  async function logout() { if (STATE.sb) { showNotice("Abmelden...","ok"); await STATE.sb.auth.signOut(); } window.location.replace((window.AB_LOGIN_PAGE||"/anfrage/login/login.html")+"?logout=1"); }
 
   // =========================
   // BIND (all event listeners)
@@ -1329,9 +1328,6 @@ if (result.ok) { showNotice("E-Mail erneut gesendet an "+email,"ok"); try { loca
     const refilterDebounced=debounce(refilterNow,120);
     if (UI.qSearch) UI.qSearch.addEventListener("input",refilterDebounced);
     if (UI.qStatus) UI.qStatus.addEventListener("change",refilterNow);
-    if (UI.qDate) UI.qDate.addEventListener("change",refilterNow);
-    if (UI.qSort) UI.qSort.addEventListener("change",refilterNow);
-    if (UI.btnReset) UI.btnReset.addEventListener("click",(e)=>{ e.preventDefault(); if (UI.qSearch) UI.qSearch.value=""; if (UI.qStatus) UI.qStatus.value=""; if (UI.qDate) UI.qDate.value=""; if (UI.qSort) UI.qSort.value="newest"; refilterNow(); });
 
     if (UI.drawerOverlay) { const stop=(e)=>{ e.preventDefault(); e.stopImmediatePropagation(); }; UI.drawerOverlay.addEventListener("click",stop,true); UI.drawerOverlay.addEventListener("mousedown",stop,true); UI.drawerOverlay.addEventListener("pointerdown",stop,true); }
     if (UI.drawerClose) UI.drawerClose.addEventListener("click",closeDrawer);
@@ -1356,7 +1352,6 @@ if (result.ok) { showNotice("E-Mail erneut gesendet an "+email,"ok"); try { loca
     if (UI.btnEditCloseBottom) UI.btnEditCloseBottom.addEventListener("click",()=>closeModal(UI.editModal));
     if (UI.editModal) UI.editModal.addEventListener("click",(e)=>{ if (e.target===UI.editModal) { e.preventDefault(); e.stopImmediatePropagation(); } },true);
     if (UI.btnSaveSettings) UI.btnSaveSettings.addEventListener("click",(e)=>{ e.preventDefault(); e.stopPropagation(); saveSettings(); });
-    if (UI.btnResetSettings) UI.btnResetSettings.addEventListener("click",(e)=>{ e.preventDefault(); applySettingsToForm(readLocalSettings()||STATE.companySettings||{}); showNotice("Zurückgesetzt.","ok"); });
 
     // Logo bindings
     const logoInput=$("logoFileInput");
