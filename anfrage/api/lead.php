@@ -140,9 +140,6 @@ function supabase_insert(string $baseUrl, string $table, string $serviceRole, ar
     respond(500, [
       'ok' => false,
       'error' => 'Insert failed',
-      'http' => $http,
-      'supabase' => json_decode((string)$res, true),
-      'raw' => (string)$res
     ]);
   }
 
