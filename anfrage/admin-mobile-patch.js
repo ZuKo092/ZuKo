@@ -14,27 +14,10 @@
   function app() { return window.__AB_APP || {}; }
 
   /* ══════════════════════════════════════
-     1. FILTER COLLAPSE
+     1. FILTER — always visible on mobile (search + status only)
      ══════════════════════════════════════ */
   function initFilterCollapse() {
-    var toolbar = document.querySelector(".leadsToolbar");
-    if (!toolbar) return;
-    var ltLeft = toolbar.querySelector(".ltLeft");
-    var ltMid = toolbar.querySelector(".ltMid");
-    if (!ltLeft || !ltMid || ltLeft.querySelector(".mob-filter-toggle")) return;
-
-    var btn = document.createElement("button");
-    btn.className = "mob-filter-toggle";
-    btn.type = "button";
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg> Filter';
-    ltLeft.appendChild(btn);
-
-    btn.addEventListener("click", function () {
-      var open = ltMid.classList.toggle("mob-filters-open");
-      btn.innerHTML = open
-        ? '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Schliessen'
-        : '<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg> Filter';
-    });
+    // Filters are now always visible via CSS, no toggle needed
   }
 
   /* ══════════════════════════════════════
@@ -424,8 +407,9 @@
       if (v === lv) return;
       lv = v;
       var k = v;
-      if (v === "portal" || v === "calendar") k = "leads";
-      if (v === "billing") k = "settings";
+      // Map views to bottom nav items: leads, calendar, offer, mehr
+      if (v === "portal") k = "leads";
+      if (v === "start" || v === "rechnungen" || v === "settings" || v === "billing") k = "mehr";
       items.forEach(function (b) { b.classList.toggle("active", b.dataset.mbn === k); });
     }, 200);
   }

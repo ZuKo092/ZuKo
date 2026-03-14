@@ -14,38 +14,82 @@
   z-index: 200;
   background: #fff;
   border-top: 1px solid var(--line);
-  padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 20px rgba(0,0,0,.06);
 }
 .mobileBottomNav .mbn-inner {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  max-width: 500px;
+  max-width: 400px;
   margin: 0 auto;
 }
 .mobileBottomNav .mbn-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 12px;
+  gap: 3px;
+  padding: 4px 16px;
   border: none;
   background: none;
   cursor: pointer;
   color: var(--text-4);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   transition: color .15s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 .mobileBottomNav .mbn-item svg {
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   stroke: currentColor; stroke-width: 2; fill: none;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .mobileBottomNav .mbn-item.active { color: var(--brand); }
 .mobileBottomNav .mbn-item.active svg { stroke: var(--brand); }
+.mobileBottomNav .mbn-item.active::after {
+  content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 3px; background: var(--brand); border-radius: 0 0 3px 3px;
+}
+
+/* ── "Mehr" Slide-Up Menu ── */
+.mehr-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 250;
+  background: rgba(0,0,0,.4);
+  -webkit-tap-highlight-color: transparent;
+}
+.mehr-overlay.show { display: block; }
+.mehr-menu {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 40px rgba(0,0,0,.12);
+  transform: translateY(100%);
+  transition: transform .25s ease-out;
+}
+.mehr-overlay.show .mehr-menu { transform: translateY(0); }
+.mehr-handle {
+  width: 36px; height: 4px; background: #d1d5db; border-radius: 4px;
+  margin: 0 auto 16px;
+}
+.mehr-menu-item {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; height: 52px; padding: 0 12px;
+  border: none; background: none; border-radius: 12px;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background .12s;
+}
+.mehr-menu-item:active { background: var(--bg-subtle); }
+.mehr-menu-item svg {
+  width: 22px; height: 22px; stroke: var(--text-3);
+  stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.mehr-menu-item.danger { color: #dc2626; }
+.mehr-menu-item.danger svg { stroke: #dc2626; }
+.mehr-sep { height: 1px; background: var(--line); margin: 4px 0; }
 
 @media (max-width: 768px) {
 
@@ -95,27 +139,16 @@
   .startTrendHead { flex-direction: column; align-items: flex-start !important; gap: 8px; }
   .rangeTabs { margin-left: 0 !important; }
 
-  /* ── Filter collapse ── */
-  .leadsToolbar { padding: 12px !important; }
-  .leadsToolbar .ltLeft {
-    margin-bottom: 0; display: flex; align-items: center; gap: 8px;
-  }
-  .leadsToolbar .ltMid { display: none !important; }
-  .leadsToolbar .ltMid.mob-filters-open {
-    display: grid !important; grid-template-columns: 1fr !important;
+  /* ── Filters: always visible (search + status only) ── */
+  .leadsToolbar { padding: 10px 12px !important; }
+  .leadsToolbar .ltLeft { margin-bottom: 0; }
+  .leadsToolbar .ltMid {
+    display: grid !important; grid-template-columns: 1fr auto !important;
     gap: 6px !important; margin-top: 8px;
   }
   .leadsToolbar .ltMid .input { font-size: 16px !important; height: 44px !important; }
-  .leadsToolbar .ltMid .select { height: 44px !important; font-size: 14px !important; }
-
-  .mob-filter-toggle {
-    display: inline-flex !important; align-items: center; gap: 4px;
-    height: 32px; padding: 0 12px;
-    border: 1px solid var(--line); border-radius: 8px; background: #fff;
-    font-size: 12px; font-weight: 700; color: var(--text-2); cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .mob-filter-toggle svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .leadsToolbar .ltMid .select { height: 44px !important; font-size: 14px !important; min-width: 120px; }
+  .mob-filter-toggle { display: none !important; }
 
   /* ══════════════════════════════════════
      LEAD CARDS — Clean, 4-line hierarchy
@@ -129,18 +162,18 @@
   .leadTable tbody tr {
     background: #fff !important;
     border: 1px solid var(--line) !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     padding: 0 !important;
-    margin-bottom: 10px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    margin-bottom: 8px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: box-shadow .12s, border-color .12s;
+    transition: transform .1s, box-shadow .12s;
     overflow: hidden;
   }
   .leadTable tbody tr:active {
-    box-shadow: 0 0 0 2px var(--brand-glow);
-    border-color: var(--brand) !important;
+    transform: scale(.98);
+    box-shadow: 0 0 0 2px rgba(4,120,87,.15);
   }
   .leadTable tbody tr.active {
     border-left: 3px solid var(--brand) !important;
@@ -276,23 +309,23 @@
   .mob-status-pill.st-storniert { background: #fee2e2; color: #991b1b; }
   .mob-status-pill.st-archiviert { background: #f3f4f6; color: #6b7280; }
 
-  /* Action buttons: filled, prominent */
+  /* Action buttons: filled, prominent, big touch targets */
   .mob-actions-row {
     display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px; margin-top: 14px;
+    gap: 8px; margin-top: 16px;
   }
   .mob-action-btn {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    height: 44px; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    height: 56px; border-radius: 14px;
     border: none; background: var(--bg-subtle);
-    font-size: 13px; font-weight: 700; color: var(--text);
+    font-size: 12px; font-weight: 800; color: var(--text);
     text-decoration: none; cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: opacity .12s;
+    transition: transform .1s;
   }
-  .mob-action-btn:active { opacity: .7; }
+  .mob-action-btn:active { transform: scale(.95); }
   .mob-action-btn svg {
-    width: 16px; height: 16px; stroke: currentColor;
+    width: 20px; height: 20px; stroke: currentColor;
     stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
   }
   .mob-action-btn.call-btn { background: #ecfdf5; color: #059669; }
@@ -437,13 +470,15 @@
   .kpiGrid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
   .kpiMini .v { font-size: 24px !important; }
   .content { padding: 10px 10px 90px !important; }
-  .mob-drawer-header { padding: 12px; }
-  .mob-drawer-quick { padding: 12px; }
-  .mob-drawer-details { padding: 12px; }
+  .mob-drawer-header { padding: 12px 14px 14px; }
+  .mob-drawer-quick { padding: 10px 14px; }
+  .mob-drawer-details { padding: 14px; }
   .mob-actions-row { gap: 6px; }
-  .mob-action-btn { height: 42px; font-size: 12px; }
-  .leadTable tbody tr { padding: 12px !important; }
+  .mob-action-btn { height: 50px; font-size: 11px; }
+  .mob-card-name { font-size: 15px !important; }
   .tName { font-size: 15px !important; }
+  .mobileBottomNav .mbn-item { padding: 4px 12px; font-size: 9px; }
+  .mehr-menu-item { height: 48px; font-size: 14px; }
 }
 
 /* ── Desktop: hide mobile-only ── */
