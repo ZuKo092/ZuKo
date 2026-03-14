@@ -273,11 +273,11 @@ $SMTP_PASS    = SMTP_PASS;
 
 if (trim($SUPABASE_URL) === '' || trim($LEADS_TABLE) === '') {
   log_error('CONFIG missing: SUPABASE_URL or LEADS_TABLE');
-  respond(500, ['ok' => false, 'error' => 'Server not configured']);
+  respond(500, ['ok' => false, 'error' => 'SUPABASE_URL oder LEADS_TABLE fehlt in der .env Datei.']);
 }
 if ($SERVICE_ROLE === '' || strlen($SERVICE_ROLE) < 40) {
   log_error('SUPABASE_SERVICE_ROLE missing');
-  respond(500, ['ok' => false, 'error' => 'Server not configured']);
+  respond(500, ['ok' => false, 'error' => 'SUPABASE_SERVICE_ROLE fehlt in der .env Datei.']);
 }
 
 $data = post_json();

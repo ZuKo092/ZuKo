@@ -110,8 +110,13 @@ check_origin($ALLOWED_ORIGINS);
 $SERVICE_ROLE = SUPABASE_SERVICE_ROLE_KEY;
 $SMTP_PASS = SMTP_PASS;
 
-if ($SERVICE_ROLE === '' || $SMTP_PASS === '') {
-  respond(500, ['ok' => false, 'error' => 'Server not configured']);
+if ($SERVICE_ROLE === '') {
+  log_error('SUPABASE_SERVICE_ROLE missing');
+  respond(500, ['ok' => false, 'error' => 'SUPABASE_SERVICE_ROLE fehlt in der .env Datei.']);
+}
+if ($SMTP_PASS === '') {
+  log_error('SMTP_PASS missing');
+  respond(500, ['ok' => false, 'error' => 'SMTP_PASS fehlt in der .env Datei.']);
 }
 
 $data = post_json();

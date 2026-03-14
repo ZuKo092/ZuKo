@@ -1215,8 +1215,12 @@ const photoReminderKey="ab_photo_reminder_"+leadId; const lastPhotoReminder=loca
 
   // ── Portal List (Kundenportal tab) ──
   async function loadPortalList() {
-    if (!STATE.sb||!STATE.companyId||!STATE.hasAccess) return;
     const loading=$("portalListLoading"),table=$("portalTable"),empty=$("portalEmpty"),tbody=$("portalTbody");
+    if (!STATE.sb||!STATE.companyId||!STATE.hasAccess) {
+      if (loading) loading.style.display="none";
+      if (empty) { empty.style.display="block"; empty.textContent="Nicht verbunden."; }
+      return;
+    }
     if (loading) loading.style.display="block"; if (table) table.style.display="none"; if (empty) empty.style.display="none";
     try {
     const {data:tokens,error}=await STATE.sb.from("portal_tokens").select("id,token,lead_id,created_at,is_active,expires_at").eq("company_id",STATE.companyId).order("created_at",{ascending:false}).limit(100);

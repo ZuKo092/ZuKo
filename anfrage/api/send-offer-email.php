@@ -227,11 +227,11 @@ $SMTP_PASS    = SMTP_PASS;
 
 if ($SERVICE_ROLE === '' || strlen($SERVICE_ROLE) < 40) {
   log_error('SERVICE_ROLE missing');
-  respond(500, ['ok' => false, 'error' => 'Server not configured']);
+  respond(500, ['ok' => false, 'error' => 'SUPABASE_SERVICE_ROLE fehlt in der .env Datei.']);
 }
 if ($SMTP_PASS === '') {
   log_error('SMTP_PASS missing');
-  respond(500, ['ok' => false, 'error' => 'Email not configured']);
+  respond(500, ['ok' => false, 'error' => 'SMTP_PASS fehlt in der .env Datei.']);
 }
 
 $data = post_json();
