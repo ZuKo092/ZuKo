@@ -1,0 +1,268 @@
+[2026-03-11T19:28:43+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:28:43+00:00] No new leads or error fetching.
+[2026-03-11T19:28:43+00:00] === DONE ===
+[2026-03-11T19:33:46+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:33:46+00:00] Found 2 leads in last 24h
+[2026-03-11T19:33:46+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:33:46+00:00] Created token for lead 6bcebc52-e327-4d20-b796-fc619425fd03: hXlr7a9fQj7e4tCAdeCouLmBCcaGFS2U
+[2026-03-11T19:33:47+00:00] SENT welcome email to daniel.koenig@example.com for lead 6bcebc52-e327-4d20-b796-fc619425fd03
+[2026-03-11T19:33:47+00:00] === DONE. Sent 1 welcome emails. ===
+[2026-03-11T19:34:36+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:34:36+00:00] Found 2 leads in last 24h
+[2026-03-11T19:34:36+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:34:36+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:34:36+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-11T19:34:37+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:34:37+00:00] Found 2 leads in last 24h
+[2026-03-11T19:34:37+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:34:37+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:34:37+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-11T19:34:40+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:34:40+00:00] Found 2 leads in last 24h
+[2026-03-11T19:34:40+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:34:40+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:34:40+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-11T19:34:41+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:34:41+00:00] Found 2 leads in last 24h
+[2026-03-11T19:34:41+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:34:41+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:34:41+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-11T19:34:54+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:34:54+00:00] Found 2 leads in last 24h
+[2026-03-11T19:34:54+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:34:54+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:34:54+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-11T19:36:18+00:00] === cron-portal-welcome START ===
+[2026-03-11T19:36:18+00:00] Found 2 leads in last 24h
+[2026-03-11T19:36:18+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-11T19:36:18+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-11T19:36:18+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:00:03+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:00:04+00:00] Found 7 leads in last 24h
+[2026-03-12T05:00:04+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:00:04+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:00:04+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:00:04+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:00:05+00:00] Created token for lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: U69DHgQV0NCmhC6SOkleFTlR2I3FuMfY
+[2026-03-12T05:00:06+00:00] SENT welcome email to belistroica@gmail.com for lead d3e3b7ad-30b9-4643-a58b-52c556f6beec
+[2026-03-12T05:00:06+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:00:06+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:00:06+00:00] === DONE. Sent 1 welcome emails. ===
+[2026-03-12T05:05:03+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:05:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:05:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:05:04+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:05:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:10:03+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:10:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:10:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:10:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:10:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:10:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:10:04+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:10:04+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:10:04+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:10:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:15:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:15:02+00:00] Found 7 leads in last 24h
+[2026-03-12T05:15:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:15:03+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:15:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:20:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:20:02+00:00] Found 7 leads in last 24h
+[2026-03-12T05:20:02+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:20:02+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:20:02+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:25:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:25:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:25:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:25:03+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:25:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:30:03+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:30:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:30:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:30:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:30:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:30:04+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:30:04+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:30:04+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:30:04+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:30:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:35:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:35:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:35:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:35:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:35:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:35:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:35:04+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:35:04+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:35:04+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:35:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:40:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:40:02+00:00] Found 7 leads in last 24h
+[2026-03-12T05:40:02+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:40:02+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:40:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:40:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:40:03+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:40:03+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:40:03+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:40:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:45:03+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:45:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:45:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:45:03+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:45:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:50:04+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:50:04+00:00] Found 7 leads in last 24h
+[2026-03-12T05:50:04+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:50:04+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:50:04+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:50:05+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:50:05+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:50:05+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:50:05+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:50:05+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-12T05:55:02+00:00] === cron-portal-welcome START ===
+[2026-03-12T05:55:03+00:00] Found 7 leads in last 24h
+[2026-03-12T05:55:03+00:00] SKIP lead 68479ce4-9973-4155-935d-9dd653a80345: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead 96d36687-95e3-4c8d-8193-ae589311d088: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead 04eee136-c4bf-4cbe-9c09-046ef2e84d19: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead 617078f9-2ee7-4520-8683-bbc9e2112851: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead d3e3b7ad-30b9-4643-a58b-52c556f6beec: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead 6bcebc52-e327-4d20-b796-fc619425fd03: token exists
+[2026-03-12T05:55:03+00:00] SKIP lead 69016a22-530c-4139-a61c-651aa7d64b62: token exists
+[2026-03-12T05:55:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:00:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:00:04+00:00] Found 6 leads in last 24h
+[2026-03-13T05:00:04+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:00:04+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:00:04+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:00:04+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:00:05+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:00:05+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:00:05+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:05:05+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:05:06+00:00] Found 6 leads in last 24h
+[2026-03-13T05:05:06+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:05:06+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:05:06+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:05:06+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:05:06+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:05:06+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:05:06+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:10:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:10:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:10:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:10:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:10:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:10:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:10:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:10:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:10:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:15:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:15:04+00:00] Found 6 leads in last 24h
+[2026-03-13T05:15:04+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:15:04+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:15:04+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:15:04+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:15:04+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:15:04+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:15:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:20:02+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:20:02+00:00] Found 6 leads in last 24h
+[2026-03-13T05:20:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:20:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:20:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:20:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:20:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:20:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:20:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:25:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:25:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:25:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:25:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:25:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:25:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:25:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:25:04+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:25:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:30:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:30:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:30:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:30:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:30:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:30:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:30:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:30:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:30:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:35:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:35:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:35:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:35:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:35:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:35:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:35:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:35:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:35:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:40:02+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:40:02+00:00] Found 6 leads in last 24h
+[2026-03-13T05:40:02+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:40:02+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:40:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:40:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:40:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:40:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:40:03+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:45:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:45:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:45:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:45:04+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:45:04+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:45:04+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:45:04+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:45:04+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:45:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:50:03+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:50:04+00:00] Found 6 leads in last 24h
+[2026-03-13T05:50:04+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:50:04+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:50:04+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:50:04+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:50:04+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:50:04+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:50:04+00:00] === DONE. Sent 0 welcome emails. ===
+[2026-03-13T05:55:02+00:00] === cron-portal-welcome START ===
+[2026-03-13T05:55:03+00:00] Found 6 leads in last 24h
+[2026-03-13T05:55:03+00:00] SKIP lead e50e6260-e1e1-4e91-a415-8df9f193055b: token exists
+[2026-03-13T05:55:03+00:00] SKIP lead df61d3a0-d1cb-4012-b7cb-e2dd949a6168: token exists
+[2026-03-13T05:55:03+00:00] SKIP lead c460b8a7-1ef9-426c-98d2-a157e7d26b2a: token exists
+[2026-03-13T05:55:03+00:00] SKIP lead 2b68fe94-b92e-4352-87bb-8cecfdf563e5: token exists
+[2026-03-13T05:55:03+00:00] SKIP lead 960b8a55-ddfa-4089-806e-018f53379e0f: token exists
+[2026-03-13T05:55:03+00:00] SKIP lead 9bda43f3-b40f-4bb9-b55f-95d0e3802420: token exists
+[2026-03-13T05:55:03+00:00] === DONE. Sent 0 welcome emails. ===

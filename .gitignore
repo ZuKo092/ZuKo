@@ -1,0 +1,4 @@
+*_secrets.php
+*.zip
+public_html/anfrage/api/ratelimit/
+public_html/anfrage/api/ratelimit_offer/

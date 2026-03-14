@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Ihr Umzugsangebot</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="/anfrage/anfragebox-pdf-unified1.js"></script>
+  <style>
+/* ── Portal CSS ── */
+:root {
+  --brand: #047857;
+  --brand-light: #d1fae5;
+  --brand-dark: #065f46;
+  --text: #111827;
+  --text-2: #374151;
+  --text-3: #6b7280;
+  --text-4: #9ca3af;
+  --line: #e5e7eb;
+  --bg: #f8f9fb;
+  --red: #dc2626;
+  --r: 12px;
+  --font: "Inter", -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; font-weight: 500; -webkit-font-smoothing: antialiased; }
+
+.portal-wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 80px; }
+
+/* Header */
+.portal-header { text-align: center; padding: 32px 0 24px; }
+.portal-logo { max-height: 48px; margin: 0 auto; }
+.portal-brand { margin-top: 8px; font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
+.portal-sub { margin-top: 4px; font-size: 13px; color: var(--text-3); font-weight: 500; }
+
+/* Sections */
+.p-section { margin-top: 20px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.p-section-head { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.p-section-head h2 { font-size: 16px; font-weight: 700; letter-spacing: -.02em; color: var(--text); }
+.p-section-head p { margin-top: 2px; font-size: 12px; color: var(--text-4); font-weight: 500; }
+.p-section-body { padding: 20px; }
+
+/* Status badge */
+.p-status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.p-status.open { background: #dbeafe; color: #1e40af; }
+.p-status.accepted { background: var(--brand-light); color: var(--brand-dark); }
+.p-status.expired { background: #fef2f2; color: #991b1b; }
+
+/* Info grid */
+.p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.p-info { padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fafbfc; }
+.p-info-label { font-size: 11px; font-weight: 600; color: var(--text-4); text-transform: uppercase; letter-spacing: .04em; }
+.p-info-value { margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* Route */
+.p-route { display: grid; grid-template-columns: 1fr 32px 1fr; gap: 8px; align-items: center; }
+.p-route-box { padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fafbfc; }
+.p-route-box .label { font-size: 11px; font-weight: 600; color: var(--brand); text-transform: uppercase; letter-spacing: .04em; }
+.p-route-box .addr { margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; }
+.p-route-arrow { text-align: center; font-size: 18px; color: var(--text-4); }
+
+/* Price */
+.p-price-box { text-align: center; padding: 24px; border: 2px solid var(--brand); border-radius: var(--r); background: linear-gradient(180deg, #ecfdf5 0%, #fff 100%); }
+.p-price-label { font-size: 12px; font-weight: 600; color: var(--brand-dark); text-transform: uppercase; letter-spacing: .06em; }
+.p-price-value { margin-top: 8px; font-size: 36px; font-weight: 800; letter-spacing: -.04em; color: var(--brand-dark); line-height: 1; }
+.p-price-note { margin-top: 6px; font-size: 12px; color: var(--text-3); }
+
+/* Inventory */
+.p-inv-room { margin-top: 12px; }
+.p-inv-room:first-child { margin-top: 0; }
+.p-inv-room-title { font-size: 13px; font-weight: 700; color: var(--brand-dark); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.p-inv-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.p-inv-item:last-child { border-bottom: none; }
+.p-inv-qty { font-size: 13px; font-weight: 600; color: var(--text-3); }
+.p-inv-svc { display: inline-flex; padding: 2px 6px; border-radius: 999px; background: var(--brand-light); color: var(--brand-dark); font-size: 10px; font-weight: 700; margin-left: 6px; }
+
+/* Terms */
+.p-check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; }
+.p-check input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--brand); flex: 0 0 20px; cursor: pointer; }
+.p-check label { font-size: 14px; font-weight: 500; color: var(--text-2); cursor: pointer; }
+.p-check a { color: var(--brand); text-decoration: underline; }
+
+/* Signature */
+.p-sig-canvas-wrap { border: 2px dashed var(--line); border-radius: 8px; background: #fff; position: relative; overflow: hidden; touch-action: none; }
+.p-sig-canvas { width: 100%; height: 160px; display: block; cursor: crosshair; }
+.p-sig-clear { position: absolute; top: 8px; right: 8px; height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 12px; font-weight: 600; color: var(--text-3); cursor: pointer; }
+.p-sig-hint { margin-top: 6px; font-size: 12px; color: var(--text-4); }
+
+/* Buttons */
+.p-btn { width: 100%; height: 48px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s, transform .1s; }
+.p-btn:active { transform: scale(.98); }
+.p-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.p-btn-primary { background: var(--brand); color: #fff; }
+.p-btn-primary:hover:not(:disabled) { background: #059669; }
+.p-btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--line); }
+.p-btn-secondary:hover { background: #f9fafb; }
+
+/* Upload */
+.p-upload-zone { border: 2px dashed var(--line); border-radius: 8px; padding: 24px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; }
+.p-upload-zone:hover { border-color: #d1d5db; background: #fafbfc; }
+.p-upload-zone input { display: none; }
+.p-upload-icon { font-size: 24px; color: var(--text-4); }
+.p-upload-text { margin-top: 4px; font-size: 13px; color: var(--text-3); font-weight: 500; }
+.p-upload-list { margin-top: 10px; display: grid; gap: 6px; }
+.p-upload-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 13px; font-weight: 500; }
+
+/* Timeline */
+.p-timeline { display: flex; flex-direction: column; gap: 0; }
+.p-tl-item { display: flex; gap: 12px; padding: 10px 0; position: relative; }
+.p-tl-dot { width: 10px; height: 10px; border-radius: 999px; background: var(--brand); margin-top: 5px; flex: 0 0 10px; }
+.p-tl-dot.gray { background: var(--line); }
+.p-tl-text { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.p-tl-time { font-size: 11px; color: var(--text-4); margin-top: 1px; }
+
+/* Alert */
+.p-alert { padding: 14px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+.p-alert-success { background: var(--brand-light); color: var(--brand-dark); border: 1px solid #a7f3d0; }
+.p-alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.p-alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+/* Loading */
+.p-loading { text-align: center; padding: 60px 20px; }
+.p-loading-spinner { width: 32px; height: 32px; border: 3px solid var(--line); border-top-color: var(--brand); border-radius: 999px; animation: spin .6s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Error page */
+.p-error { text-align: center; padding: 80px 20px; }
+.p-error h1 { font-size: 48px; font-weight: 800; color: var(--text-4); }
+.p-error p { margin-top: 8px; font-size: 16px; color: var(--text-3); }
+
+/* Accepted overlay */
+.p-accepted-banner { background: var(--brand); color: #fff; text-align: center; padding: 12px; font-size: 14px; font-weight: 700; }
+
+/* Footer */
+.portal-footer { text-align: center; padding: 32px 0; font-size: 12px; color: var(--text-4); }
+.portal-footer a { color: var(--brand); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .portal-wrap { padding: 16px 12px 60px; }
+  .p-grid { grid-template-columns: 1fr; }
+  .p-route { grid-template-columns: 1fr; gap: 6px; }
+  .p-route-arrow { display: none; }
+  .p-price-value { font-size: 28px; }
+  .p-sig-canvas { height: 140px; }
+}
+  </style>
+</head>
+<body>
+
+<div id="portalLoading" class="portal-wrap">
+  <div class="p-loading">
+    <div class="p-loading-spinner"></div>
+    <p style="margin-top:16px;font-size:14px;color:var(--text-3);">Angebot wird geladen...</p>
+  </div>
+</div>
+
+<div id="portalError" class="portal-wrap" style="display:none;">
+  <div class="p-error">
+    <h1>404</h1>
+    <p>Dieses Angebot existiert nicht oder ist abgelaufen.</p>
+  </div>
+</div>
+
+<div id="portalMain" class="portal-wrap" style="display:none;">
+
+  <!-- Accepted Banner -->
+  <div id="acceptedBanner" class="p-accepted-banner" style="display:none;border-radius:var(--r);margin-bottom:16px;">
+    Angebot wurde angenommen und unterschrieben.
+  </div>
+
+  <!-- Header -->
+  <div class="portal-header">
+    <img id="portalLogo" class="portal-logo" src="" alt="" style="display:none;" />
+    <div id="portalBrand" class="portal-brand"></div>
+    <div class="portal-sub">Ihr persönliches Umzugsangebot</div>
+  </div>
+
+  <!-- Status + Meta -->
+  <div class="p-section">
+    <div class="p-section-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-3);">Angebot für</div>
+          <div id="portalCustomerName" style="font-size:18px;font-weight:700;letter-spacing:-.02em;"></div>
+        </div>
+        <div id="portalStatusBadge" class="p-status open">Offen</div>
+      </div>
+      <div class="p-grid" style="margin-top:16px;">
+        <div class="p-info"><div class="p-info-label">Erstellt am</div><div class="p-info-value" id="portalCreatedAt">-</div></div>
+        <div class="p-info"><div class="p-info-label">Umzugstermin</div><div class="p-info-value" id="portalMoveDate">-</div></div>
+        <div class="p-info"><div class="p-info-label">Telefon</div><div class="p-info-value" id="portalPhone">-</div></div>
+        <div class="p-info"><div class="p-info-label">E-Mail</div><div class="p-info-value" id="portalEmail">-</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route -->
+  <div class="p-section">
+    <div class="p-section-head"><h2>Route</h2></div>
+    <div class="p-section-body">
+      <div class="p-route">
+        <div class="p-route-box"><div class="label">Beladestelle</div><div class="addr" id="portalFrom">-</div></div>
+        <div class="p-route-arrow">→</div>
+        <div class="p-route-box"><div class="label">Entladestelle</div><div class="addr" id="portalTo">-</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Hero (Phase 1: shown when no price) -->
+  <div id="uploadHeroSection" class="p-section" style="display:none;">
+    <div class="p-section-body" style="text-align:center;padding:32px 20px;">
+      <div style="font-size:40px;margin-bottom:12px;">📸</div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text);margin:0 0 8px;">Fotos hochladen</h2>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.6;max-width:440px;margin:0 auto 16px;">
+        Damit wir Ihnen einen genauen Preis berechnen können, benötigen wir Fotos von den Gegenständen, die transportiert werden sollen.
+      </p>
+      <p style="font-size:13px;color:var(--text-3);">Bitte fotografieren Sie jeden Raum und größere Möbelstücke einzeln.</p>
+    </div>
+  </div>
+
+  <!-- Price (Phase 2: shown when price exists) -->
+  <div class="p-section" id="priceSection">
+    <div class="p-section-body">
+      <div class="p-price-box">
+        <div class="p-price-label">Gesamtpreis inkl. MwSt.</div>
+        <div class="p-price-value" id="portalPrice">-</div>
+        <div class="p-price-note">Festpreis. Keine versteckten Kosten.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory -->
+  <div class="p-section" id="portalInventorySection" style="display:none;">
+    <div class="p-section-head"><h2>Leistungsumfang</h2><p>Inventar und Services</p></div>
+    <div class="p-section-body" id="portalInventory"></div>
+  </div>
+
+  <!-- Customer Photos (shown in phase 2 if photos exist) -->
+  <div class="p-section" id="portalPhotosSection" style="display:none;">
+    <div class="p-section-head"><h2>Ihre Fotos</h2><p>Von Ihnen hochgeladene Bilder</p></div>
+    <div class="p-section-body" id="portalPhotosGrid"></div>
+  </div>
+
+  <!-- Offer Text -->
+  <div class="p-section" id="portalNoteSection" style="display:none;">
+    <div class="p-section-head"><h2>Hinweis</h2></div>
+    <div class="p-section-body"><div id="portalNote" style="white-space:pre-line;font-size:14px;color:var(--text-2);"></div></div>
+  </div>
+
+  <!-- Terms + Signature (hidden after acceptance) -->
+  <div id="acceptSection" style="display:block;">
+
+    <!-- Terms -->
+    <div class="p-section">
+      <div class="p-section-head"><h2>Bedingungen</h2><p>Bitte lesen und bestätigen</p></div>
+      <div class="p-section-body">
+        <div class="p-check">
+          <input type="checkbox" id="checkAgb" />
+          <label for="checkAgb">Ich akzeptiere die <a href="#" target="_blank">Allgemeinen Geschäftsbedingungen</a>.</label>
+        </div>
+        <div class="p-check">
+          <input type="checkbox" id="checkDatenschutz" />
+          <label for="checkDatenschutz">Ich habe die <a href="#" target="_blank">Datenschutzerklärung</a> gelesen und stimme zu.</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signature -->
+    <div class="p-section">
+      <div class="p-section-head"><h2>Unterschrift</h2><p>Bitte unterschreiben Sie im Feld unten</p></div>
+      <div class="p-section-body">
+        <div class="p-sig-canvas-wrap">
+          <canvas id="sigCanvas" class="p-sig-canvas"></canvas>
+          <button id="sigClear" class="p-sig-clear" type="button">Löschen</button>
+        </div>
+        <div class="p-sig-hint">Zeichnen Sie Ihre Unterschrift mit dem Finger oder der Maus.</div>
+      </div>
+    </div>
+
+    <!-- Accept -->
+    <div style="margin-top:20px;">
+      <button id="btnAccept" class="p-btn p-btn-primary" type="button" disabled>
+        Angebot annehmen und unterschreiben
+      </button>
+      <div id="acceptError" class="p-alert p-alert-error" style="display:none;margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Success message (shown after acceptance) -->
+  <div id="successSection" style="display:none;">
+    <div class="p-section">
+      <div class="p-section-body" style="text-align:center;padding:24px;">
+        <div style="font-size:40px;margin-bottom:8px;">✓</div>
+        <div style="font-size:18px;font-weight:700;color:var(--brand-dark);margin-bottom:8px;">Vielen Dank!</div>
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:16px;">Ihr Angebot wurde erfolgreich angenommen und unterschrieben.</div>
+        <button id="btnDownloadSigned" class="p-btn p-btn-primary" type="button" style="min-width:240px;">
+          Angebot mit Unterschrift herunterladen
+        </button>
+        <div id="pdfProgress" style="display:none;margin-top:12px;font-size:13px;color:var(--text-3);">PDF wird erstellt...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Download -->
+  <div class="p-section" style="margin-top:20px;">
+    <div class="p-section-body" style="text-align:center;">
+      <button id="btnDownloadPdf" class="p-btn p-btn-secondary" type="button">
+        Angebot als PDF herunterladen
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div class="p-section">
+    <div class="p-section-head"><h2>Dokumente hochladen</h2><p>Fotos, Listen oder andere Dateien</p></div>
+    <div class="p-section-body">
+      <label class="p-upload-zone" id="uploadZone">
+        <input type="file" id="uploadInput" multiple accept="image/*,.pdf,.doc,.docx" />
+        <div class="p-upload-icon">📎</div>
+<div class="p-upload-text">Dateien hier ablegen oder klicken (max. 50 MB)</div>
+      </label>
+      <div id="uploadList" class="p-upload-list"></div>
+    </div>
+  </div>
+
+  <!-- Event Timeline -->
+  <div class="p-section">
+    <div class="p-section-head"><h2>Verlauf</h2></div>
+    <div class="p-section-body">
+      <div id="portalTimeline" class="p-timeline">
+        <div class="p-tl-item"><div class="p-tl-dot gray"></div><div><div class="p-tl-text">Noch keine Aktivitäten.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="portal-footer">
+    Bereitgestellt von <a href="https://anfragebox.de" target="_blank">AnfrageBox</a>
+  </div>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  const SUPABASE_URL = "https://uledkuegmaritmsjejlm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWRrdWVnbWFyaXRtc2plamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODk5MjksImV4cCI6MjA4NzE2NTkyOX0.ieblf3gbOOuZiqN_tF6S4dyh-GOgWDtIgdtFbrM5VVU";
+
+  let sb, tokenData, leadData, companyData, signatureData;
+  let sigCanvas, sigCtx, sigDrawing = false, sigHasData = false;
+
+  const $ = (id) => document.getElementById(id);
+
+  function getTokenFromUrl() {
+    const parts = window.location.pathname.split("/");
+    return parts[parts.length - 1] || null;
+  }
+
+  function esc(v) {
+    return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function formatDate(v) {
+    if (!v) return "-";
+    try { return new Date(v).toLocaleDateString("de-DE"); } catch { return String(v); }
+  }
+
+  function formatDT(v) {
+    if (!v) return "-";
+    try { return new Date(v).toLocaleString("de-DE"); } catch { return String(v); }
+  }
+
+  function formatEuro(v) {
+    const s = String(v || "").trim().replace(",", ".");
+    const n = Number(s);
+    if (!Number.isFinite(n)) return s || "-";
+    return n.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+  }
+
+  // ── Init ──
+  async function init() {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const token = getTokenFromUrl();
+    if (!token || token.length < 10) return showError();
+
+    // Load token
+    const { data: tk, error: tkErr } = await sb
+      .from("portal_tokens")
+      .select("*")
+      .eq("token", token)
+      .eq("is_active", true)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (tkErr || !tk) return showError();
+    tokenData = tk;
+
+    // Load lead
+    const { data: lead, error: leadErr } = await sb
+      .from("leads")
+      .select("*")
+      .eq("id", tk.lead_id)
+      .maybeSingle();
+
+    if (leadErr || !lead) return showError();
+    leadData = lead;
+
+    // Load company settings
+    const { data: company } = await sb
+      .from("company_settings")
+      .select("*")
+      .eq("company_id", tk.company_id)
+      .maybeSingle();
+
+    companyData = company || {};
+
+    // Check if already signed
+    const { data: sig } = await sb
+      .from("portal_signatures")
+      .select("*")
+      .eq("lead_id", tk.lead_id)
+      .limit(1)
+      .maybeSingle();
+
+    signatureData = sig || null;
+
+    // Log open event
+    logEvent("opened");
+
+    renderPortal();
+    initSignature();
+    initUpload();
+    loadTimeline();
+    loadUploads();
+    loadPortalPhotos();
+  }
+
+  function showError() {
+    $("portalLoading").style.display = "none";
+    $("portalError").style.display = "block";
+  }
+
+  // ── Render ──
+  function renderPortal() {
+    $("portalLoading").style.display = "none";
+    $("portalMain").style.display = "block";
+
+    const p = getPayload(leadData);
+
+    // Brand
+    if (companyData.logo_url && !companyData.logo_url.includes("logo1-umzug")) {
+      $("portalLogo").src = companyData.logo_url;
+      $("portalLogo").style.display = "block";
+    }
+    $("portalBrand").textContent = companyData.company_name || "Umzugsunternehmen";
+
+    // Customer
+    const name = leadData.customer_name || p.customer_name || p.customer?.name || "Kunde";
+    $("portalCustomerName").textContent = name;
+    $("portalCreatedAt").textContent = formatDate(leadData.created_at);
+    $("portalMoveDate").textContent = formatDate(leadData.move_date || p.move_date) || "Nach Vereinbarung";
+    $("portalPhone").textContent = leadData.customer_phone || p.customer_phone || p.customer?.phone || "-";
+    $("portalEmail").textContent = leadData.customer_email || p.customer_email || p.customer?.email || "-";
+
+    // Route
+    const fromA = p.pickup_address || p.from_address || p.from || leadData.pickup_address || {};
+    const toA = p.dropoff_address || p.to_address || p.to || leadData.dropoff_address || {};
+    $("portalFrom").innerHTML = addrHtml(fromA);
+    $("portalTo").innerHTML = addrHtml(toA);
+
+    // Determine phase: has price = angebot mode, no price = upload mode
+    const offer = p.offer || {};
+    const price = String(offer.price || "").trim();
+    const hasPrice = price.length > 0 && price !== "0";
+
+    if (hasPrice) {
+      // ── PHASE 2: Full Angebot ──
+      $("portalPrice").textContent = formatEuro(price);
+      if ($("priceSection")) $("priceSection").style.display = "block";
+      if ($("acceptSection")) $("acceptSection").style.display = "block";
+      if ($("uploadHeroSection")) $("uploadHeroSection").style.display = "none";
+      if ($("btnDownloadPdf")) $("btnDownloadPdf").parentElement.parentElement.style.display = "block";
+
+      const note = String(offer.text || "").trim();
+      if (note) {
+        $("portalNoteSection").style.display = "block";
+        $("portalNote").textContent = note;
+      }
+
+      renderInventory(p);
+
+      if (signatureData) showAccepted();
+    } else {
+      // ── PHASE 1: Upload Only (no price yet) ──
+      if ($("priceSection")) $("priceSection").style.display = "none";
+      if ($("portalInventorySection")) $("portalInventorySection").style.display = "none";
+      if ($("portalNoteSection")) $("portalNoteSection").style.display = "none";
+      if ($("acceptSection")) $("acceptSection").style.display = "none";
+      if ($("successSection")) $("successSection").style.display = "none";
+      if ($("btnDownloadPdf")) $("btnDownloadPdf").parentElement.parentElement.style.display = "none";
+      if ($("uploadHeroSection")) $("uploadHeroSection").style.display = "block";
+    }
+
+    // Status
+    updateStatusBadge();
+
+    document.title = `Angebot - ${name} | ${companyData.company_name || "AnfrageBox"}`;
+  }
+
+  function getPayload(row) {
+    const p = row?.payload;
+    if (!p) return {};
+    if (typeof p === "object") return p;
+    try { return JSON.parse(p); } catch { return {}; }
+  }
+
+  function addrHtml(a) {
+    if (!a) return "-";
+    const l1 = [a.street || a.strasse, a.number || a.nr || a.no].filter(Boolean).join(" ");
+    const l2 = [a.zip || a.plz, a.city || a.ort].filter(Boolean).join(" ");
+    const floor = a.floor ? `Stock ${a.floor}` : "";
+    const lift = a.lift ? `Aufzug: ${a.lift}` : "";
+    return [l1, l2, floor, lift].filter(Boolean).map(esc).join("<br>");
+  }
+
+  function renderInventory(p) {
+    const rooms = p.selected_rooms || p.rooms || [];
+    const items = p.room_items || p.roomItems || {};
+    const qty = p.room_item_quantities || p.roomItemQuantities || {};
+    const svc = p.assembly_request || p.services || {};
+
+    const allRooms = Array.from(new Set([...rooms.map(String), ...Object.keys(items)])).filter(Boolean);
+    if (!allRooms.length) return;
+
+    $("portalInventorySection").style.display = "block";
+    let html = "";
+
+    for (const room of allRooms) {
+      const list = Array.isArray(items[room]) ? items[room] : [];
+      if (!list.length) continue;
+
+      html += `<div class="p-inv-room"><div class="p-inv-room-title">${esc(room)}</div>`;
+      for (const it of list) {
+        const q = Math.max(1, Number(qty?.[room]?.[it] || 1));
+        const s = String(svc?.[room]?.[it] || "").trim();
+        const sLabel = s === "demontage" ? "DM" : s === "montage" ? "M" : s === "beides" ? "DM+M" : "";
+        html += `<div class="p-inv-item"><span>${esc(it)}${sLabel ? ` <span class="p-inv-svc">${sLabel}</span>` : ""}</span><span class="p-inv-qty">${q}x</span></div>`;
+      }
+      html += `</div>`;
+    }
+
+    $("portalInventory").innerHTML = html;
+  }
+
+  function updateStatusBadge() {
+    const badge = $("portalStatusBadge");
+    if (signatureData) {
+      badge.className = "p-status accepted";
+      badge.textContent = "Angenommen";
+    } else {
+      badge.className = "p-status open";
+      badge.textContent = "Offen";
+    }
+  }
+
+  function showAccepted() {
+    $("acceptSection").style.display = "none";
+    $("successSection").style.display = "block";
+    $("acceptedBanner").style.display = "block";
+    updateStatusBadge();
+  }
+
+  // ── Signature Canvas ──
+  function initSignature() {
+    sigCanvas = $("sigCanvas");
+    if (!sigCanvas) return;
+
+    const rect = sigCanvas.parentElement.getBoundingClientRect();
+    sigCanvas.width = rect.width;
+    sigCanvas.height = 160;
+    sigCtx = sigCanvas.getContext("2d");
+    sigCtx.strokeStyle = "#111827";
+    sigCtx.lineWidth = 2;
+    sigCtx.lineCap = "round";
+    sigCtx.lineJoin = "round";
+
+    const getPos = (e) => {
+      const r = sigCanvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    };
+
+    const start = (e) => { e.preventDefault(); sigDrawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
+    const move = (e) => { if (!sigDrawing) return; e.preventDefault(); const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); sigHasData = true; updateAcceptBtn(); };
+    const end = () => { sigDrawing = false; };
+
+    sigCanvas.addEventListener("mousedown", start);
+    sigCanvas.addEventListener("mousemove", move);
+    sigCanvas.addEventListener("mouseup", end);
+    sigCanvas.addEventListener("mouseleave", end);
+    sigCanvas.addEventListener("touchstart", start, { passive: false });
+    sigCanvas.addEventListener("touchmove", move, { passive: false });
+    sigCanvas.addEventListener("touchend", end);
+
+    $("sigClear").addEventListener("click", () => {
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+      sigHasData = false;
+      updateAcceptBtn();
+    });
+
+    $("checkAgb").addEventListener("change", updateAcceptBtn);
+    $("checkDatenschutz").addEventListener("change", updateAcceptBtn);
+    $("btnAccept").addEventListener("click", submitAcceptance);
+  }
+
+  function updateAcceptBtn() {
+    const agb = $("checkAgb")?.checked;
+    const ds = $("checkDatenschutz")?.checked;
+    $("btnAccept").disabled = !(agb && ds && sigHasData);
+  }
+
+  async function submitAcceptance() {
+    const btn = $("btnAccept");
+    const errEl = $("acceptError");
+    btn.disabled = true;
+    btn.textContent = "Wird gesendet...";
+    errEl.style.display = "none";
+
+    try {
+      const sigPng = sigCanvas.toDataURL("image/png");
+      const p = getPayload(leadData);
+      const name = leadData.customer_name || p.customer_name || p.customer?.name || "";
+      const email = leadData.customer_email || p.customer_email || p.customer?.email || "";
+
+      // 1. Save signature to portal_signatures
+      const { error } = await sb.from("portal_signatures").insert({
+        portal_token_id: tokenData.id,
+        lead_id: tokenData.lead_id,
+        company_id: tokenData.company_id,
+        signer_name: name,
+        signer_email: email,
+        signature_data: sigPng,
+        accepted_agb: true,
+        accepted_datenschutz: true,
+        ip_address: "",
+        user_agent: navigator.userAgent || "",
+      });
+
+      if (error) throw error;
+
+      // 2. Update lead status to Gebucht
+      await sb.from("leads").update({ status: "Gebucht" }).eq("id", tokenData.lead_id);
+
+      // 3. Log events
+      await logEvent("signed", { signer: name });
+      await logEvent("accepted");
+
+      signatureData = { signed_at: new Date().toISOString(), signature_data: sigPng };
+      showAccepted();
+      loadTimeline();
+
+      // 4. Generate signed PDF and upload
+      setTimeout(() => generateAndUploadPdf(sigPng, name), 500);
+
+    } catch (err) {
+      console.error("Accept error:", err);
+      errEl.textContent = "Fehler: " + (err.message || "Bitte versuchen Sie es erneut.");
+      errEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Angebot annehmen und unterschreiben";
+    }
+  }
+
+
+  // ── Shared jsPDF Builder (professional layout matching admin HTML) ──
+  function buildJsPdfDoc(draft, company, sigOpts) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pw = doc.internal.pageSize.getWidth();
+    const brand = company.company_name || "Umzugsunternehmen";
+    const from = draft.from || {};
+    const to = draft.to || {};
+    const customer = draft.customer || {};
+    const offer = { price: draft.price || "", text: draft.text || "" };
+    const inv = draft.inv || {};
+    let y = 15;
+
+    // Green top line
+    doc.setDrawColor(4, 120, 87); doc.setLineWidth(1.5);
+    doc.line(15, y, pw - 15, y); y += 8;
+
+    // Company name left + Angebot title right
+    doc.setFontSize(18); doc.setFont(undefined, "bold"); doc.setTextColor(11, 18, 32);
+    doc.text(brand, 15, y);
+    doc.setFontSize(24);
+    doc.text("Angebot", pw - 15 - doc.getTextWidth("Angebot"), y);
+    y += 7;
+
+    // Company details
+    doc.setFontSize(9); doc.setFont(undefined, "normal"); doc.setTextColor(100);
+    const compLines = [company.street, company.cityline, company.country || "Deutschland", company.phone ? "Tel.: " + company.phone : "", company.email ? "E-Mail: " + company.email : ""].filter(Boolean);
+    for (const cl of compLines) { doc.text(cl, 15, y); y += 4; }
+
+    // Offer number box right
+    const offerNo = "ANG-" + new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2,"0") + String(new Date().getDate()).padStart(2,"0") + "-" + String((customer.name||"KUNDE").replace(/\s+/g,"").slice(0,6).toUpperCase()||"KUNDE");
+    const offerDate = new Date().toLocaleDateString("de-DE");
+    const validDate = new Date(); validDate.setDate(validDate.getDate()+14);
+    const validUntil = validDate.toLocaleDateString("de-DE");
+    const boxX = pw - 85;
+    doc.setDrawColor(200); doc.setLineWidth(0.3);
+    doc.roundedRect(boxX, y - 16, 70, 28, 2, 2, "S");
+    doc.setFontSize(8);
+    const bY = y - 12;
+    doc.setTextColor(100); doc.setFont(undefined, "normal");
+    doc.text("Angebotsnr.", boxX+3, bY); doc.setTextColor(15); doc.setFont(undefined, "bold"); doc.text(offerNo, boxX+30, bY);
+    doc.setTextColor(100); doc.setFont(undefined, "normal");
+    doc.text("Datum", boxX+3, bY+5); doc.setTextColor(15); doc.setFont(undefined, "bold"); doc.text(offerDate, boxX+30, bY+5);
+    doc.setTextColor(100); doc.setFont(undefined, "normal");
+    doc.text("Gültig bis", boxX+3, bY+10); doc.setTextColor(15); doc.setFont(undefined, "bold"); doc.text(validUntil, boxX+30, bY+10);
+    doc.setTextColor(100); doc.setFont(undefined, "normal");
+    doc.text("Status", boxX+3, bY+15); doc.setTextColor(15); doc.setFont(undefined, "bold"); doc.text(draft.status || "Angebot", boxX+30, bY+15);
+    y += 6; doc.setTextColor(0); doc.setFont(undefined, "normal");
+
+    // Kunde + Auftragsdaten boxes
+    doc.setDrawColor(200);
+    doc.roundedRect(15, y, 82, 28, 2, 2, "S");
+    doc.roundedRect(102, y, 93, 28, 2, 2, "S");
+    doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined, "bold");
+    doc.text("KUNDE", 18, y+5); doc.text("AUFTRAGSDATEN", 105, y+5);
+    doc.setFontSize(9); doc.setTextColor(15); doc.setFont(undefined, "bold");
+    doc.text(customer.name || "-", 18, y+11);
+    doc.setFont(undefined, "normal");
+    if (customer.phone) doc.text(customer.phone, 18, y+15);
+    if (customer.email) doc.text(customer.email, 18, y+19);
+    const moveDate = draft.move_date || "";
+    const moveFmt = moveDate ? (function(v){ const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m?m[3]+"."+m[2]+"."+m[1]:v; })(moveDate) : "nach Vereinbarung";
+    doc.setFont(undefined, "bold");
+    doc.text("Termin: " + moveFmt, 105, y+11);
+    doc.setFont(undefined, "normal");
+    const fromShort = [from.zip, from.city].filter(Boolean).join(" ") || "-";
+    const toShort = [to.zip, to.city].filter(Boolean).join(" ") || "-";
+    doc.text("Route: " + fromShort + " \u2192 " + toShort, 105, y+16);
+    y += 34;
+
+    // Leistungsdaten box
+    const fromLine1 = [from.street, from.no].filter(Boolean).join(" ") || "-";
+    const fromLine2 = [from.zip, from.city].filter(Boolean).join(" ") || "-";
+    const toLine1 = [to.street, to.no].filter(Boolean).join(" ") || "-";
+    const toLine2 = [to.zip, to.city].filter(Boolean).join(" ") || "-";
+    doc.setDrawColor(200); doc.roundedRect(15, y, pw-30, 28, 2, 2, "S");
+    doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined, "bold");
+    doc.text("LEISTUNGSDATEN", 18, y+5);
+    doc.setFontSize(8); doc.setTextColor(22, 101, 52); doc.setFont(undefined, "bold");
+    doc.text("Beladestelle", 18, y+10); doc.text("Entladestelle", pw/2+5, y+10);
+    doc.setFontSize(8.5); doc.setTextColor(15); doc.setFont(undefined, "bold");
+    doc.text(fromLine1, 18, y+15); doc.text(fromLine2, 18, y+19);
+    doc.text(toLine1, pw/2+5, y+15); doc.text(toLine2, pw/2+5, y+19);
+    doc.setFont(undefined, "normal");
+    if (from.floor) doc.text("Stock: "+from.floor, 18, y+23);
+    if (from.lift) doc.text("Aufzug: "+from.lift, 50, y+23);
+    if (to.floor) doc.text("Stock: "+to.floor, pw/2+5, y+23);
+    if (to.lift) doc.text("Aufzug: "+to.lift, pw/2+37, y+23);
+    y += 33;
+
+    // Service table
+    const priceRaw = String(offer.price||"").trim().replace(",",".");
+    const priceNum = Number(priceRaw);
+    const hasPrice = Number.isFinite(priceNum);
+    const euroFmt = function(n) { return Number.isFinite(n)?n.toLocaleString("de-DE",{style:"currency",currency:"EUR"}):"\u2014"; };
+    const gross = hasPrice?priceNum:null;
+    const net = hasPrice?gross/1.19:null;
+    const vat = hasPrice?gross-net:null;
+
+    // Table header
+    doc.setFillColor(247,250,248);
+    doc.rect(15, y, pw-30, 7, "F");
+    doc.setDrawColor(200); doc.rect(15, y, pw-30, 7, "S");
+    doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined, "bold");
+    doc.text("POS.", 18, y+5); doc.text("LEISTUNG", 32, y+5);
+    doc.text("MENGE", 120, y+5); doc.text("EINZELPREIS", 138, y+5); doc.text("GESAMT", 170, y+5);
+    y += 7;
+
+    const svcRows = []; let pos = 1;
+    svcRows.push({p:pos++,t:"Umzugsservice gemäß Objekt- und Routendaten",q:"1",u:hasPrice?euroFmt(gross):"\u2014",g:hasPrice?euroFmt(gross):"\u2014"});
+
+    const rooms = inv.rooms||[]; const items = inv.items||{};
+    const qty = inv.qty||{}; const svc = inv.svc||{};
+    let itemCount=0, svcCount=0;
+    for (const room of rooms) { const ri=Array.isArray(items[room])?items[room]:[]; for (const it of ri) { itemCount+=Math.max(1,Number(qty?.[room]?.[it]||1)); if(String(svc?.[room]?.[it]||"").trim()) svcCount++; }}
+    if (from.floor||to.floor||from.lift||to.lift) svcRows.push({p:pos++,t:"Zugang / Etage / Aufzug",q:"inkl.",u:"inkl.",g:"inkl."});
+    if (itemCount>0) svcRows.push({p:pos++,t:"Inventar laut Anlage ("+itemCount+" Pos.)",q:"1",u:"inkl.",g:"inkl."});
+    if (svcCount>0) svcRows.push({p:pos++,t:"Montage / Demontage gemäß Inventar",q:String(svcCount),u:"inkl.",g:"inkl."});
+
+    doc.setFontSize(8); doc.setTextColor(15);
+    for (const r of svcRows) {
+      doc.setFont(undefined, "bold");
+      doc.text(String(r.p), 18, y+4); doc.text(r.t, 32, y+4);
+      doc.text(r.q, 125, y+4); doc.text(r.u, 143, y+4); doc.text(r.g, 172, y+4);
+      doc.setDrawColor(230); doc.line(15, y+6, pw-15, y+6); y += 7;
+    }
+    y += 4;
+
+    // Konditionen + Price box
+    if (y > 200) { doc.addPage(); y = 20; }
+    doc.setDrawColor(200); doc.roundedRect(15, y, 90, 40, 2, 2, "S");
+    doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined, "bold");
+    doc.text("KONDITIONEN", 18, y+5);
+    doc.setFontSize(7.5); doc.setTextColor(15); doc.setFont(undefined, "normal");
+    const konds = ["\u2022 Angebot gültig bis "+validUntil, "\u2022 Grundlage: angegebene Leistungen", "\u2022 Mehraufwand gesondert berechenbar", "\u2022 Terminvergabe nach Verfügbarkeit", "\u2022 Änderungen nach Besichtigung vorb."];
+    let ky = y+10; for (const k of konds) { doc.text(k, 18, ky); ky += 4.5; }
+
+    // Price box
+    doc.setDrawColor(22,163,74); doc.setLineWidth(0.6);
+    doc.roundedRect(110, y, pw-125, 40, 3, 3, "S");
+    doc.setFontSize(8.5); doc.setTextColor(51); doc.setFont(undefined, "normal");
+    doc.text("Zwischensumme netto", 114, y+10);
+    const netStr = euroFmt(net); doc.text(netStr, pw-20-doc.getTextWidth(netStr), y+10);
+    doc.text("zzgl. 19% MwSt.", 114, y+16);
+    const vatStr = euroFmt(vat); doc.text(vatStr, pw-20-doc.getTextWidth(vatStr), y+16);
+    doc.setDrawColor(200); doc.line(114, y+20, pw-19, y+20);
+    doc.setFontSize(10); doc.setTextColor(22,101,52); doc.setFont(undefined, "bold");
+    doc.text("Gesamt brutto", 114, y+28);
+    doc.setFontSize(18);
+    const grossStr = euroFmt(gross); doc.text(grossStr, pw-20-doc.getTextWidth(grossStr), y+30);
+    y += 46;
+
+    // Offer note
+    if (offer.text && String(offer.text).trim()) {
+      if (y>245) { doc.addPage(); y=20; }
+      doc.setDrawColor(200); doc.roundedRect(15, y, pw-30, 20, 2, 2, "S");
+      doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined, "bold");
+      doc.text("HINWEIS", 18, y+5);
+      doc.setFontSize(8.5); doc.setTextColor(15); doc.setFont(undefined, "normal");
+      const noteLines = doc.splitTextToSize(offer.text, pw-40);
+      doc.text(noteLines, 18, y+10);
+      y += 12 + noteLines.length*4;
+    }
+
+    // Signature block
+    if (sigOpts && sigOpts.png) {
+      if (y>215) { doc.addPage(); y=20; }
+      doc.setDrawColor(4,120,87); doc.setLineWidth(0.8);
+      doc.line(15, y, pw-15, y); y += 8;
+      doc.setFontSize(11); doc.setFont(undefined, "bold"); doc.setTextColor(0);
+      doc.text("Unterschrift des Kunden", 15, y); y += 5;
+      doc.setFontSize(9); doc.setFont(undefined, "normal"); doc.setTextColor(100);
+      doc.text("Unterzeichnet am: "+(sigOpts.date||"-"), 15, y); y += 4;
+      doc.text("Name: "+(sigOpts.name||"-"), 15, y); y += 7;
+      doc.setTextColor(0);
+      try { doc.addImage(sigOpts.png, "PNG", 15, y, 60, 25); y+=28; } catch(e) { console.error("Sig:",e); }
+      doc.setFontSize(10); doc.setFont(undefined, "bold"); doc.setTextColor(4,120,87);
+      doc.text("Angebot angenommen und unterschrieben.", 15, y);
+      doc.setTextColor(0); y+=8;
+    }
+
+    // Footer
+    doc.setFontSize(7.5); doc.setTextColor(100); doc.setFont(undefined, "normal");
+    const fL1 = [brand, company.street, company.cityline, company.country||"Deutschland"].filter(Boolean).join(" \u2022 ");
+    const fL2 = [company.phone?"Tel. "+company.phone:"", company.email?"E-Mail "+company.email:"", company.iban?"IBAN "+company.iban:""].filter(Boolean).join(" \u2022 ");
+    doc.text(fL1, 15, 282); doc.text(fL2, 15, 286);
+
+    // Annex: Inventarliste
+    if (rooms.length && Object.keys(items).length) {
+      const svcLabel = function(v){if(v==="demontage")return"Demontage";if(v==="montage")return"Montage";if(v==="beides")return"Demontage + Montage";return"Nur Transport";};
+      doc.addPage(); let ay=15;
+      doc.setDrawColor(4,120,87); doc.setLineWidth(1.5); doc.line(15,ay,pw-15,ay); ay+=10;
+      doc.setFontSize(18); doc.setFont(undefined,"bold"); doc.setTextColor(11,18,32);
+      doc.text("Inventarliste",15,ay);
+      doc.setFontSize(9); doc.setFont(undefined,"normal"); doc.setTextColor(100);
+      doc.text(customer.name||"-", pw-15-doc.getTextWidth(customer.name||"-"), ay-3);
+      doc.text(fromShort+" \u2192 "+toShort, pw-15-doc.getTextWidth(fromShort+" \u2192 "+toShort), ay+2);
+      if (moveDate) { const mdText = moveFmt; doc.text(mdText, pw-15-doc.getTextWidth(mdText), ay+7); }
+      ay+=4;
+      doc.setFontSize(9); doc.setTextColor(71);
+      doc.text("Anlage zum Angebot "+offerNo, 15, ay); ay+=8;
+
+      for (const room of rooms) {
+        const rItems=Array.isArray(items[room])?items[room]:[];
+        if (!rItems.length) continue;
+        if (ay>250) { doc.addPage(); ay=20; }
+        doc.setFillColor(247,250,248); doc.roundedRect(15, ay, pw-30, 7, 2, 2, "F");
+        doc.setFontSize(10); doc.setTextColor(22,101,52); doc.setFont(undefined,"bold");
+        doc.text(room, 18, ay+5); ay+=9;
+        doc.setFontSize(7); doc.setTextColor(100); doc.setFont(undefined,"bold");
+        doc.text("POSITION",18,ay); doc.text("MENGE",130,ay); doc.text("SERVICE",150,ay); ay+=4;
+        doc.setFontSize(8.5); doc.setTextColor(15);
+        for (const it of rItems) {
+          if (ay>272) { doc.addPage(); ay=20; }
+          const q=Math.max(1,Number(qty?.[room]?.[it]||1));
+          const sv=String(svc?.[room]?.[it]||"");
+          doc.setFont(undefined,"bold"); doc.text(it,18,ay);
+          doc.text(String(q),133,ay);
+          doc.setFont(undefined,"normal"); doc.text(svcLabel(sv),150,ay);
+          doc.setDrawColor(232); doc.line(18,ay+2,pw-18,ay+2); ay+=5.5;
+        }
+        ay+=4;
+      }
+      doc.setFontSize(7.5); doc.setTextColor(100); doc.setFont(undefined,"normal");
+      doc.text(fL1, 15, 282); doc.text(fL2, 15, 286);
+    }
+
+    return doc;
+  }
+
+  // ── Build draft from lead data ──
+  function buildPortalDraft(statusOverride) {
+    const p = getPayload(leadData);
+    const offer = p.offer || {};
+    const fromA = p.pickup_address || p.from_address || p.from || leadData.pickup_address || {};
+    const toA = p.dropoff_address || p.to_address || p.to || leadData.dropoff_address || {};
+    return {
+      from: { street: fromA.street||fromA.strasse||"", no: fromA.number||fromA.nr||fromA.no||"", zip: fromA.zip||fromA.plz||"", city: fromA.city||fromA.ort||"", floor: fromA.floor||"", lift: fromA.lift||fromA.aufzug||"" },
+      to: { street: toA.street||toA.strasse||"", no: toA.number||toA.nr||toA.no||"", zip: toA.zip||toA.plz||"", city: toA.city||toA.ort||"", floor: toA.floor||"", lift: toA.lift||toA.aufzug||"" },
+      customer: { name: leadData.customer_name||p.customer_name||p.customer?.name||"", phone: leadData.customer_phone||p.customer_phone||p.customer?.phone||"", email: leadData.customer_email||p.customer_email||p.customer?.email||"" },
+      move_date: leadData.move_date||p.move_date||"",
+      price: String(offer.price||""), text: String(offer.text||""),
+      status: statusOverride||"Angebot",
+      inv: { rooms: p.selected_rooms||p.rooms||[], items: p.room_items||p.roomItems||{}, qty: p.room_item_quantities||p.roomItemQuantities||{}, svc: p.assembly_request||p.services||{} }
+    };
+  }
+
+  async function generateAndUploadPdf(sigPng, signerName) {
+    const progress = $("pdfProgress");
+    if (progress) { progress.style.display = "block"; progress.textContent = "PDF wird erstellt..."; }
+    try {
+      const sigDate = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+      const draft = buildPortalDraft("Gebucht");
+      const custName = draft.customer.name || "Kunde";
+      const doc = buildJsPdfDoc(draft, companyData||{}, { png: sigPng, name: signerName||"-", date: sigDate });
+      const pdfBlob = doc.output("blob");
+      const fileName = "Angebot_" + custName.replace(/\s+/g,"_") + "_unterschrieben_" + Date.now() + ".pdf";
+      if (progress) progress.textContent = "PDF wird hochgeladen...";
+      const storagePath = tokenData.company_id+"/"+tokenData.lead_id+"/"+fileName;
+      const { error: upErr } = await sb.storage.from("portal-uploads").upload(storagePath, pdfBlob, { upsert: true, contentType: "application/pdf" });
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from("portal-uploads").getPublicUrl(storagePath);
+        const publicUrl = urlData?.publicUrl || "";
+        await sb.from("portal_uploads").insert({ portal_token_id: tokenData.id, lead_id: tokenData.lead_id, company_id: tokenData.company_id, file_name: fileName, file_url: publicUrl, file_type: "application/pdf", file_size: pdfBlob.size });
+        await logEvent("pdf_signed_uploaded", { file: fileName, url: publicUrl });
+        const btnDl = $("btnDownloadSigned");
+        if (btnDl) { btnDl.onclick = function(){ const a=document.createElement("a"); a.href=publicUrl; a.download=fileName; a.target="_blank"; a.click(); }; }
+      } else { console.error("PDF upload error:", upErr); }
+      doc.save(fileName);
+      if (progress) progress.textContent = "PDF heruntergeladen.";
+    } catch (pdfErr) {
+      console.error("PDF generation error:", pdfErr);
+      if (progress) progress.textContent = "PDF Fehler: " + (pdfErr.message || "Unbekannt");
+    }
+  }
+
+  // ── Upload ──
+  function initUpload() {
+    const input = $("uploadInput");
+    if (!input) return;
+    input.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files || []);
+      for (const file of files) {
+if (file.size > 50 * 1024 * 1024) { alert("Max. 50 MB pro Datei."); continue; }
+        const path = `${tokenData.company_id}/${tokenData.lead_id}/${Date.now()}_${file.name}`;
+        const { error: upErr } = await sb.storage.from("portal-uploads").upload(path, file, { upsert: true });
+        if (upErr) { console.error("Upload error:", upErr); continue; }
+        const { data: urlData } = sb.storage.from("portal-uploads").getPublicUrl(path);
+        await sb.from("portal_uploads").insert({
+          portal_token_id: tokenData.id,
+          lead_id: tokenData.lead_id,
+          company_id: tokenData.company_id,
+          file_name: file.name,
+          file_url: urlData?.publicUrl || "",
+          file_type: file.type,
+          file_size: file.size,
+        });
+        await logEvent("uploaded", { file: file.name });
+      }
+      input.value = "";
+      loadUploads();
+      loadTimeline();
+    });
+  }
+
+  // ── Portal Photos (shown in phase 2) ──
+  async function loadPortalPhotos() {
+    const section = $("portalPhotosSection");
+    const grid = $("portalPhotosGrid");
+    if (!section || !grid) return;
+
+    const { data } = await sb.from("portal_uploads").select("file_name,file_url,file_type").eq("lead_id", tokenData.lead_id).order("uploaded_at", { ascending: false });
+    if (!data || !data.length) return;
+
+    const imgs = data.filter(f => f.file_type && f.file_type.startsWith("image/"));
+    if (!imgs.length) return;
+
+    section.style.display = "block";
+    grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">${imgs.map(img => `<a href="${esc(img.file_url)}" target="_blank" style="display:block;border:1px solid var(--line);border-radius:8px;overflow:hidden;aspect-ratio:1;"><img src="${esc(img.file_url)}" alt="${esc(img.file_name)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" /></a>`).join("")}</div><div style="margin-top:6px;font-size:12px;color:var(--text-3);">${imgs.length} Foto${imgs.length !== 1 ? "s" : ""} hochgeladen.</div>`;
+  }
+
+  async function loadUploads() {
+    const { data } = await sb.from("portal_uploads").select("*").eq("lead_id", tokenData.lead_id).order("uploaded_at", { ascending: false });
+    const el = $("uploadList");
+    if (!el || !data?.length) return;
+    el.innerHTML = data.map(f => `<div class="p-upload-item"><span>${esc(f.file_name)}</span><a href="${esc(f.file_url)}" target="_blank" style="color:var(--brand);font-size:12px;font-weight:600;">Öffnen</a></div>`).join("");
+  }
+
+  // ── Timeline ──
+  async function loadTimeline() {
+    const { data } = await sb.from("portal_events").select("*").eq("lead_id", tokenData.lead_id).order("created_at", { ascending: false }).limit(20);
+    const el = $("portalTimeline");
+    if (!el) return;
+    if (!data?.length) {
+      el.innerHTML = `<div class="p-tl-item"><div class="p-tl-dot gray"></div><div><div class="p-tl-text">Angebot erstellt.</div><div class="p-tl-time">${formatDT(tokenData.created_at)}</div></div></div>`;
+      return;
+    }
+    const labels = { opened: "Portal geöffnet", viewed: "Angebot angesehen", signed: "Unterschrieben", accepted: "Angebot angenommen", downloaded: "PDF heruntergeladen", uploaded: "Datei hochgeladen" };
+    el.innerHTML = data.map(ev => {
+      const label = labels[ev.event_type] || ev.event_type;
+      const isGreen = ev.event_type === "accepted" || ev.event_type === "signed";
+      return `<div class="p-tl-item"><div class="p-tl-dot ${isGreen ? "" : "gray"}"></div><div><div class="p-tl-text">${esc(label)}</div><div class="p-tl-time">${formatDT(ev.created_at)}</div></div></div>`;
+    }).join("");
+  }
+
+  // ── Events ──
+  async function logEvent(type, data = {}) {
+    try {
+      await sb.from("portal_events").insert({
+        portal_token_id: tokenData.id,
+        lead_id: tokenData.lead_id,
+        event_type: type,
+        event_data: data,
+      });
+    } catch (e) { console.error("logEvent:", e); }
+  }
+
+  // ── PDF Download (unified) ──
+
+  // ── PDF Download (jsPDF, works on mobile) ──
+  $("btnDownloadPdf")?.addEventListener("click", () => {
+    logEvent("downloaded");
+    try {
+      const draft = buildPortalDraft("Angebot gesendet");
+      const doc = buildJsPdfDoc(draft, companyData || {}, null);
+      const custName = draft.customer.name || "Kunde";
+      doc.save("Angebot_" + custName.replace(/\s+/g, "_") + ".pdf");
+    } catch (err) {
+      console.error("PDF download error:", err);
+      alert("PDF konnte nicht erstellt werden. Bitte versuchen Sie es erneut.");
+    }
+  });
+
+  // ── Boot ──
+  init().catch(err => { console.error("Portal init error:", err); showError(); });
+})();
+</script>
+</body>
+</html>

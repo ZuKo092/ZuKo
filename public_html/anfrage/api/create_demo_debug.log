@@ -1,0 +1,2 @@
+[2026-03-10T06:33:54+00:00] company_users fail: HTTP 400 | RAW: {"code":"22P02","details":null,"hint":null,"message":"invalid input syntax for type bigint: \"77e455a5-a14c-4e4d-ba43-e4f39f3480ea\""}
+[2026-03-10T06:37:29+00:00] company_users fail | HTTP 400 | RAW: {"code":"22P02","details":null,"hint":null,"message":"invalid input syntax for type bigint: \"c0931914-7c4b-4d3e-a60c-fc84d475a88e\""}

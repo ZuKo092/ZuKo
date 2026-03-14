@@ -1,0 +1,51 @@
+[2026-03-11T07:50:44+00:00] PHPMailer send failed for lead fc814835-f352-4fba-a0c8-3107b7c32903: SMTP Error: The following recipients failed: ungureanudavid39@gmail.com: <ungureanudavid39@gmail.com>: Sender address rejected: not owned by user info@grapify-media.de
+
+[2026-03-11T07:53:04+00:00] PHPMailer send failed for lead fc814835-f352-4fba-a0c8-3107b7c32903: SMTP Error: The following recipients failed: ungureanudavid39@gmail.com: <ungureanudavid39@gmail.com>: Sender address rejected: not owned by user info@grapify.show
+
+[2026-03-11T07:53:11+00:00] PHPMailer send failed for lead fc814835-f352-4fba-a0c8-3107b7c32903: SMTP Error: The following recipients failed: ungureanudavid39@gmail.com: <ungureanudavid39@gmail.com>: Sender address rejected: not owned by user info@grapify.show
+
+[2026-03-11T07:53:30+00:00] PHPMailer send failed for lead dfae4659-8237-4d75-965c-5ec61bee22ed: SMTP Error: The following recipients failed: zukodavid22@gmail.com: <ungureanudavid39@gmail.com>: Sender address rejected: not owned by user info@grapify.show
+
+[2026-03-11T07:55:29+00:00] OFFER EMAIL SENT | lead=fc814835-f352-4fba-a0c8-3107b7c32903 | to=ungureanudavid39@gmail.com | company=0632a3c1-2734-4303-9341-f1b2db7f977a
+[2026-03-11T10:12:52+00:00] OFFER EMAIL SENT | lead=fc814835-f352-4fba-a0c8-3107b7c32903 | to=ungureanudavid39@gmail.com | company=0632a3c1-2734-4303-9341-f1b2db7f977a
+[2026-03-11T11:28:51+00:00] OFFER EMAIL SENT | lead=fc814835-f352-4fba-a0c8-3107b7c32903 | to=ungureanudavid39@gmail.com | company=0632a3c1-2734-4303-9341-f1b2db7f977a
+[2026-03-11T11:51:05+00:00] OFFER EMAIL SENT | lead=fc814835-f352-4fba-a0c8-3107b7c32903 | to=ungureanudavid39@gmail.com | company=0632a3c1-2734-4303-9341-f1b2db7f977a
+[2026-03-11T21:43:48+00:00] PHPMailer send failed for lead 617078f9-2ee7-4520-8683-bbc9e2112851: SMTP Error: The following recipients failed: belistroica@gmail.com: <belistroica@gmail.com>: Sender address rejected: not owned by user info@grapify-media.de
+
+[2026-03-11T21:43:53+00:00] PHPMailer send failed for lead 617078f9-2ee7-4520-8683-bbc9e2112851: SMTP Error: The following recipients failed: belistroica@gmail.com: <belistroica@gmail.com>: Sender address rejected: not owned by user info@grapify-media.de
+
+[2026-03-11T21:44:00+00:00] PHPMailer send failed for lead 617078f9-2ee7-4520-8683-bbc9e2112851: SMTP Error: The following recipients failed: belistroica@gmail.com: <belistroica@gmail.com>: Sender address rejected: not owned by user info@grapify-media.de
+
+[2026-03-11T21:45:55+00:00] OFFER EMAIL SENT | lead=617078f9-2ee7-4520-8683-bbc9e2112851 | to=belistroica@gmail.com | company=af719021-50cd-452c-a11d-e3f812b8a6e7
+[2026-03-11T22:12:13+00:00] OFFER EMAIL SENT | lead=69016a22-530c-4139-a61c-651aa7d64b62 | to=daniel.koenig@example.com | company=c78e23a4-86fd-4ce1-afb6-e5d03354cd0d
+[2026-03-11T22:22:11+00:00] OFFER EMAIL SENT | lead=68479ce4-9973-4155-935d-9dd653a80345 | to=zukodavid22@gmail.com | company=c78e23a4-86fd-4ce1-afb6-e5d03354cd0d
+[2026-03-12T06:22:28+00:00] OFFER EMAIL SENT | lead=9f39adea-0340-43bc-9d2b-90a5b887fa7e | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T06:37:07+00:00] OFFER EMAIL SENT | lead=9f39adea-0340-43bc-9d2b-90a5b887fa7e | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T06:54:17+00:00] OFFER EMAIL SENT | lead=a44b8c95-d49c-4398-8f07-3b7e40cdc1b5 | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T06:57:03+00:00] OFFER EMAIL SENT | lead=a44b8c95-d49c-4398-8f07-3b7e40cdc1b5 | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:31:10+00:00] OFFER EMAIL SENT | lead=bf574e5e-cc29-4752-af09-ccfafb1ddd9d | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:32:42+00:00] OFFER EMAIL SENT | lead=bf574e5e-cc29-4752-af09-ccfafb1ddd9d | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:33:18+00:00] OFFER EMAIL SENT | lead=bf574e5e-cc29-4752-af09-ccfafb1ddd9d | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:45:00+00:00] OFFER EMAIL SENT | lead=e92db827-364a-4721-8920-cf5eb71e9eb0 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:45:07+00:00] OFFER EMAIL SENT | lead=e92db827-364a-4721-8920-cf5eb71e9eb0 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T07:55:57+00:00] OFFER EMAIL SENT | lead=4e1f723a-537b-47fa-b088-0bb3e8e28b9d | to=iceblue200407@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T09:13:53+00:00] OFFER EMAIL SENT | lead=9bda43f3-b40f-4bb9-b55f-95d0e3802420 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T09:14:47+00:00] OFFER EMAIL SENT | lead=9bda43f3-b40f-4bb9-b55f-95d0e3802420 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T10:08:37+00:00] OFFER EMAIL SENT | lead=960b8a55-ddfa-4089-806e-018f53379e0f | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T11:33:17+00:00] OFFER EMAIL SENT | lead=2b68fe94-b92e-4352-87bb-8cecfdf563e5 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T12:33:18+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T13:08:32+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T13:08:49+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T13:11:09+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T13:11:35+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T13:13:16+00:00] OFFER EMAIL SENT | lead=c460b8a7-1ef9-426c-98d2-a157e7d26b2a | to=zukodavid22@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T20:59:10+00:00] OFFER EMAIL SENT | lead=df61d3a0-d1cb-4012-b7cb-e2dd949a6168 | to=belistroica@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-12T21:09:12+00:00] OFFER EMAIL SENT | lead=e50e6260-e1e1-4e91-a415-8df9f193055b | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T16:14:18+00:00] OFFER EMAIL SENT | lead=e50e6260-e1e1-4e91-a415-8df9f193055b | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T16:16:06+00:00] OFFER EMAIL SENT | lead=e50e6260-e1e1-4e91-a415-8df9f193055b | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T16:43:22+00:00] OFFER EMAIL SENT | lead=94dd7463-a024-48bd-a676-2ba0817e105c | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T16:46:01+00:00] OFFER EMAIL SENT | lead=94dd7463-a024-48bd-a676-2ba0817e105c | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T17:40:44+00:00] OFFER EMAIL SENT | lead=1cce42c1-c390-495e-85e4-7e5a7e9d6a74 | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
+[2026-03-13T17:45:36+00:00] [photo-reminder] PHOTO REMINDER SENT | lead=1cce42c1-c390-495e-85e4-7e5a7e9d6a74 | to=ungureanudavid39@gmail.com
+[2026-03-13T17:59:14+00:00] [photo-reminder] PHOTO REMINDER SENT | lead=1cce42c1-c390-495e-85e4-7e5a7e9d6a74 | to=ungureanudavid39@gmail.com
+[2026-03-13T17:59:53+00:00] OFFER EMAIL SENT | lead=1cce42c1-c390-495e-85e4-7e5a7e9d6a74 | to=ungureanudavid39@gmail.com | company=69e8d242-be8a-47a7-978c-6648d461759f
